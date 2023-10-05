@@ -1,0 +1,211 @@
+﻿<Window x:Class="TiberiumFusion.FixedSteamFriendsUI.QuickPatcher.ForcedSteamClientUpdateTip"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TiberiumFusion.FixedSteamFriendsUI.QuickPatcher"
+        mc:Ignorable="d"
+        Title="Performing a forced in-place Steam client update" Width="660" Height="740" WindowStyle="ToolWindow" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
+    <DockPanel>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="8,6">
+            
+                <StackPanel.Resources>
+                    <ResourceDictionary>
+
+                        <Style TargetType="TextBlock">
+                            <Setter Property="TextWrapping" Value="Wrap" />
+                        </Style>
+
+                        <Style TargetType="Hyperlink">
+                            <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=NavigateUri}"/>
+                        </Style>
+                        
+                        <Style x:Key="StepItem" TargetType="{x:Type ContentControl}">
+                            <Setter Property="DataContext">
+                                <Setter.Value>
+                                    <Binding RelativeSource="{RelativeSource Self}" Path="." />
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Margin" Value="0,8,0,0" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type ContentControl}">
+                                        <DockPanel>
+                                            <TextBlock Margin="0,0,10,0" FontWeight="Bold" Text="{Binding Tag}" />
+                                            <ContentPresenter />
+                                        </DockPanel>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    
+                        <Style x:Key="Example" TargetType="{x:Type ContentControl}">
+                            <Setter Property="DataContext">
+                                <Setter.Value>
+                                    <Binding RelativeSource="{RelativeSource Self}" Path="." />
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Margin" Value="0,4,0,0" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type ContentControl}">
+                                        <Border Margin="0,6,0,0" Padding="8,4" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" BorderThickness="1" CornerRadius="3" BorderBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}">
+                                            <DockPanel>
+                                                <TextBlock FontStyle="Italic" Text="{Binding Tag}" Margin="0,0,10,0"/>
+                                                <ContentPresenter />
+                                            </DockPanel>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+
+                        <Style x:Key="CommandCopypasta" TargetType="{x:Type ContentControl}">
+                            <Setter Property="DataContext">
+                                <Setter.Value>
+                                    <Binding RelativeSource="{RelativeSource Self}" Path="." />
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Margin" Value="0,6,0,0" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type ContentControl}">
+                                        <Border Padding="6,4" BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" Background="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}">
+                                            <TextBox FontFamily="Segoe UI Mono" FontSize="11" IsReadOnly="True" TextWrapping="Wrap" Background="Transparent" BorderThickness="0" Text="{Binding Tag}"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    
+                    </ResourceDictionary>
+                </StackPanel.Resources>
+                
+                <TextBlock>
+                    If you ever need to reset the Steam client's program files to a clean state, you must perform a forced in-place update. Valve likes taking away your freedoms, and this is the only way to install a specific version of the Steam client of your choice. Do <Run FontFamily="Segoe UI Semibold">not</Run> use the Steam installer; it only installs bleeding-edge, which is incompatible with the FriendsUI patch.
+                </TextBlock>
+                
+                <ContentControl Style="{StaticResource StepItem}" Margin="0,4,0,0" Tag="Step 1:">
+                    <TextBlock>
+                        Open the Steam library. In the menu bar, click on Help -> About Steam.
+                    </TextBlock>
+                </ContentControl>
+            
+                <ContentControl Style="{StaticResource StepItem}" Tag="Step 2:">
+                    <TextBlock>
+                        Refer to the number in the <Run FontStyle="Italic">Steam package versions</Run> line. This number is your installed version of the Steam client.
+                    </TextBlock>
+                </ContentControl>
+            
+                <ContentControl Style="{StaticResource StepItem}" Tag="Step 3:">
+                    <TextBlock>
+                        Open
+                        <Hyperlink x:Name="HyperlinkLightwoGuide" RequestNavigate="OpenLightwoGuide" NavigateUri="https://steamcommunity.com/sharedfiles/filedetails/?id=2967855237">
+                            <Hyperlink.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Copy link to clipboard" Click="CopyLightwoGuideLinkToClipboard"/>
+                                </ContextMenu>
+                            </Hyperlink.ContextMenu>
+                            this steam guide
+                        </Hyperlink>
+                        in a web browser. Ctrl+F for the section titled "The Downgrade Table".
+                    </TextBlock>
+                </ContentControl>
+            
+                <ContentControl Style="{StaticResource StepItem}" Tag="Step 4:">
+                    <TextBlock>
+                        Find the table entry whose <Run FontStyle="Italic">Manifest version</Run> cell corresponds to the number you obtained in Step 2.
+                    </TextBlock>
+                </ContentControl>
+            
+                <ContentControl Style="{StaticResource StepItem}" Tag="Step 5:">
+                    <TextBlock>
+                        Refer to the numbers in the <Run FontStyle="Italic">Wayback Machine date</Run> column for that table entry. Three numbers are listed, one for each platform that Steam supports. Take note of the number for your platform.
+                    </TextBlock>
+                </ContentControl>
+
+                <ContentControl Style="{StaticResource Example}" Tag="Example:">
+                    <TextBlock FontSize="11.5" FontFamily="Segoe UI Semilight">About -> Steam says <Run FontStyle="Italic" FontFamily="Segoe UI">Steam package versions: 1685488080</Run>. Look for <Run FontStyle="Italic" FontFamily="Segoe UI">1685488080</Run> in the Downgrade Table. The "Wayback Machine date" number for <Run FontStyle="Italic" FontFamily="Segoe UI">1685488080</Run> on Windows is <Run FontStyle="Italic" FontFamily="Segoe UI">20230531113527</Run> (May 31 2023 client release). Use this number in the following steps.</TextBlock>
+                </ContentControl>
+            
+                <ContentControl Style="{StaticResource StepItem}" Tag="Step 6:">
+                    <TextBlock>
+                        Open a text editor, like notepad.
+                    </TextBlock>
+                </ContentControl>
+            
+                <ContentControl Style="{StaticResource StepItem}" Tag="Step 7:">
+                    <StackPanel>
+                        <TextBlock>
+                            Copy &amp; paste the command below into the text editor:
+                        </TextBlock>
+                        <ContentControl Style="{StaticResource CommandCopypasta}" Margin="0,4,0,0">
+                            <ContentControl.Tag>
+                                steam.exe -forcesteamupdate -forcepackagedownload -overridepackageurl http://web.archive.org/web/ZZZif_/media.steampowered.com/client -exitsteam
+                            </ContentControl.Tag>
+                        </ContentControl>
+                    </StackPanel>
+                </ContentControl>
+            
+                <ContentControl Style="{StaticResource StepItem}" Tag="Step 8:">
+                    <TextBlock>
+                        Replace <TextBlock Margin="4,0" FontFamily="Segoe UI Mono" FontSize="11">ZZZ</TextBlock> with the "Wayback Machine date" number you obtained in Step 5.
+                    </TextBlock>
+                </ContentControl>
+
+                <ContentControl Style="{StaticResource Example}" Tag="Example:">
+                    <StackPanel>
+                        <TextBlock FontSize="11.5" FontFamily="Segoe UI Semilight">Using <Run FontStyle="Italic" FontFamily="Segoe UI">20230531113527</Run> from the previous example, the edited command is:</TextBlock>
+                        <ContentControl Style="{StaticResource CommandCopypasta}" Margin="0,4,0,0">
+                            <ContentControl.Tag>
+                                steam.exe -forcesteamupdate -forcepackagedownload -overridepackageurl http://web.archive.org/web/20230531113527if_/media.steampowered.com/client -exitsteam
+                            </ContentControl.Tag>
+                        </ContentControl>
+                    </StackPanel>
+                </ContentControl>
+                
+                <ContentControl Style="{StaticResource StepItem}" Tag="Step 9:">
+                    <TextBlock>
+                        Exit Steam. Wait for all Steam windows to close.
+                    </TextBlock>
+                </ContentControl>
+                
+                <ContentControl Style="{StaticResource StepItem}" Tag="Step 10:">
+                    <TextBlock>
+                        Open explorer and browse to the Steam program files. This is the folder containing Steam.exe and is typically: <Run FontFamily="Segoe UI Mono" FontSize="11">C:\Program Files (x86)\Steam</Run>
+                    </TextBlock>
+                </ContentControl>
+                
+                <ContentControl Style="{StaticResource StepItem}" Tag="Step 11:">
+                    <TextBlock>
+                        Shift + Right click anywhere in the empty space within the folder, then choose <Run FontStyle="Italic">Open command window here</Run>. Alternatively, open the command prompt elsewhere, then <Run FontFamily="Segoe UI Mono">cd</Run> to the Steam install folder.
+                    </TextBlock>
+                </ContentControl>
+                
+                <ContentControl Style="{StaticResource StepItem}" Tag="Step 12:">
+                    <TextBlock>
+                        Switch to the text editor. Select the entire command you created in Step 8 and copy it to the clipboard.
+                    </TextBlock>
+                </ContentControl>
+                
+                <ContentControl Style="{StaticResource StepItem}" Tag="Step 13:">
+                    <TextBlock>
+                        Switch back to the command prompt. Right click anywhere in the command prompt, then choose <Run FontStyle="Italic">Paste</Run>.
+                    </TextBlock>
+                </ContentControl>
+                
+                <ContentControl Style="{StaticResource StepItem}" Tag="Step 14:">
+                    <TextBlock>
+                        Press Enter to launch Steam with the specified arguments.
+                    </TextBlock>
+                </ContentControl>
+                
+                <TextBlock Margin="0,6,0,0">
+                    Steam will now download &amp; install the specific client version you selected in Steps 3-5. All of your personal data will be retained. When the update is finished, the Steam bootstrapper window will close. After that, you may now launch Steam normally.
+                </TextBlock>
+                
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</Window>

@@ -1,0 +1,21 @@
+﻿<Application x:Class="TiberiumFusion.FixedSteamFriendsUI.QuickPatcher.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:TiberiumFusion.FixedSteamFriendsUI.QuickPatcher"
+             xmlns:infra="clr-namespace:TiberiumFusion.FixedSteamFriendsUI.QuickPatcher.Infra"
+             StartupUri="MainWindow.xaml"
+             Startup="Application_Startup">
+    <Application.Resources>
+        
+        <infra:XamlDllIconGetter x:Key="DllIconGetter" />
+        <infra:NullableToVisibilityConverter x:Key="NullableToVisibility" />
+        <infra:EpochSecondsToMMMMdyyyyConverter x:Key="EpochSecondsToMMMMdyyyy" />
+        <infra:EpochSecondsToHHmmssConverter x:Key="EpochSecondsToHHmmss" />
+        <infra:XamlMathMinDoubleMultiConverter x:Key="MathMinDoubleMulti" />
+        <infra:XamlMathMaxDoubleMultiConverter x:Key="MathMaxDoubleMulti" />
+        <infra:XamlMathMax2ClampDoubleMultiConverter x:Key="MathMax2ClampDoubleMulti" />
+        <infra:XamlNegateBoolConverter x:Key="NegateBool" />
+        <infra:XamlTrimStringEndConverter x:Key="TrimStringEnd" />
+
+    </Application.Resources>
+</Application>

@@ -1,0 +1,658 @@
+﻿<UserControl x:Class="TiberiumFusion.FixedSteamFriendsUI.QuickPatcher.Patcher"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:syscom="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+             xmlns:local="clr-namespace:TiberiumFusion.FixedSteamFriendsUI.QuickPatcher"
+             xmlns:infra="clr-namespace:TiberiumFusion.FixedSteamFriendsUI.QuickPatcher.Infra"
+             xmlns:sd="clr-namespace:TiberiumFusion.FixedSteamFriendsUI.QuickPatcher.StaticData"
+             RenderOptions.BitmapScalingMode="HighQuality"
+             DataContext="{Binding RelativeSource={RelativeSource Self}, Path=.}"
+             mc:Ignorable="d" 
+             d:DesignWidth="800" d:DesignHeight="1400"
+             >
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+
+            <local:PatcherState x:Key="PatcherState" />
+            <local:PatchMetadata x:Key="PayloadPatchMetadata" />
+            <local:PatchInstallState x:Key="PatchInstallState" />
+
+            <SolidColorBrush x:Key="WarningBoxBackgroundBrush" Color="#FFFFF6DD" />
+            <SolidColorBrush x:Key="WarningBoxBorderBrush" Color="#FFD6B966" />
+
+            <SolidColorBrush x:Key="ErrorBoxBackgroundBrush" Color="#FFFFDDDD" />
+            <SolidColorBrush x:Key="ErrorBoxBorderBrush" Color="#FFD66666" />
+
+            <SolidColorBrush x:Key="GreenBoxBackgroundBrush" Color="#FFCAFFCA" />
+            <SolidColorBrush x:Key="GreenBoxBorderBrush" Color="#FF50C950" />
+
+            <SolidColorBrush x:Key="InfoBoxBackgroundBrush" Color="#FFCAE5FF" />
+            <SolidColorBrush x:Key="InfoBoxBorderBrush" Color="#FF4288CB" />
+
+            <SolidColorBrush x:Key="DimFrontPathTextForeground" Color="#C9000000" />
+
+            <Style x:Key="Subtext" TargetType="{x:Type TextBlock}">
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.InactiveCaptionTextBrushKey}}" />
+                <Setter Property="FontStyle" Value="Italic" />
+            </Style>
+
+            <Style x:Key="WarningBoxWithIcon" TargetType="{x:Type ContentControl}">
+                <Setter Property="Padding" Value="4" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ContentControl}">
+                            <Border Background="{StaticResource WarningBoxBackgroundBrush}" BorderThickness="1" BorderBrush="{StaticResource WarningBoxBorderBrush}">
+                                <DockPanel Margin="{TemplateBinding Padding}">
+                                    <Image Source="{Binding Converter={StaticResource DllIconGetter}, ConverterParameter=imageres.dll|79}" Width="16" Height="16" Margin="3,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                                    <ContentPresenter Margin="6,0,0,1" />
+                                </DockPanel>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="YellowBox" TargetType="{x:Type ContentControl}">
+                <Setter Property="Padding" Value="4" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ContentControl}">
+                            <Border Background="{StaticResource WarningBoxBackgroundBrush}" BorderThickness="1" BorderBrush="{StaticResource WarningBoxBorderBrush}">
+                                <DockPanel Margin="{TemplateBinding Padding}">
+                                    <ContentPresenter />
+                                </DockPanel>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="ErrorBoxWithIcon" TargetType="{x:Type ContentControl}">
+                <Setter Property="Padding" Value="4" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ContentControl}">
+                            <Border Background="{StaticResource ErrorBoxBackgroundBrush}" BorderThickness="1" BorderBrush="{StaticResource ErrorBoxBorderBrush}">
+                                <DockPanel Margin="{TemplateBinding Padding}">
+                                    <Image Source="{Binding Converter={StaticResource DllIconGetter}, ConverterParameter=imageres.dll|93}" Width="16" Height="16" Margin="3,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                                    <ContentPresenter Margin="6,0,0,1" />
+                                </DockPanel>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="RedBox" TargetType="{x:Type ContentControl}">
+                <Setter Property="Padding" Value="4" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ContentControl}">
+                            <Border Background="{StaticResource ErrorBoxBackgroundBrush}" BorderThickness="1" BorderBrush="{StaticResource ErrorBoxBorderBrush}">
+                                <DockPanel Margin="{TemplateBinding Padding}">
+                                    <ContentPresenter />
+                                </DockPanel>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="GreenBox" TargetType="{x:Type ContentControl}">
+                <Setter Property="Padding" Value="4" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ContentControl}">
+                            <Border Background="{StaticResource GreenBoxBackgroundBrush}" BorderThickness="1" BorderBrush="{StaticResource GreenBoxBorderBrush}">
+                                <DockPanel Margin="{TemplateBinding Padding}">
+                                    <ContentPresenter />
+                                </DockPanel>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="WhiteBox" TargetType="{x:Type ContentControl}">
+                <Setter Property="Padding" Value="4" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ContentControl}">
+                            <Border Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}">
+                                <DockPanel Margin="{TemplateBinding Padding}">
+                                    <ContentPresenter />
+                                </DockPanel>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="NoticeBoxWithIcon" TargetType="{x:Type ContentControl}">
+                <Setter Property="Padding" Value="4" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ContentControl}">
+                            <Border Background="{StaticResource InfoBoxBackgroundBrush}" BorderThickness="1" BorderBrush="{StaticResource InfoBoxBorderBrush}">
+                                <DockPanel Margin="{TemplateBinding Padding}">
+                                    <Image Source="{Binding Converter={StaticResource DllIconGetter}, ConverterParameter=imageres.dll|76}" Width="16" Height="16" Margin="3,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                                    <ContentPresenter Margin="6,0,0,1" />
+                                </DockPanel>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="SectionHeaderLabel" TargetType="{x:Type ContentControl}">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ContentControl}">
+                            <DockPanel>
+                                <Rectangle Width="4" Height="16" Fill="{TemplateBinding Foreground}" Opacity="0.7" />
+                                <Label Margin="4,0,0,0" FontFamily="Segoe UI Light" FontSize="20" Foreground="{TemplateBinding Foreground}" Padding="4,2,4,6">
+                                    <ContentPresenter />
+                                </Label>
+                            </DockPanel>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Grid>
+        
+        <Grid.Resources>
+            <ResourceDictionary>
+
+                <Style TargetType="TextBlock">
+                    <Setter Property="TextWrapping" Value="Wrap" />
+                </Style>
+                
+            </ResourceDictionary>
+        </Grid.Resources>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" MinWidth="260" />
+            <ColumnDefinition Width="1" />
+            <ColumnDefinition Width="*" MinWidth="260" />
+        </Grid.ColumnDefinitions>
+        
+        <!-- Left side -->
+        <DockPanel Grid.Column="0" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" IsEnabled="{Binding Source={StaticResource PatchInstallState}, Path=InstallInProgress, Converter={StaticResource NegateBool}}">
+            <DockPanel.Resources>
+                <ResourceDictionary>
+                    
+                    <Style TargetType="{x:Type GroupBox}">
+                        <Setter Property="Padding" Value="4,6,2,2" />
+                        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" />
+                    </Style>
+                    
+                </ResourceDictionary>
+            </DockPanel.Resources>
+            <DockPanel Margin="0,2,0,6">
+                
+                <ContentControl DockPanel.Dock="Top" Style="{StaticResource SectionHeaderLabel}" Foreground="#FF707070">
+                    Steam Client
+                </ContentControl>
+
+                <DockPanel DockPanel.Dock="Top" Margin="8,0">
+                    
+                    <!-- Path to steam program files -->
+                    <GroupBox DockPanel.Dock="Top" Header="Steam location:">
+                        <StackPanel>
+
+                            <!-- Path selector -->
+                            <DockPanel Height="24">
+                                <Button DockPanel.Dock="Right" Padding="7,2" Click="OnSteamLocationBrowseClick">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="Resources/OpenFolder_16x.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="16" Height="16" />
+                                        <TextBlock Margin="5,0,2,0">Browse</TextBlock>
+                                    </StackPanel>
+                                </Button>
+                                <TextBox x:Name="SteamLocationPath" Margin="0,0,10,0" FontFamily="Segoe UI Mono" TextOptions.TextFormattingMode="Display" Text="{Binding Source={StaticResource PatcherState}, Path=SteamRootDirPath}" TextChanged="SteamLocationPath_TextChanged" VerticalContentAlignment="Center"/>
+                            </DockPanel>
+                            <TextBlock Style="{StaticResource Subtext}" Margin="2,3,2,0" FontSize="11" TextWrapping="Wrap">
+                                Path to the folder which contains <Image Source="Resources/steam.ico" Height="12" Width="12" Margin="0,0,0,-2" /> steam.exe
+                            </TextBlock>
+
+                            <!-- Invalid steam location warning -->
+                            <StackPanel Visibility="{Binding Vis_InvalidSteamRootDirPath}" Margin="0,8,0,0">
+                                <ContentControl Style="{StaticResource ErrorBoxWithIcon}">
+                                    <TextBlock>Invalid path. No directory exists at this location.</TextBlock>
+                                </ContentControl>
+                            </StackPanel>
+
+                            <!-- clientui folder missing -->
+                            <StackPanel Visibility="{Binding Vis_MissingClientUiDir}" Margin="0,8,0,0">
+                                <ContentControl Style="{StaticResource ErrorBoxWithIcon}">
+                                    <TextBlock>
+                                        <Run FontFamily="Segoe UI Mono" FontSize="11" Foreground="{StaticResource DimFrontPathTextForeground}" Text="{Binding Source={StaticResource PatcherState}, Path=SteamRootDirPath, Converter={StaticResource TrimStringEnd}, ConverterParameter=\\}"/>
+                                        <Run FontFamily="Segoe UI Mono" FontSize="11" FontWeight="Bold">\clientui</Run>
+                                        folder is missing.<LineBreak/>Are you sure this is the path to the Steam program files?
+                                    </TextBlock>
+                                </ContentControl>
+                            </StackPanel>
+                            
+                            <!-- Steam client version mismatch warning -->
+                            <StackPanel Visibility="{Binding Vis_SteamClientVersionMismatch}" Margin="0,8,0,0">
+                                <ContentControl Style="{StaticResource ErrorBoxWithIcon}">
+                                    <TextBlock>
+                                        Incompatible Steam client version (<Run Text="{Binding Source={StaticResource PatcherState}, Path=SteamState.SteamclientDllVersion, Mode=OneWay}"/>). This patch is only compatible with Steam clients released August 2023 or earlier (version <Run Text="{Binding Source={x:Static sd:SteamClientNotableVersions.Client20230728}, Mode=OneTime}"/> or earlier).
+                                    </TextBlock>
+                                </ContentControl>
+                            </StackPanel>
+                            
+                            <!-- friends.js missing -->
+                            <StackPanel Visibility="{Binding Vis_MissingFriendsJs}" Margin="0,8,0,0">
+                                <ContentControl Style="{StaticResource WarningBoxWithIcon}">
+                                    <TextBlock>
+                                        <Run FontFamily="Segoe UI Mono" FontSize="11" Foreground="{StaticResource DimFrontPathTextForeground}" Text="{Binding Source={StaticResource PatcherState}, Path=SteamRootDirPath, Converter={StaticResource TrimStringEnd}, ConverterParameter=\\}"/>
+                                        <Run FontFamily="Segoe UI Mono" FontSize="11" FontWeight="Bold">\clientui\friends.js</Run>
+                                        is missing.<LineBreak/>Patch installation is still possible, but no friends.js backup will be made since it does not exist.
+                                    </TextBlock>
+                                </ContentControl>
+                            </StackPanel>
+                            
+                        </StackPanel>
+                    </GroupBox>
+                    
+                    <Rectangle DockPanel.Dock="Top" Height="4" Fill="Transparent" />
+                    
+                    <!-- Status of steam program files -->
+                    <GroupBox DockPanel.Dock="Top" Header="Patch status:" Visibility="{Binding Vis_SteamStatus}">
+                        <StackPanel>
+                        
+                            <!-- Unknown -->
+                            <StackPanel Visibility="{Binding Vis_UnknownFriendsJs}">
+
+                                <ContentControl Style="{StaticResource WhiteBox}" Padding="8">
+                                    <DockPanel>
+                                        <Image Width="16" Height="16" Margin="3,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Source="Resources/Question_16x.png" />
+                                        <TextBlock Margin="8,0,0,0" FontFamily="Segoe UI Semibold">Unknown</TextBlock>
+                                    </DockPanel>
+                                </ContentControl>
+                                
+                                <TextBlock Margin="0,4,0,0">
+                                    Unable to determine installed patch status.
+                                </TextBlock>
+                                
+                                <ContentControl Style="{StaticResource RedBox}" Margin="0,4,0,0" Padding="6" Visibility="{Binding FriendsJsReadErrorDetails, Converter={StaticResource NullableToVisibility}}">
+                                    <DockPanel>
+                                        <Image Width="16" Height="16" Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Source="Resources/Bug_16x.png" />
+                                        <TextBlock Margin="4,0,0,0">
+                                            An unexpected error occurred while reading
+                                            <Run FontFamily="Segoe UI Mono" FontSize="11" Foreground="{StaticResource DimFrontPathTextForeground}" Text="{Binding Source={StaticResource PatcherState}, Path=SteamRootDirPath, Converter={StaticResource TrimStringEnd}, ConverterParameter=\\}"/>
+                                            <Run FontFamily="Segoe UI Mono" FontSize="11" FontWeight="Bold">\clientui\friends.js</Run>
+                                            <LineBreak/>
+                                            Details:
+                                            <LineBreak/>
+                                            <Run FontFamily="Segoe UI Mono" FontSize="11" Text="{Binding FriendsJsReadErrorDetails}" />
+                                        </TextBlock>
+                                    </DockPanel>
+                                </ContentControl>
+                            
+                            </StackPanel>
+                        
+                            <!-- Stock -->
+                            <StackPanel Visibility="{Binding Vis_StockFriendsJs}">
+                            
+                                <ContentControl Style="{StaticResource YellowBox}" Padding="8">
+                                    <DockPanel>
+                                        <Image Width="16" Height="16" Margin="3,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Source="Resources/unmodified16.png" />
+                                        <TextBlock Margin="8,0,0,0" FontFamily="Segoe UI Semibold">Not Patched</TextBlock>
+                                    </DockPanel>
+                                </ContentControl>
+                            
+                                <TextBlock Margin="0,4,0,0">
+                                    The FriendsUI patch is not installed.
+                                </TextBlock>
+                            
+                            </StackPanel>
+                        
+                            <!-- Patched -->
+                            <StackPanel Visibility="{Binding Vis_ModifiedFriendsJs}">
+                                
+                                <ContentControl Style="{StaticResource GreenBox}" Padding="8">
+                                    <DockPanel>
+                                        <Image Width="16" Height="16" Margin="3,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Source="Resources/Property_16x.png" />
+                                        <TextBlock Margin="8,0,0,0" FontFamily="Segoe UI Semibold">
+                                            FriendsUI Patch Installed
+                                            <TextBlock Visibility="{Binding Vis_ModifiedFriendsJs_WithoutMetadata}">?</TextBlock>
+                                        </TextBlock>
+                                    </DockPanel>
+                                </ContentControl>
+                                
+                                <StackPanel Visibility="{Binding Vis_ModifiedFriendsJs_WithMetadata}">
+                                    <TextBlock Margin="0,6,0,0">
+                                        Your Steam client already has the following FriendsUI patch installed:
+                                    </TextBlock>
+                                    <local:PatchMetadataSheet Margin="0,6,0,0" PatchMetadata="{Binding Source={StaticResource PatcherState}, Path=SteamState.InstalledPatchMetadata}" />
+                                </StackPanel>
+                            
+                                <StackPanel Visibility="{Binding Vis_ModifiedFriendsJs_WithoutMetadata}">
+                                    <TextBlock Margin="0,4,0,0">
+                                        Your Steam client appears to already have a FriendsUI patch installed. However, some data is missing. The patch may be incomplete and non-functioning.
+                                    </TextBlock>
+                                    <ContentControl Style="{StaticResource WarningBoxWithIcon}" Margin="0,6,0,0">
+                                        <TextBlock>
+                                            Could not find patch metadata in
+                                            <Run FontFamily="Segoe UI Mono" FontSize="11" Foreground="{StaticResource DimFrontPathTextForeground}" Text="{Binding Source={StaticResource PatcherState}, Path=SteamRootDirPath, Converter={StaticResource TrimStringEnd}, ConverterParameter=\\}"/>
+                                            <Run FontFamily="Segoe UI Mono" FontSize="11" FontWeight="Bold">\clientui\friends.js</Run>
+                                            <LineBreak />
+                                            Patch may be malformed or corrupt.
+                                        </TextBlock>
+                                    </ContentControl>
+                                </StackPanel>
+
+                            </StackPanel>
+                        
+                        </StackPanel>
+                    </GroupBox>
+                    
+                    <Rectangle DockPanel.Dock="Top" Height="4" Fill="Transparent" />
+                    
+                    <!-- Uninstall patch controls -->
+                    <GroupBox DockPanel.Dock="Top" Header="Uninstall patch:" Visibility="{Binding Vis_UninstallPatch}">
+                        <StackPanel>
+                            <TextBlock>
+                                Backup file found: 
+                                <Run FontFamily="Segoe UI Mono" FontSize="11" Foreground="{StaticResource DimFrontPathTextForeground}" Text="{Binding Source={StaticResource PatcherState}, Path=SteamRootDirPath, Converter={StaticResource TrimStringEnd}, ConverterParameter=\\}"/>
+                                <Run FontFamily="Segoe UI Mono" FontSize="11" FontWeight="Bold">\clientui\friends.js.first-backup</Run>
+                            </TextBlock>
+                            
+                            <StackPanel Visibility="{Binding Vis_DirtyBackupFriendsJs}" Margin="0,8,0,0">
+                                <ContentControl Style="{StaticResource WarningBoxWithIcon}">
+                                    <StackPanel>
+                                        <TextBlock>
+                                            Backup file is not clean!
+                                        </TextBlock>
+                                        <TextBlock FontSize="11" Margin="0,2,0,0">
+                                            The backup friends.js file is modified and patched. Restoring this backup will <Run FontFamily="Segoe UI Semibold">not</Run> uninstall the patch and will likely cause problems instead.
+                                            <LineBreak />
+                                            Instead, <Hyperlink RequestNavigate="ShowForcedSteamClientUpdateTip" NavigateUri="">perform a forced in-place Steam client update</Hyperlink> to remove the FriendsUI patch and replace all Steam program files with clean, unmodified versions.
+                                        </TextBlock>
+                                    </StackPanel>
+                                </ContentControl>
+                            </StackPanel>
+                            
+                            <!-- Button and logically attached notices -->
+                            <StackPanel Margin="0,8,0,0">
+                                <StackPanel.Opacity>
+                                    <Binding Path="EnableUninstallButton">
+                                        <Binding.Converter>
+                                            <infra:BoolSelectorDoubleConverter />
+                                        </Binding.Converter>
+                                        <Binding.ConverterParameter>
+                                            <x:Array Type="{x:Type sys:Double}">
+                                                <sys:Double>0.5</sys:Double>
+                                                <sys:Double>1</sys:Double>
+                                            </x:Array>
+                                        </Binding.ConverterParameter>
+                                    </Binding>
+                                </StackPanel.Opacity>
+                                
+                                <StackPanel Visibility="{Binding Vis_SteamIsRunningWarning}" Margin="0,0,0,6">
+                                    <ContentControl Style="{StaticResource ErrorBoxWithIcon}">
+                                        <StackPanel>
+                                            <TextBlock FontFamily="Segoe UI Semibold">Patch cannot be uninstalled while Steam is running. Close Steam first.</TextBlock>
+                                            <TextBlock Margin="0,2,0,0" FontStyle="Italic" Cursor="Hand">
+                                                <Hyperlink RequestNavigate="ShowMessageBoxRunningSteamProcesses" NavigateUri="">
+                                                    List of running Steam processes
+                                                </Hyperlink>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </ContentControl>
+                                </StackPanel>
+                            
+                                <Button Padding="15,6" IsEnabled="{Binding EnableUninstallPatchButton}" Click="OnUninstallPatchButtonClick">
+                                    <TextBlock FontSize="12" FontFamily="Segoe UI Semibold">
+                                        Restore Backup &amp; Uninstall FriendsUI Patch
+                                    </TextBlock>
+                                </Button>
+                            </StackPanel>
+                            
+                        </StackPanel>
+                    </GroupBox>
+                    
+                    <!-- Uninstall progress -->
+                    <GroupBox x:Name="UninstallProgressGroupBox" DockPanel.Dock="Top" Header="Uninstall progress:">
+                        <DockPanel Margin="0,4,2,0">
+                            
+                            <!-- Controls above Log -->
+                            <StackPanel DockPanel.Dock="Top" Margin="0,0,0,0">
+                                
+                                <StackPanel x:Name="PatchUninstallSuccessNotice" Margin="0,0,0,8">
+                                    <ContentControl Style="{StaticResource GreenBox}" Padding="8">
+                                        <DockPanel>
+                                            <Image Width="16" Height="16" Margin="3,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Source="Resources/Checkmark_16x.png" />
+                                            <TextBlock Margin="8,0,0,0" FontFamily="Segoe UI Semibold">Patch uninstalled</TextBlock>
+                                        </DockPanel>
+                                    </ContentControl>
+                                    <TextBlock Margin="0,4,0,0">
+                                        You may now close this application and launch Steam.
+                                    </TextBlock>
+                                </StackPanel>
+                                
+                                <StackPanel x:Name="PatchUninstallErrorNotice" Margin="0,0,0,8">
+                                    <ContentControl Style="{StaticResource RedBox}" Padding="8">
+                                        <DockPanel>
+                                            <Image Width="16" Height="16" Margin="3,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Source="{Binding Converter={StaticResource DllIconGetter}, ConverterParameter=imageres.dll|93}" />
+                                            <TextBlock Margin="8,0,0,0" FontFamily="Segoe UI Semibold">Error while uninstalling patch. Check log.</TextBlock>
+                                        </DockPanel>
+                                    </ContentControl>
+                                    <TextBlock Margin="0,4,0,0">
+                                        Your Steam program files may have been left in a mangled state.
+                                        <LineBreak />
+                                        <TextBlock FontFamily="Segoe WP Semibold">It is highly recommended that you <Hyperlink RequestNavigate="ShowForcedSteamClientUpdateTip" NavigateUri="">perform a forced in-place Steam client update</Hyperlink> right now to fix any broken Steam program files.</TextBlock>
+                                    </TextBlock>
+                                </StackPanel>
+                                
+                            </StackPanel>
+                            
+                            <!-- Log -->
+                            <DockPanel DockPanel.Dock="Top">
+                                <Border BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.ScrollBarBrushKey}}" DataContext="{DynamicResource PatchInstallState}">
+                                    <local:Log DataContext="{Binding UninstallLog}" />
+                                </Border>
+                            </DockPanel>
+
+                        </DockPanel>
+                    </GroupBox>
+
+                </DockPanel>
+                
+            </DockPanel>
+        </DockPanel>
+
+        <GridSplitter ResizeBehavior="PreviousAndNext" Grid.Column="1" HorizontalAlignment="Stretch" Margin="-2,0,-4,0" Panel.ZIndex="10000">
+            <GridSplitter.Template>
+                <ControlTemplate>
+                    <DockPanel>
+                        <Rectangle Width="2" Fill="Transparent" />
+                        <Rectangle Width="1" Fill="{DynamicResource {x:Static SystemColors.GradientActiveCaptionBrushKey}}" />
+                        <Rectangle Width="2" Fill="Transparent" />
+                    </DockPanel>
+                </ControlTemplate>
+            </GridSplitter.Template>
+        </GridSplitter>
+
+        <!-- Right side -->
+        <DockPanel Grid.Column="2" Background="{DynamicResource {x:Static SystemColors.ControlLightLightBrushKey}}">
+            <DockPanel.Resources>
+                <ResourceDictionary>
+                    
+                    <Style TargetType="{x:Type GroupBox}">
+                        <Setter Property="Padding" Value="4,4,2,2" />
+                        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
+                    </Style>
+                    
+                </ResourceDictionary>
+            </DockPanel.Resources>
+            
+            <DockPanel DockPanel.Dock="Top" Margin="0,2,0,6">
+                
+                <ContentControl DockPanel.Dock="Top" Style="{StaticResource SectionHeaderLabel}" Foreground="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}">
+                    Install Patch
+                </ContentControl>
+
+                <DockPanel DockPanel.Dock="Top" Margin="8,0">
+                    
+                    <!-- Patch payload information -->
+                    <GroupBox DockPanel.Dock="Top" Header="Patch payload:">
+                        <StackPanel>
+                            <TextBlock>
+                                This application will install the following FriendsUI patch:
+                            </TextBlock>
+                            <local:PatchMetadataSheet Margin="0,4,0,0" PatchMetadata="{DynamicResource PayloadPatchMetadata}" />
+                        </StackPanel>
+                    </GroupBox>
+                    
+                    <Rectangle DockPanel.Dock="Top" Height="4" Fill="Transparent" />
+                    
+                    <!-- Install patch controls -->
+                    <GroupBox DockPanel.Dock="Top" Header="Install:">
+                        <StackPanel>
+                            
+                            <!-- Steam is running notice -->
+                            <StackPanel Visibility="{Binding Vis_SteamIsRunningWarning}" Margin="0,0,0,4">
+                                <ContentControl Style="{StaticResource ErrorBoxWithIcon}">
+                                    <StackPanel>
+                                        <TextBlock FontFamily="Segoe UI Semibold">Patch cannot be installed while Steam is running. Close Steam first.</TextBlock>
+                                        <TextBlock Margin="0,2,0,0" FontStyle="Italic" Cursor="Hand">
+                                            <Hyperlink RequestNavigate="ShowMessageBoxRunningSteamProcesses" NavigateUri="">
+                                                List of running Steam processes
+                                            </Hyperlink>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </ContentControl>
+                            </StackPanel>
+
+                            <!-- Subtitle -->
+                            <TextBlock Margin="0,1,0,0">
+                                Refer to
+                                <Hyperlink x:Name="SteamGuideHyperlink" RequestNavigate="ShowSteamGuide" NavigateUri="https://github.com/TiberiumFusion/FixedSteamFriendsUI/wiki">
+                                    <Hyperlink.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Copy link to clipboard" Click="SteamGuideLinkToClipboard"/>
+                                        </ContextMenu>
+                                    </Hyperlink.ContextMenu>
+                                    https://github.com/TiberiumFusion/FixedSteamFriendsUI/wiki
+                                </Hyperlink>
+                                if you experience any issues.
+                            </TextBlock>
+
+                            <!-- Button and logically attached notices -->
+                            <StackPanel>
+                                <StackPanel.Opacity>
+                                    <Binding Path="EnableInstallButton">
+                                        <Binding.Converter>
+                                            <infra:BoolSelectorDoubleConverter />
+                                        </Binding.Converter>
+                                        <Binding.ConverterParameter>
+                                            <x:Array Type="{x:Type sys:Double}">
+                                                <sys:Double>0.5</sys:Double>
+                                                <sys:Double>1</sys:Double>
+                                            </x:Array>
+                                        </Binding.ConverterParameter>
+                                    </Binding>
+                                </StackPanel.Opacity>
+                                <Button x:Name="InstallPatchButton" Padding="15,6" Margin="0,10,0,0" IsEnabled="{Binding EnableInstallPatchButton}" Click="OnInstallPatchButtonClick">
+                                    <DockPanel>
+                                        <Image Source="Resources/BuildSelection_16x.png" Width="16" Height="16" />
+                                        <TextBlock Margin="6,0,0,0" FontSize="13" FontFamily="Segoe UI Semibold">
+                                            Install FriendsUI Patch
+                                        </TextBlock>
+                                    </DockPanel>
+                                </Button>
+                                
+                                <StackPanel Visibility="{Binding Vis_DowngradeWarning}" Margin="0,8,0,0">
+                                    <ContentControl Style="{StaticResource WarningBoxWithIcon}">
+                                        <TextBlock>
+                                            This will install a version of the patch which is older than the currently installed patch.
+                                        </TextBlock>
+                                    </ContentControl>
+                                </StackPanel>
+                                
+                                <StackPanel Visibility="{Binding Vis_NogradeWarning}" Margin="0,8,0,0">
+                                    <ContentControl Style="{StaticResource NoticeBoxWithIcon}">
+                                        <TextBlock>
+                                            This will reinstall the same version of the currently installed patch.
+                                        </TextBlock>
+                                    </ContentControl>
+                                </StackPanel>
+                            </StackPanel>
+
+                        </StackPanel>
+                    </GroupBox>
+                    
+                    <Rectangle DockPanel.Dock="Top" Height="4" Fill="Transparent" />
+                    
+                    <!-- Install progress -->
+                    <GroupBox x:Name="InstallProgressGroupBox" DockPanel.Dock="Top" Header="Install progress:">
+                        <DockPanel Margin="0,4,2,0">
+                            
+                            <!-- Controls above Log -->
+                            <StackPanel DockPanel.Dock="Top" Margin="0,0,0,0">
+
+                                <StackPanel x:Name="PatchInstallSuccessNotice" Margin="0,0,0,8">
+                                    <ContentControl Style="{StaticResource GreenBox}" Padding="8">
+                                        <DockPanel>
+                                            <Image Width="16" Height="16" Margin="3,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Source="Resources/Checkmark_16x.png" />
+                                            <TextBlock Margin="8,0,0,0" FontFamily="Segoe UI Semibold">Patch installed successfully</TextBlock>
+                                        </DockPanel>
+                                    </ContentControl>
+                                    <TextBlock Margin="0,4,0,0">
+                                        You may now close this application and launch Steam. The patch will remain installed as long as the Steam program files are not modified.
+                                        <LineBreak />
+                                        <Run FontFamily="Segoe WP Semibold">Steam updates will remove the patch</Run>; re-install it afterwards.
+                                    </TextBlock>
+                                </StackPanel>
+                                
+                                <StackPanel x:Name="PatchInstallErrorNotice" Margin="0,0,0,8">
+                                    <ContentControl Style="{StaticResource RedBox}" Padding="8">
+                                        <DockPanel>
+                                            <Image Width="16" Height="16" Margin="3,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Source="{Binding Converter={StaticResource DllIconGetter}, ConverterParameter=imageres.dll|93}" />
+                                            <TextBlock Margin="8,0,0,0" FontFamily="Segoe UI Semibold">Error while installing patch. Check log.</TextBlock>
+                                        </DockPanel>
+                                    </ContentControl>
+                                    <TextBlock Margin="0,4,0,0">
+                                        Your Steam program files may have been left in a mangled state.
+                                        <LineBreak />
+                                        <TextBlock FontFamily="Segoe WP Semibold">It is highly recommended that you <Hyperlink RequestNavigate="ShowForcedSteamClientUpdateTip" NavigateUri="">perform a forced in-place Steam client update</Hyperlink> right now to fix any broken Steam program files.</TextBlock>
+                                    </TextBlock>
+                                </StackPanel>
+
+                            </StackPanel>
+                            
+                            <!-- Controls below Log -->
+                            <StackPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
+                                
+                                <ProgressBar x:Name="PatchInstallProgressBar" Height="24" />
+                                
+                            </StackPanel>
+                            
+                            <!-- Log -->
+                            <DockPanel DockPanel.Dock="Top">
+                                <Border BorderThickness="1" BorderBrush="{DynamicResource {x:Static SystemColors.ScrollBarBrushKey}}" DataContext="{DynamicResource PatchInstallState}">
+                                    <local:Log DataContext="{Binding InstallLog}" />
+                                </Border>
+                            </DockPanel>
+
+                        </DockPanel>
+                    </GroupBox>
+                    
+                </DockPanel>
+
+            </DockPanel>
+        </DockPanel>
+        
+    </Grid>
+
+</UserControl>

@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{2C5398C0-EC81-41E4-A1BD-AF5544A56551}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>TiberiumFusion.FixedSteamFriendsUI.PatchFilesPackager</RootNamespace>
+    <AssemblyName>PatchFilesPackager</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Helpers.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TemplateDirectives.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="build\PatchPayload_v1.0.0-{9e2017aa-091c-423f-8ff3-37d340e97c35}.zip" />
+    <None Include="Patch\clientui\steam-chat.com-snapshot-mod\public\shared\fonts\MotivaSans-Black.ttf" />
+    <None Include="Patch\clientui\steam-chat.com-snapshot-mod\public\shared\fonts\MotivaSans-Bold.ttf" />
+    <None Include="Patch\clientui\steam-chat.com-snapshot-mod\public\shared\fonts\MotivaSans-BoldItalic.ttf" />
+    <None Include="Patch\clientui\steam-chat.com-snapshot-mod\public\shared\fonts\MotivaSans-Light.ttf" />
+    <None Include="Patch\clientui\steam-chat.com-snapshot-mod\public\shared\fonts\MotivaSans-LightItalic.ttf" />
+    <None Include="Patch\clientui\steam-chat.com-snapshot-mod\public\shared\fonts\MotivaSans-Medium.ttf" />
+    <None Include="Patch\clientui\steam-chat.com-snapshot-mod\public\shared\fonts\MotivaSans-Regular.ttf" />
+    <None Include="Patch\clientui\steam-chat.com-snapshot-mod\public\shared\fonts\MotivaSans-RegularItalic.ttf" />
+    <None Include="Patch\clientui\steam-chat.com-snapshot-mod\public\shared\fonts\MotivaSans-Thin.ttf" />
+    <None Include="Patch\clientui\steam-chat.com-snapshot-mod\staticdata.json5" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Patch\clientui\friends.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\favicon.ico" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\index.html" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\json5.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\css\webui\461.css" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\css\webui\broadcastapp.css" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\css\webui\friends.css" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\images\webui\8669e97b288da32670e77181618c3dfb.png" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\461.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friends.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_arabic-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_brazilian-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_bulgarian-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_czech-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_danish-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_dutch-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_english-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_finnish-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_french-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_german-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_greek-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_hungarian-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_italian-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_japanese-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_koreana-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_latam-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_norwegian-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_polish-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_portuguese-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_romanian-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_russian-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_schinese-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_sc_schinese-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_spanish-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_swedish-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_tchinese-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_thai-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_turkish-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_ukrainian-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_vietnamese-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\libraries.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\libraries\react-dom.production.min.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\libraries\react.production.min.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\libraries_cm.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\noisegate-audio-worklet.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_arabic-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_brazilian-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_bulgarian-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_czech-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_danish-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_dutch-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_english-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_finnish-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_french-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_german-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_greek-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_hungarian-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_italian-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_japanese-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_koreana-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_latam-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_norwegian-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_polish-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_portuguese-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_romanian-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_russian-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_schinese-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_sc_schinese-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_spanish-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_swedish-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_tchinese-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_thai-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_turkish-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_ukrainian-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_vietnamese-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\steammessages.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\shared\css\motiva_sans.css" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\shared\css\shared_global.css" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\steam_at_mention.m4a" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\steam_chatroom_notification.m4a" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\steam_phonecall %281%29.m4a" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\steam_phonecall.m4a" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\steam_rpt_join.m4a" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\steam_rpt_leave.m4a" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\steam_ui_ptt_short_01_quiet %281%29.m4a" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\steam_ui_ptt_short_01_quiet.m4a" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\steam_ui_ptt_short_02_quiet %281%29.m4a" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\steam_ui_ptt_short_02_quiet.m4a" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\steam_voice_channel_enter %281%29.m4a" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\steam_voice_channel_enter.m4a" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\steam_voice_channel_exit %281%29.m4a" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\steam_voice_channel_exit %282%29.m4a" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\steam_voice_channel_exit %283%29.m4a" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\steam_voice_channel_exit.m4a" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\ui_steam_message_old_smooth.m4a" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\ui_steam_smoother_friend_join.m4a" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\ui_steam_smoother_friend_online.m4a" />
+    <Content Include="TemplateDirectives.xml" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>"$(TargetPath)" "$(ProjectDir)\"</PostBuildEvent>
+  </PropertyGroup>
+</Project>

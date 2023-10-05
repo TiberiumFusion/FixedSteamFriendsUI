@@ -1,0 +1,50 @@
+﻿<Window x:Class="TiberiumFusion.FixedSteamFriendsUI.QuickPatcher.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:local="clr-namespace:TiberiumFusion.FixedSteamFriendsUI.QuickPatcher"
+        mc:Ignorable="d"
+        UseLayoutRounding="True"
+        Title="FriendsUI Quick Patcher" Width="950" Height="620" Background="#FFF0F0F0">
+    
+    <DockPanel x:Name="RootElement">
+
+        <ScrollViewer x:Name="ScrollHost" VerticalScrollBarVisibility="Visible">
+            <Canvas x:Name="Canvas" MinHeight="{Binding ElementName=Patcher, Path=ActualHeight}">
+                <Canvas.Resources>
+                    <sys:Double x:Key="ScrollContentMinHeight">570</sys:Double> <!-- Patcher is allowed to grow to this height before we clamp it and the scroll bars engage -->
+                </Canvas.Resources>
+                <local:Patcher x:Name="Patcher" Width="{Binding ElementName=Canvas, Path=ActualWidth}" MinHeight="{Binding ElementName=ScrollHost, Path=ActualHeight}">
+                    <local:Patcher.Style>
+                        <Style TargetType="local:Patcher">
+                            <Setter Property="MaxHeight">
+                                <Setter.Value>
+                                    <MultiBinding Converter="{StaticResource MathMaxDoubleMulti}">
+                                        <Binding ElementName="ScrollHost" Path="ActualHeight" />
+                                        <Binding Source="{StaticResource ScrollContentMinHeight}" />
+                                    </MultiBinding>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </local:Patcher.Style>
+                </local:Patcher>
+            </Canvas>
+        </ScrollViewer>
+        
+        <!--
+            This is an ugly & partially effective layout hierarchy that achieves the following in pure xaml:
+            - Given:
+                - A scrollviewer
+                - A child control whose height varies, potentially being more/less than the scrollviewer's height at any given time
+            - Goal:
+                - We want the child control to fill the scrollviewer's height when its own children are not tall enough to make it reach said height normally
+                - We want the child control to exceed the scrollviewer's height when its own children too tall (== greater than a compile-time constant), thus triggering the scrollbars
+            - Because:
+                - The child control (Patcher) has background graphics (the 2-tone left/right backgrounds + separator line between) that should fill the parent (this window) even if the main content is not tall enough to fill the window
+        -->
+        
+    </DockPanel>
+    
+</Window>

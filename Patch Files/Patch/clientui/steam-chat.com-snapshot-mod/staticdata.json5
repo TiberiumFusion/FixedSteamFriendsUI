@@ -1,0 +1,232 @@
+{
+	// This is JSON5, not JSON
+	// See: https://json5.org/
+	// Among many things, the JSON spec does not include these // comments, so this file should fail to parse with standard JSON libraries
+	
+	
+	// ____________________________________________________________________________________________________
+	//
+	//     Patch metadata
+	// ____________________________________________________________________________________________________
+	//
+	
+	// This is a copypasta from Steam\clientui\friends.js
+	// And thus must be manually updated for each patch release
+	
+	PatchMetadata: {
+		"ScraperMagic": "{A0806671-AC87-4543-A2B6-51BC55CEE900}",
+		"Level0": {
+			"PatchType": "{62C3D4C0-8A0B-4602-820E-7020B8473037}",
+			"Version": "<<![Version]>>",
+			"VersionGuid": "<<![VersionGuid]>>",
+			"ReleaseDate": "<<![ReleaseDate]>>",
+			"ReleaseDateFriendly": "<<![ReleaseDateFriendly]>>",
+			"CoreBase": "8200419",
+			"PayloadName": "steam-chat.com-snapshot-mod-<<![VersionGuid]>>",
+			"PayloadRootIndexFilename": "index.html"
+		}
+	},
+	
+	
+	
+	// ____________________________________________________________________________________________________
+	//
+	//     Knowledge base of valve's fragmented javascript modules
+	// ____________________________________________________________________________________________________
+	//
+	
+	KnownJsModules: [
+	
+		//
+		// Steam website localization strings
+		//
+		
+		["CultureStrings_Shared_English", 7975, [ // symbol name for use in this js file, js module id1
+			[8200419, 84075], // steam website build ID, js module id2 per that steam website build
+			[8371134, 48751]
+		]],
+		["CultureStrings_Shared_Arabic", 2431, [
+			[8371134, 78501]
+		]],
+		["CultureStrings_Shared_Brazilian", 8385, [
+			[8371134, 55106]
+		]],
+		["CultureStrings_Shared_Bulgarian", 1313, [
+			[8371134, 34469]
+		]],
+		["CultureStrings_Shared_Czech", 4189, [
+			[8371134, 93182]
+		]],
+		["CultureStrings_Shared_Danish", 9753, [
+			[8371134, 87113]
+		]],
+		["CultureStrings_Shared_Dutch", 5925, [
+			[8371134, 80737]
+		]],
+		["CultureStrings_Shared_Finnish", 3557, [
+			[8371134, 7817]
+		]],
+		["CultureStrings_Shared_French", 3112, [
+			[8371134, 50731]
+		]],
+		["CultureStrings_Shared_German", 6007, [
+			[8371134, 54811]
+		]],
+		["CultureStrings_Shared_Greek", 4297, [
+			[8371134, 90175]
+		]],
+		["CultureStrings_Shared_Hungarian", 5948, [
+			[8371134, 49628]
+		]],
+		["CultureStrings_Shared_Italian", 5933, [
+			[8371134, 90116]
+		]],
+		["CultureStrings_Shared_Japanese", 2844, [
+			[8371134, 15055]
+		]],
+		["CultureStrings_Shared_Korean", 6542, [
+			[8371134, 82062]
+		]],
+		["CultureStrings_Shared_LatinAmerica", 2443, [
+			[8371134, 97679]
+		]],
+		["CultureStrings_Shared_Norwegian", 4108, [
+			[8371134, 33469]
+		]],
+		["CultureStrings_Shared_Polish", 3252, [
+			[8371134, 13255]
+		]],
+		["CultureStrings_Shared_Portuguese", 5849, [
+			[8371134, 77294]
+		]],
+		["CultureStrings_Shared_Romanian", 4823, [
+			[8371134, 3850]
+		]],
+		["CultureStrings_Shared_Russian", 9062, [
+			[8371134, 76440]
+		]],
+		["CultureStrings_Shared_ChineseSimplifiedSc", 2029, [
+			[8371134, 16386]
+		]],
+		["CultureStrings_Shared_ChineseSimplified", 2537, [
+			[8371134, 65933]
+		]],
+		["CultureStrings_Shared_Spanish", 6492, [
+			[8371134, 2712]
+		]],
+		["CultureStrings_Shared_Swedish", 5625, [
+			[8371134, 85835]
+		]],
+		["CultureStrings_Shared_ChineseTraditional", 7602, [
+			[8371134, 85918]
+		]],
+		["CultureStrings_Shared_Thai", 1162, [
+			[8371134, 63269]
+		]],
+		["CultureStrings_Shared_Turkish", 5438, [
+			[8371134, 27810]
+		]],
+		["CultureStrings_Shared_Ukrainian", 7781, [
+			[8371134, 32110]
+		]],
+		["CultureStrings_Shared_Vietnamese", 4964, [
+			[8371134, 59201]
+		]],
+		
+		//
+		// FriendsUI localization strings
+		//
+		
+		["CultureStrings_FriendsUI_English", 8247, [
+			[8200419, 67927]
+		]],
+		["CultureStrings_FriendsUI_Arabic", 6992, [
+			[8200419, 58480]
+		]],
+		["CultureStrings_FriendsUI_Brazilian", 2862, [
+			[8200419, 33109]
+		]],
+		["CultureStrings_FriendsUI_Bulgarian", 8518, [
+			[8200419, 5242]
+		]],
+		["CultureStrings_FriendsUI_Czech", 4448, [
+			[8200419, 98399]
+		]],
+		["CultureStrings_FriendsUI_Danish", 9775, [
+			[8200419, 34581]
+		]],
+		["CultureStrings_FriendsUI_Dutch", 7575, [
+			[8200419, 27904]
+		]],
+		["CultureStrings_FriendsUI_Finnish", 4596, [
+			[8200419, 63907]
+		]],
+		["CultureStrings_FriendsUI_French", 3500, [
+			[8200419, 49877]
+		]],
+		["CultureStrings_FriendsUI_German", 4989, [
+			[8200419, 90262]
+		]],
+		["CultureStrings_FriendsUI_Greek", 1471, [
+			[8200419, 84583]
+		]],
+		["CultureStrings_FriendsUI_Hungarian", 5802, [
+			[8200419, 85581]
+		]],
+		["CultureStrings_FriendsUI_Italian", 8815, [
+			[8200419, 31577]
+		]],
+		["CultureStrings_FriendsUI_Japanese", 6727, [
+			[8200419, 86521]
+		]],
+		["CultureStrings_FriendsUI_Korean", 6986, [
+			[8200419, 73827]
+		]],
+		["CultureStrings_FriendsUI_LatinAmerica", 7651, [
+			[8200419, 13236]
+		]],
+		["CultureStrings_FriendsUI_Norwegian", 4716, [
+			[8200419, 19181]
+		]],
+		["CultureStrings_FriendsUI_Polish", 699, [
+			[8200419, 3751]
+		]],
+		["CultureStrings_FriendsUI_Portuguese", 4264, [
+			[8200419, 21520]
+		]],
+		["CultureStrings_FriendsUI_Romanian", 3182, [
+			[8200419, 98235]
+		]],
+		["CultureStrings_FriendsUI_Russian", 2913, [
+			[8200419, 99942]
+		]],
+		["CultureStrings_FriendsUI_ChineseSimplifiedSc", 3140, [
+			[8200419, 64522]
+		]],
+		["CultureStrings_FriendsUI_ChineseSimplified", 7706, [
+			[8200419, 19456]
+		]],
+		["CultureStrings_FriendsUI_Spanish", 3471, [
+			[8200419, 12011]
+		]],
+		["CultureStrings_FriendsUI_Swedish", 9818, [
+			[8200419, 66100]
+		]],
+		["CultureStrings_FriendsUI_ChineseTraditional", 7340, [
+			[8200419, 74628]
+		]],
+		["CultureStrings_FriendsUI_Thai", 9263, [
+			[8200419, 88902]
+		]],
+		["CultureStrings_FriendsUI_Turkish", 5632, [
+			[8200419, 95797]
+		]],
+		["CultureStrings_FriendsUI_Ukrainian", 2822, [
+			[8200419, 83292]
+		]],
+		["CultureStrings_FriendsUI_Vietnamese", 1635, [
+			[8200419, 39248]
+		]],
+	]
+	
+}

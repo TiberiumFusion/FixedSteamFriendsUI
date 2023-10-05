@@ -1,0 +1,190 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{89370614-CC59-49E8-A4C2-706F92F5F89F}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>TiberiumFusion.FixedSteamFriendsUI.QuickPatcher</RootNamespace>
+    <AssemblyName>Fixed Steam FriendsUI QuickPatcher</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Ookii.Dialogs.Wpf">
+      <HintPath>References\Ookii.Dialogs.Wpf.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="BinaryResources.cs" />
+    <Compile Include="ClientUiFriendsJsState.cs" />
+    <Compile Include="ForcedSteamClientUpdateTip.xaml.cs">
+      <DependentUpon>ForcedSteamClientUpdateTip.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers.cs" />
+    <Compile Include="Infra\EpochSecondsToFriendlyStringConverters.cs" />
+    <Compile Include="Infra\BoolSelectorConverters.cs" />
+    <Compile Include="Infra\PropertyChangedNotifier.cs" />
+    <Compile Include="Infra\NullableToVisibilityConverter.cs" />
+    <Compile Include="Infra\ScrollViewerHelper.cs" />
+    <Compile Include="Infra\XamlMathConverters.cs" />
+    <Compile Include="Infra\XamlNegateBoolConverter.cs" />
+    <Compile Include="Infra\XamlTrimStringEndConverter.cs" />
+    <Compile Include="Infra\ZipFileExtensionsEx.cs" />
+    <Compile Include="Log.xaml.cs">
+      <DependentUpon>Log.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PatcherState.cs" />
+    <Compile Include="PatchInstaller.cs" />
+    <Compile Include="PatchInstallLog.cs" />
+    <Compile Include="PatchInstallState.cs" />
+    <Compile Include="PatchMetadata.cs" />
+    <Compile Include="PatchMetadataSheet.xaml.cs">
+      <DependentUpon>PatchMetadataSheet.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PatchTypeGuidToDisplayName.cs" />
+    <Compile Include="StaticData\PatchTypes.cs" />
+    <Compile Include="StaticData\SteamClientNotableVersions.cs" />
+    <Compile Include="SteamExeVersionStatus.cs" />
+    <Compile Include="SteamState.cs" />
+    <Compile Include="Infra\XamlDllIconGetter.cs" />
+    <Page Include="ForcedSteamClientUpdateTip.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Log.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Patcher.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Patcher.xaml.cs">
+      <DependentUpon>Patcher.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="PatchMetadataSheet.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Patch Files\build\PatchPayload_v1.0.0-{9e2017aa-091c-423f-8ff3-37d340e97c35}.zip">
+      <Link>Resources\Patch\PatchPayload_v1.0.0-{9e2017aa-091c-423f-8ff3-37d340e97c35}.zip</Link>
+    </EmbeddedResource>
+    <None Include="app.config" />
+    <None Include="app.manifest" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\OpenFolder_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\steam.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\BuildSelection_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Bug_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Property_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Question_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\unmodified16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Checkmark_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icon.ico" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.34031.82
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickPatcher", "QuickPatcher\QuickPatcher.csproj", "{89370614-CC59-49E8-A4C2-706F92F5F89F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Patch Files", "Patch Files\Patch Files.csproj", "{2C5398C0-EC81-41E4-A1BD-AF5544A56551}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{89370614-CC59-49E8-A4C2-706F92F5F89F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89370614-CC59-49E8-A4C2-706F92F5F89F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89370614-CC59-49E8-A4C2-706F92F5F89F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89370614-CC59-49E8-A4C2-706F92F5F89F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C5398C0-EC81-41E4-A1BD-AF5544A56551}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C5398C0-EC81-41E4-A1BD-AF5544A56551}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C5398C0-EC81-41E4-A1BD-AF5544A56551}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C5398C0-EC81-41E4-A1BD-AF5544A56551}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5E57E469-7476-4FFC-B421-0B76F24B5534}
+	EndGlobalSection
+EndGlobal
