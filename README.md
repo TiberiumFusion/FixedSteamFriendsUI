@@ -6,7 +6,7 @@ If you use the August 2023 Steam client or earlier in vgui mode, this patch is f
 ![Drafting 2](https://github.com/TiberiumFusion/FixedSteamFriendsUI/assets/6332277/f2239290-7f5a-4d10-88ea-feacaf336e12)
 
 ## Brief
-On September 21st 2023, Valve pushed some untested, intern-level code to worldwide production and broke modern Steam friends/chat for all Steam clients which use FriendsUI PWA interop to `steam-chat.com`. This project restores modern Steam friends/chat to working order for those affected Steam clients, by redirecting FriendsUI to run a functional, modified snapshot of the PWA instead of Valve's broken version.
+On September 21st 2023, Valve pushed some untested, intern-level code to worldwide production, breaking modern Steam friends/chat for all Steam clients which use the FriendsUI PWA interop to `steam-chat.com`. This project restores modern Steam friends/chat to working order for those affected Steam clients, by redirecting FriendsUI to run a functional, modified snapshot of the PWA instead of Valve's broken version.
 
 The patch is a semi-permanent "install and forget" type. It's easy to install & remove, it's VAC safe, and most importantly, it restores all features of modern Steam friends/chat to working order. No more `-nofriendsui` compromise!
 
