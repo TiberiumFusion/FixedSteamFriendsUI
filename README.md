@@ -2,6 +2,7 @@
 Patch-and-patcher project which makes Steam friends & chat work again after Valve broke it on Sept 21 2023.
 
 If you use the August 2023 Steam client or earlier in vgui mode, this patch is for you.
+![width measurer test](https://github.com/TiberiumFusion/FixedSteamFriendsUI/assets/6332277/72735c8d-00e0-422e-88e5-304a5c550b35)
 
 ![Drafting 2](https://github.com/TiberiumFusion/FixedSteamFriendsUI/assets/6332277/f2239290-7f5a-4d10-88ea-feacaf336e12)
 
