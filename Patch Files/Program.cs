@@ -26,10 +26,20 @@ namespace TiberiumFusion.FixedSteamFriendsUI.PatchFilesPackager
 
             // ____________________________________________________________________________________________________
             // 
+            //     Default config
+            // ____________________________________________________________________________________________________
+            //
+
+            bool MakeZip = true;
+
+
+
+            // ____________________________________________________________________________________________________
+            // 
             //     Preparation
             // ____________________________________________________________________________________________________
             //
-            
+
             //
             // Discover paths
             //
@@ -54,9 +64,22 @@ namespace TiberiumFusion.FixedSteamFriendsUI.PatchFilesPackager
 
 
             //
+            // Discover optional arguments
+            //
+
+            foreach (string arg in args)
+            {
+                string argl = arg.ToLowerInvariant();
+
+                if (argl == "/skipzip") MakeZip = false;
+            }
+
+
+
+            //
             // Prepare output folder
             //
-            
+
             string outputDirPath = Path.Combine(projectDirPath, OutputDirectoryName);
             Directory.CreateDirectory(outputDirPath);
 
@@ -264,25 +287,31 @@ namespace TiberiumFusion.FixedSteamFriendsUI.PatchFilesPackager
             //     Package patch files
             // ____________________________________________________________________________________________________
             //
-
-            Console.WriteLine("Packaging patch files...");
-
-            string archiveName = string.Format("PatchPayload_v{0}-{1}.zip", tds.Version, tds.VersionGuid);
-
-            string packagePath = Path.Combine(outputDirPath, archiveName);
-
-            try
-            {
-                ZipFile.CreateFromDirectory(buildWorkingDirPath, packagePath, CompressionLevel.Optimal, false);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("[!!!] Failed to package patch files [!!!]");
-                Console.WriteLine("Destination: " + packagePath);
-                Console.WriteLine(e);
-                return Result_Error;
-            }
             
+            if (MakeZip)
+            {
+                Console.WriteLine("Packaging patch files into zip archive...");
+
+                string archiveName = string.Format("PatchPayload_v{0}-{1}.zip", tds.Version, tds.VersionGuid);
+
+                string packagePath = Path.Combine(outputDirPath, archiveName);
+
+                try
+                {
+                    ZipFile.CreateFromDirectory(buildWorkingDirPath, packagePath, CompressionLevel.Optimal, false);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("[!!!] Failed to package patch files [!!!]");
+                    Console.WriteLine("Destination: " + packagePath);
+                    Console.WriteLine(e);
+                    return Result_Error;
+                }
+            }
+            else
+            {
+                Console.WriteLine("Skipping zip archive creation");
+            }
 
 
             ///// Done
