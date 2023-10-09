@@ -57025,6 +57025,8 @@ function StartChat(strFrame) {
         // And I don't know of any other injected method that more cleanly/directly gets the Steam client's chosen display language
         SteamClient.WebChat.GetWebChatURL().then((url) => // GetWebChatURL() is not synchronous because that would make too much sense
         {
+            console.log("Original GetWebChatURL: ", url);
+
             let urlParams = new URLSearchParams(url.split('?')[1]); // split() because URLSearchParams is too stupid to understand urls with search params; it only understands search params without a url
             let displayLanguage = urlParams.get("l") ?? "english"; // english is a fallback present on all computers
             
@@ -57041,6 +57043,7 @@ function StartChat(strFrame) {
 			    });
 		    };
             
+            // Patch entry point installed, proceed normally from here
             finish();
         });
 	}
