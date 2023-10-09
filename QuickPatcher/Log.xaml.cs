@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -62,12 +63,25 @@ namespace TiberiumFusion.FixedSteamFriendsUI.QuickPatcher
 
         private void CopyLogToClipboard(object sender, RoutedEventArgs e)
         {
-            Clipboard.SetText(_Log.Serialize());
+            if (_Log != null)
+            {
+                try
+                {
+                    Clipboard.SetText(_Log.Serialize());
+                }
+                catch (Exception e2)
+                {
+                    Debug.WriteLine("Unhandled exception while serializing log.");
+                    Debug.WriteLine(e2);
+                    Clipboard.SetText("An error occurred while serializing the log. Details:\n\n" + e2.ToString());
+                }
+            }
         }
 
         private void ClearLog(object sender, RoutedEventArgs e)
         {
-            _Log.Clear();
+            if (_Log != null)
+                _Log.Clear();
         }
 
     }
