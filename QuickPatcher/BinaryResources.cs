@@ -14,7 +14,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.QuickPatcher
         public static Stream GetPatchPayload()
         {
             string payloadResourcePath = "TiberiumFusion.FixedSteamFriendsUI.QuickPatcher.Resources."
-                + "Patch.PatchPayload_v1.0.0-{9e2017aa-091c-423f-8ff3-37d340e97c35}.zip";
+                + "Patch.PatchPayload_v1.1.0-{146983a4-25d3-43f6-b05d-7e1c0620758d}.zip";
 
             return Assembly.GetExecutingAssembly().GetManifestResourceStream(payloadResourcePath);
         }

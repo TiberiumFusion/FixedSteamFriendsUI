@@ -147,8 +147,8 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\Patch Files\build\PatchPayload_v1.0.0-{9e2017aa-091c-423f-8ff3-37d340e97c35}.zip">
-      <Link>Resources\Patch\PatchPayload_v1.0.0-{9e2017aa-091c-423f-8ff3-37d340e97c35}.zip</Link>
+    <EmbeddedResource Include="..\Patch Files\build\PatchPayload_v1.1.0-{146983a4-25d3-43f6-b05d-7e1c0620758d}.zip">
+      <Link>Resources\Patch\PatchPayload_v1.1.0-{146983a4-25d3-43f6-b05d-7e1c0620758d}.zip</Link>
     </EmbeddedResource>
     <None Include="app.config" />
     <None Include="app.manifest" />
