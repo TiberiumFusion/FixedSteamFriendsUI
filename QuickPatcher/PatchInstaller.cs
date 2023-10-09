@@ -221,7 +221,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.QuickPatcher
             }
             progress(90);
 
-
+            
             //
             // Move payload directory to final location
             //
@@ -258,7 +258,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.QuickPatcher
                 }
             }
 
-            // Move payload
+            // Move payload folder
             log("Installing payload folder...");
             try
             {
@@ -273,6 +273,34 @@ namespace TiberiumFusion.FixedSteamFriendsUI.QuickPatcher
             }
 
             progress(95);
+            
+
+            //
+            // Delete old patch payload folder
+            //
+
+            PatchMetadata oldPm = steamState.InstalledPatchMetadata;
+            if (oldPm != null)
+            {
+                string oldPayloadDirPath = Path.Combine(steamState.ClientUiDirPath, oldPm.Level0.PayloadName);
+
+                if (Directory.Exists(oldPayloadDirPath))
+                {
+                    log("Deleting old patch payload folder...");
+
+                    try
+                    {
+                        Directory.Delete(oldPayloadDirPath, true);
+                    }
+                    catch (Exception e)
+                    {
+                        log("Failed to delete old payload folder from the previously installed version of the patch.");
+                        log("Path: " + oldPayloadDirPath);
+                        log("Exception details: " + e.ToString());
+                        log("You can safely ignore this error, or you can manually delete the old payload folder yourself. The old payload folder has been made inactive and is no longer in use.");
+                    }
+                }
+            }
 
 
             //
