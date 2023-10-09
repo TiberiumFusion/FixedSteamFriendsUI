@@ -575,7 +575,7 @@
                                 <StackPanel Visibility="{Binding Vis_DowngradeWarning}" Margin="0,8,0,0">
                                     <ContentControl Style="{StaticResource WarningBoxWithIcon}">
                                         <TextBlock>
-                                            This will install a version of the patch which is older than the currently installed patch.
+                                            This will install a version of the patch which is <Run FontFamily="Segoe UI Semibold">older</Run> than the currently installed patch.
                                         </TextBlock>
                                     </ContentControl>
                                 </StackPanel>
@@ -583,7 +583,7 @@
                                 <StackPanel Visibility="{Binding Vis_NogradeWarning}" Margin="0,8,0,0">
                                     <ContentControl Style="{StaticResource NoticeBoxWithIcon}">
                                         <TextBlock>
-                                            This will reinstall the same version of the currently installed patch.
+                                            This will <Run FontFamily="Segoe UI Semibold">reinstall</Run> the <Run FontFamily="Segoe UI Semibold">same version</Run> of the currently installed patch.
                                         </TextBlock>
                                     </ContentControl>
                                 </StackPanel>
