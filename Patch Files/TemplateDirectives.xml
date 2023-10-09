@@ -1,7 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <TemplateDirectives>
-  <Version>1.0.0</Version>
-  <VersionGuid>auto</VersionGuid> <!--{8DBA4B55-09EC-449A-A751-66853320CABD}-->
+  
+  <Version>1.1.0</Version>
+  <VersionGuid>auto</VersionGuid>
+  <!--<VersionGuid>{00000000-0000-0000-0000-000000000000}</VersionGuid>--> <!-- test builds -->
   <ReleaseDate>-1</ReleaseDate>
   <ReleaseDateFriendly>auto</ReleaseDateFriendly>
+  
 </TemplateDirectives>
