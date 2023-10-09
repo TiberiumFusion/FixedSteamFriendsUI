@@ -76,6 +76,11 @@ var CultureStrings_Shared_LocalVersion = 8371134
 
 // This information (along with the KB in the static data chunk) is necessary un-fucking the baked in js module ids in the Valve friends.js code where needed
 
+var CultureStrings_DisplayLanguage = "english" // fallback, matches static LANGUAGE:english in json in webui_config in index.html
+    // Controls which -json.js files are loaded to provide culture-localized display strings
+CultureStrings_DisplayLanguage = UrlVars.get("DisplayLanguage") ?? CultureStrings_DisplayLanguage;
+    // clientui\friends.js can get the client's chosen display language and tells us about it through our url
+
 
 
 // ____________________________________________________________________________________________________
@@ -252,6 +257,42 @@ function ResolveCdnAssetPath(webRoot, filePath, rootPathType, assetCategory, for
 		console.log("Use REMOTE asset: ", webRoot, filePath, CdnAssetCategory[assetCategory])
 		return webRoot + filePath
 	}	
+}
+
+
+
+
+// ____________________________________________________________________________________________________
+//
+//     Hooks
+// ____________________________________________________________________________________________________
+//
+
+// Entry points into various logic paths in the main chunk of bastardized js
+
+
+//
+// webui_config load
+//
+
+// Called after the JSON string defined on <div id="webui_config" data-config="..."/> in index.html has been read, parsed, and assigned to .De
+function OnWebuiConfigLoaded(de)
+{
+    // Normally, localization works in PWA friends like this:
+    // 1. FriendsUI sets iframe src to blahblahblah?l=<LANGUAGE>
+    // 2. Valve php serves index.html:
+    //    - with GET param `l` propagated to all urls in the hypertext (like <script>'s)
+    //    - with <div id="webui_config/>'s `data-config` attr set to a chunk of escaped json, which includes a LANGUAGE field
+    // 3. public/friends.js parses this json and switches -json.js file loading per that LANGUAGE field
+    // Thus, controlling which language the PWA uses is baked in to the hypertext of the webpage itself
+
+    // We do not have that luxury because of extremely strict cross-origin script priviledges
+    // So instead we are hooking into the moment that json is loaded and rewriting the LANGUAGE field to be set per the client's choice of language in the Steam client
+    // This information is given to us by clientui\friends.js, which passes the value for LANGUAGE as a GET param to the iframe's url
+
+    console.log("@@@@@@@@@@@");
+    console.log("de", de);
+    console.log("CultureStrings_DisplayLanguage", CultureStrings_DisplayLanguage);
 }
 
 
@@ -51003,9 +51044,12 @@ var CLSTAMP = "8200419";
 					return (0, o.I1)("sessionid", e, 0), e;
 				}
 				function m(e = a) {
-					const t = {},
-						n = d("config", e);
-					n && (delete n.SESSIONID, Object.assign(r.De, n), (t.config = !0));
+					const t = {};
+                    
+					let n = d("config", e); // reads in the JSON string defined on <div id="webui_config" data-config="..."/> in index.html
+                    n && (delete n.SESSIONID, Object.assign(r.De, n), (t.config = !0));
+                    OnWebuiConfigLoaded(r.De); // hook into this logic path
+
 					const i = d("userinfo", e);
 					i && (Object.assign(r.L7, i), (t.userConfig = !0), r.L7.is_support && _() && (r.L7.is_support = !1));
 					const o = d("broadcast", e);
