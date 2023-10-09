@@ -76,10 +76,9 @@ var CultureStrings_Shared_LocalVersion = 8371134
 
 // This information (along with the KB in the static data chunk) is necessary un-fucking the baked in js module ids in the Valve friends.js code where needed
 
-var CultureStrings_DisplayLanguage = "english" // fallback, matches static LANGUAGE:english in json in webui_config in index.html
+var CultureStrings_DisplayLanguage = UrlVars.get("DisplayLanguage") ?? "english" // english is a fallback,; this matches static "LANGUAGE":"english" in json in webui_config in index.html
     // Controls which -json.js files are loaded to provide culture-localized display strings
-CultureStrings_DisplayLanguage = UrlVars.get("DisplayLanguage") ?? CultureStrings_DisplayLanguage;
-    // clientui\friends.js can get the client's chosen display language and tells us about it through our url
+    // clientui\friends.js can get the client's chosen display language (but we cannot) and tells us about it through our url
 
 
 
@@ -286,13 +285,15 @@ function OnWebuiConfigLoaded(de)
     // 3. public/friends.js parses this json and switches -json.js file loading per that LANGUAGE field
     // Thus, controlling which language the PWA uses is baked in to the hypertext of the webpage itself
 
-    // We do not have that luxury because of extremely strict cross-origin script priviledges
-    // So instead we are hooking into the moment that json is loaded and rewriting the LANGUAGE field to be set per the client's choice of language in the Steam client
+    // We do not have that luxury because of extremely strict cross-origin script priviledges (or lack thereof)
+    // So instead we are hooking into the moment the webui_config json is loaded and rewriting the LANGUAGE field to be set per the user's choice of display language in their Steam client
     // This information is given to us by clientui\friends.js, which passes the value for LANGUAGE as a GET param to the iframe's url
 
-    console.log("@@@@@@@@@@@");
-    console.log("de", de);
-    console.log("CultureStrings_DisplayLanguage", CultureStrings_DisplayLanguage);
+    if (CultureStrings_DisplayLanguage != "english") // i.e. if the user's client's display language does not match the value hardcoded in index.html ("english")
+    {
+        console.log("Switching from default display language 'english' to '" + CultureStrings_DisplayLanguage + "'");
+        de.LANGUAGE = CultureStrings_DisplayLanguage;
+    }
 }
 
 
