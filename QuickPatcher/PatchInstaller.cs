@@ -221,7 +221,37 @@ namespace TiberiumFusion.FixedSteamFriendsUI.QuickPatcher
             }
             progress(90);
 
-            
+
+            //
+            // Delete old patch payload folder
+            //
+
+            PatchMetadata oldPm = steamState.InstalledPatchMetadata;
+            if (oldPm != null)
+            {
+                string oldPayloadDirPath = Path.Combine(steamState.ClientUiDirPath, oldPm.Level0.PayloadName);
+
+                if (Directory.Exists(oldPayloadDirPath))
+                {
+                    log("Deleting old payload folder...");
+
+                    try
+                    {
+                        Directory.Delete(oldPayloadDirPath, true);
+                    }
+                    catch (Exception e)
+                    {
+                        log("Failed to delete old payload folder from the previously installed version of the patch.");
+                        log("Path: " + oldPayloadDirPath);
+                        log("Exception details: " + e.ToString());
+                        log("You can safely ignore this error, or you can manually delete the old payload folder yourself. The old payload folder has been made inactive and is no longer in use.");
+                    }
+                }
+            }
+
+            progress(92);
+
+
             //
             // Move payload directory to final location
             //
@@ -274,34 +304,6 @@ namespace TiberiumFusion.FixedSteamFriendsUI.QuickPatcher
 
             progress(95);
             
-
-            //
-            // Delete old patch payload folder
-            //
-
-            PatchMetadata oldPm = steamState.InstalledPatchMetadata;
-            if (oldPm != null)
-            {
-                string oldPayloadDirPath = Path.Combine(steamState.ClientUiDirPath, oldPm.Level0.PayloadName);
-
-                if (Directory.Exists(oldPayloadDirPath))
-                {
-                    log("Deleting old payload folder...");
-
-                    try
-                    {
-                        Directory.Delete(oldPayloadDirPath, true);
-                    }
-                    catch (Exception e)
-                    {
-                        log("Failed to delete old payload folder from the previously installed version of the patch.");
-                        log("Path: " + oldPayloadDirPath);
-                        log("Exception details: " + e.ToString());
-                        log("You can safely ignore this error, or you can manually delete the old payload folder yourself. The old payload folder has been made inactive and is no longer in use.");
-                    }
-                }
-            }
-
 
             //
             // Move entry point file (friends.js) to final location
