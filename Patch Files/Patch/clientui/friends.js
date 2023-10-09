@@ -56966,8 +56966,42 @@ function StartChat(strFrame) {
         ShowFriendsListPopup();
         return;
     }
-	
-	
+
+
+    // Ugly excision of synchronous code that doesn't belong up here because GetWebChatURL() does not block for some dumbfuck reason
+    // All of this belongs after we re-assign GetWebChatURL
+    function finish()
+    {
+        // This timeout is to start showing the loading window early if we are still checking but it's slow
+        g_hShowLoadingWindow = setTimeout(LoadFrameSlow, 4000);
+        // This timeout is for GetWebChatURL never returning, which can happen if steamwebhelper.exe is broken
+        g_hLoadIframe = setTimeout(LoadFrameTimeout, 1000);
+        SteamClient.WebChat.GetWebChatURL().then((strURL) => {
+		
+		    //console.log("CHECK strURL: " + strURL)
+		    //fetch(strURL).then(resp => console.log("Response: ", resp))
+		
+            g_strFrameURL = strURL;
+            if (g_hLoadIframe !== undefined) {
+                clearTimeout(g_hLoadIframe);
+                g_hLoadIframe = undefined;
+            }
+            if (strURL) {
+                let url = new URL(strURL);
+                url.searchParams.set('origin', window.origin);
+                g_strFrameURL = url.href;
+                console.log('Loading chat from url: ', url.href);
+                StartNetworkCheck(url.href);
+            }
+            else {
+                ClearLoadingTimeouts();
+                console.log('Empty webchat URL, we are in offline mode');
+                g_OfflineChatStore.SetLoadingState(js_stores_offlinefriendsstore__WEBPACK_IMPORTED_MODULE_4__.EFriendLoadingState.OfflineMode);
+            }
+        });
+    }
+
+
 	//
 	// Overriding SteamClient.WebChat.GetWebChatURL()
 	//
@@ -56987,46 +57021,35 @@ function StartChat(strFrame) {
 	
 	if (PATCH_ENABLE)
 	{
-		let payloadRootUrl = "https://steamloopback.host/" + TfusionPatchMetadataJson.Level0.PayloadName + "/" // must have trailing slash! (for payload's friends.js logic)
+        // First, we need to get the actual url from getwebchat since it conveniently has the `l` GET param set on it
+        // And I don't know of any other injected method that more cleanly/directly gets the Steam client's chosen display language
+        SteamClient.WebChat.GetWebChatURL().then((url) => // GetWebChatURL() is not synchronous because that would make too much sense
+        {
+            let urlParams = new URLSearchParams(url.split('?')[1]); // split() because URLSearchParams is too stupid to understand urls with search params; it only understands search params without a url
+            let displayLanguage = urlParams.get("l") ?? "english"; // english is a fallback present on all computers
+            
+            // Now we can build the new url
+            let payloadRootUrl = "https://steamloopback.host/" + TfusionPatchMetadataJson.Level0.PayloadName + "/" // must have trailing slash! (for payload's friends.js logic)
 		
-		let iframeSrc = payloadRootUrl + TfusionPatchMetadataJson.Level0.PayloadRootIndexFilename
-			+ "?PayloadRootUrl=" + encodeURIComponent(payloadRootUrl)
+		    let iframeSrc = payloadRootUrl + TfusionPatchMetadataJson.Level0.PayloadRootIndexFilename
+			    + "?DisplayLanguage=" + encodeURIComponent(displayLanguage)
+			    + "&PayloadRootUrl=" + encodeURIComponent(payloadRootUrl);
 		
-		SteamClient.WebChat.GetWebChatURL = function() {
-			return new Promise( function(succeed, fail) {
-				succeed(iframeSrc)
-			})
-		}
+		    SteamClient.WebChat.GetWebChatURL = function() {
+			    return new Promise( function(succeed, fail) {
+				    succeed(iframeSrc);
+			    });
+		    };
+            
+            finish();
+        });
 	}
-	
-	
-    // This timeout is to start showing the loading window early if we are still checking but it's slow
-    g_hShowLoadingWindow = setTimeout(LoadFrameSlow, 4000);
-    // This timeout is for GetWebChatURL never returning, which can happen if steamwebhelper.exe is broken
-    g_hLoadIframe = setTimeout(LoadFrameTimeout, 1000);
-    SteamClient.WebChat.GetWebChatURL().then((strURL) => {
-		
-		//console.log("CHECK strURL: " + strURL)
-		//fetch(strURL).then(resp => console.log("Response: ", resp))
-		
-        g_strFrameURL = strURL;
-        if (g_hLoadIframe !== undefined) {
-            clearTimeout(g_hLoadIframe);
-            g_hLoadIframe = undefined;
-        }
-        if (strURL) {
-            let url = new URL(strURL);
-            url.searchParams.set('origin', window.origin);
-            g_strFrameURL = url.href;
-            console.log('Loading chat from url: ', url.href);
-            StartNetworkCheck(url.href);
-        }
-        else {
-            ClearLoadingTimeouts();
-            console.log('Empty webchat URL, we are in offline mode');
-            g_OfflineChatStore.SetLoadingState(js_stores_offlinefriendsstore__WEBPACK_IMPORTED_MODULE_4__.EFriendLoadingState.OfflineMode);
-        }
-    });
+
+    // Passthrough; no patch
+    else
+    {
+        finish();
+    }
 }
 function ClearLoadingTimeouts() {
     if (g_hLoadIframe !== undefined) {
