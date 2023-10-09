@@ -286,7 +286,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.QuickPatcher
 
                 if (Directory.Exists(oldPayloadDirPath))
                 {
-                    log("Deleting old patch payload folder...");
+                    log("Deleting old payload folder...");
 
                     try
                     {
