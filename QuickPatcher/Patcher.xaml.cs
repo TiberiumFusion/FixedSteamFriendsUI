@@ -240,6 +240,13 @@ namespace TiberiumFusion.FixedSteamFriendsUI.QuickPatcher
             set { _Vis_NogradeWarning = value; NotifyPropertyChanged("Vis_NogradeWarning"); }
         }
 
+        private Visibility _Vis_UpgradeWarning;
+        public Visibility Vis_UpgradeWarning
+        {
+            get { return _Vis_UpgradeWarning; }
+            set { _Vis_UpgradeWarning = value; NotifyPropertyChanged("Vis_UpgradeWarning"); }
+        }
+
         private Visibility _Vis_UninstallPatch;
         public Visibility Vis_UninstallPatch
         {
@@ -358,6 +365,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.QuickPatcher
 
                 Vis_DowngradeWarning = Visibility.Collapsed;
                 Vis_NogradeWarning = Visibility.Collapsed;
+                Vis_UpgradeWarning = Visibility.Collapsed;
             }
 
             if (live)
@@ -451,10 +459,12 @@ namespace TiberiumFusion.FixedSteamFriendsUI.QuickPatcher
                     {
                         Vis_ModifiedFriendsJs_WithMetadata = Visibility.Visible;
 
-                        if (friendsJsState.PatchMetadata.Level0.Version > PayloadPatchMetadata.Level0.Version)
+                        if (PayloadPatchMetadata.Level0.Version < friendsJsState.PatchMetadata.Level0.Version)
                             Vis_DowngradeWarning = Visibility.Visible;
-                        else if (friendsJsState.PatchMetadata.Level0.Version == PayloadPatchMetadata.Level0.Version)
+                        else if (PayloadPatchMetadata.Level0.Version == friendsJsState.PatchMetadata.Level0.Version)
                             Vis_NogradeWarning = Visibility.Visible;
+                        else if (PayloadPatchMetadata.Level0.Version > friendsJsState.PatchMetadata.Level0.Version)
+                            Vis_UpgradeWarning = Visibility.Visible;
                     }
                     
                     //

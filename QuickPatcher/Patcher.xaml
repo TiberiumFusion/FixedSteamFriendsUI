@@ -587,6 +587,15 @@
                                         </TextBlock>
                                     </ContentControl>
                                 </StackPanel>
+                                
+                                <StackPanel Visibility="{Binding Vis_UpgradeWarning}" Margin="0,8,0,0">
+                                    <ContentControl Style="{StaticResource NoticeBoxWithIcon}">
+                                        <TextBlock>
+                                            This will reinstall a <Run FontFamily="Segoe UI Semibold">newer</Run> version of the patch.
+                                        </TextBlock>
+                                    </ContentControl>
+                                </StackPanel>
+                                
                             </StackPanel>
 
                         </StackPanel>
