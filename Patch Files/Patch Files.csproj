@@ -168,6 +168,6 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>"$(TargetPath)" "$(ProjectDir)\"</PostBuildEvent>
+    <PostBuildEvent>"$(TargetPath)" "$(ProjectDir)\" /skipzip</PostBuildEvent>
   </PropertyGroup>
 </Project>
