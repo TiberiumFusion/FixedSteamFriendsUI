@@ -5,8 +5,10 @@
 const PATCH_ENABLE = true // set to false to quickly bypass the entire patch and run friends in vanilla form
 
 
+// ____________________________________________________________________________________________________
 //
-// Patch metadata
+//     Patch metadata
+// ____________________________________________________________________________________________________
 //
 
 // First, the raw string, wrapped in a esoteric tag so that programs can scrape this if needed
@@ -37,10 +39,79 @@ if (PATCH_ENABLE)
 
 
 
+// ____________________________________________________________________________________________________
+//
+//     Helpers
+// ____________________________________________________________________________________________________
+//
+
+function ReloadKeepUrlsVarsAndSet(params)
+{
+    let urlVars = new URLSearchParams(window.location.search);
+    for (let pName in params)
+    {
+        console.log(pName, params[pName]);
+        urlVars.set(pName, params[pName]);
+    }
+    let baseUrl = window.location.href.split('?')[0];
+    let newUrl = baseUrl + "?" + urlVars.toString();
+    console.log("ReloadKeepUrlsVarsAndSet", newUrl);
+    //window.location = a; // doesn't work for some reason
+    //window.location.href = a; // doesn't work
+    //window.location.replace(a); // doesn't work
+    //window.location.assign(a); // doesn't work
+    //setTimeout(function() { console.log("reload"); window.location.replace(a); }, 2000); // works but only once and breaks blink debugging
+    //window.location.reload(); // works, but obviously we lose all url vars
+    // Seems like cef is configured to deny page changes
+}
+
+
+
+// ____________________________________________________________________________________________________
+//
+//     Environment & Config
+// ____________________________________________________________________________________________________
+//
+
+var UrlVars = new URLSearchParams(window.location.search);
+
+
+
+// ____________________________________________________________________________________________________
+//
+//     Automatic reload
+// ____________________________________________________________________________________________________
+//
+ 
+let IframeErrorInducedReloadCountMax = 3;
+let IframeErrorInducedReloadCount = UrlVars.get("IframeErrorInducedReloadCount") ?? 0;
+
+
+
+// ____________________________________________________________________________________________________
+//
+//     Inner web page management
+// ____________________________________________________________________________________________________
+//
+
+//
+// Iframe document state tracking
+//
+
+var IsChatJavascriptIntialized = false;
+// Set to true in OnMessageFromFrame when we receive a ChatJavascriptIntialized message from the iframe document
+
+
+
+// ____________________________________________________________________________________________________
+//
+//     Main
+// ____________________________________________________________________________________________________
+//
+
 // ------                                                                                                                            ----- //
 // ==================================================  Modified Valve friends.js below  ================================================== //
 // ------                                                                                                                            ----- //
-
 
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
@@ -57100,6 +57171,49 @@ function LoadChat(strURL) {
     // start load
     let iframe = document.getElementById(g_strFrame);
     iframe.src = strURL;
+
+
+    //
+    // Iframe page failure detection
+    //
+
+    // See gh issue #5
+
+    // For reasons™, chromium never raises onerror for iframes and instead raises onload when an unhandled exception occurs while an iframe is loading
+    // This means we are prevented from simply listening for an error from within the iframe
+    // Instead, our only option is to employ the following:
+    // 1. The iframe document must post a window message after it has completed loading that indicates.
+    // 2. We listen to the iframe's onload. If onload is raised before we receive the posted message from the iframe's document, we conclude it experienced an unhandled exception.
+    // The inner friends.js already does #1 (ChatJavascriptIntialized) and we already listen for it (OnMessageFromFrame) so that makes this easier
+
+    // If we detect the iframe failed to load, we will assume the most likely known scenario: Valve's race condition as noted in issue #5
+    // Per that assumption, the injected SteamClient interface is likely borked, and the only way to regenerate it is to refresh ourself (the outer Steam\clientui\index_friends.html document, not the inner remote\public\index.html iframe)
+    // Note that this this is a stronger refresh than the blue "Retry Connection" button that appears when the Valve code "detects" the inner iframe failed (by ugly fixed timeout)
+    // That button only reloads the iframe and is thus only suitable for handling network issues
+
+    // To avoid refreshing indefinitely to no avail, we will pass the number of refresh counts as GET params to the new url on each reload, and cease reloading past a threshold
+
+    iframe.addEventListener("load", function ()
+    {
+        console.log("@@@@ load", IsChatJavascriptIntialized);
+        if (!IsChatJavascriptIntialized)
+        {
+            console.log("[!!!] An unhandled exception occurred while the inner document was loading [!!!]");
+            if (IframeErrorInducedReloadCount < IframeErrorInducedReloadCountMax)
+            {
+                let retryCount = IframeErrorInducedReloadCount + 1;
+                console.log(`Reloading outer document (attempt ${retryCount}/${IframeErrorInducedReloadCountMax})`);
+                ReloadKeepUrlsVarsAndSet({
+                    "IframeErrorInducedReloadCount": retryCount,
+                });
+            }
+            else
+            {
+                console.log("Maximum number of outer document reloads reached");
+            }
+        }
+    });
+    
 }
 function LoadFrameTimeout() {
     console.log('Failed to load chat!');
@@ -57137,6 +57251,7 @@ function OnMessageFromFrame(event) {
         ShowFriendsListPopup();
     }
     else if (event.data.message == 'ChatJavascriptInitialized') {
+        IsChatJavascriptIntialized = true;
         g_OfflineChatStore.SetLoadingState(js_stores_offlinefriendsstore__WEBPACK_IMPORTED_MODULE_4__.EFriendLoadingState.Loaded);
         ClearLoadingTimeouts();
         let strOrigin = g_strFrameURL.match(/(https:\/\/[^\/]+)\/.*/)[1];

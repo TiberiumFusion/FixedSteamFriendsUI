@@ -10059,6 +10059,7 @@ var CLSTAMP = "8200419";
 					constructor(e) {
                         console.log("@@@ pn.ctor");
                         console.log("SteamClient", SteamClient);
+                        SteamClient = null;
 						super(o.De.IN_CLIENT && void 0 !== SteamClient.Storage ? new qt() : new Qt.Z()), (this.m_AudioPlaybackManager = new zt()), (this.m_bLoadedInClientSharedJSContext = e), (this.m_IdleTracker = o.De.IN_CLIENT ? new m() : new c()), (this.m_DesktopApp = ((Sn = new un(this, !1)), Sn)), (this.m_ChatRoomBBCodeParser = new le.AZ(Object.assign(je(), { mention: kt }), le.So)), (this.m_FriendChatBBCodeParser = new le.AZ(Object.assign(je(), { invite: vt, gameinvite: bt, lobbyinvite: It, tradeoffer: Rt, broadcastinvite: yt, broadcastviewrequest: Et }), le.So)), (this.m_NotificationBBCodeParser = new le.YO({ gameinvite: Le, lobbyinvite: Ge, invite: Oe, tradeoffer: Fe, spoiler: Be, roomeffect: Ne, sticker: xe })), (this.m_ChatRoomEffectSettings = Re.F), (Sn = this.m_DesktopApp), this.m_AudioPlaybackManager.SetVoiceStore(this.m_VoiceChatStore), (0, f.X)(!o.De.IN_MOBILE, "DesktopApp initialized in mobile context");
 					}
 					Init(e, t, n) {
