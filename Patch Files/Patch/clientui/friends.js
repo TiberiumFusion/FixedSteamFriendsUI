@@ -57446,7 +57446,6 @@ function Init() {
         let iframe = document.getElementById("tracked_frame_friends_chat");
         iframe.addEventListener("load", function()
         {
-            console.log("@@@@ load", IsChatJavascriptIntialized);
             if (!IsChatJavascriptIntialized)
             {
                 console.log("[!!!] An unhandled exception occurred while the inner document was loading [!!!]");
