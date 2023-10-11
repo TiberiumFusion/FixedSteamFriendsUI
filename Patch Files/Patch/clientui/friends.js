@@ -41,39 +41,18 @@ if (PATCH_ENABLE)
 
 // ____________________________________________________________________________________________________
 //
-//     Helpers
+//     Libraries
 // ____________________________________________________________________________________________________
 //
 
-function ReloadKeepUrlsVarsAndSet(params)
-{
-    let urlVars = new URLSearchParams(window.location.search);
-    for (let pName in params)
-    {
-        console.log(pName, params[pName]);
-        urlVars.set(pName, params[pName]);
-    }
-    let baseUrl = window.location.href.split('?')[0];
-    let newUrl = baseUrl + "?" + urlVars.toString();
-    console.log("ReloadKeepUrlsVarsAndSet", newUrl);
-    //window.location = a; // doesn't work for some reason
-    //window.location.href = a; // doesn't work
-    //window.location.replace(a); // doesn't work
-    //window.location.assign(a); // doesn't work
-    //setTimeout(function() { console.log("reload"); window.location.replace(a); }, 2000); // works but only once and breaks blink debugging
-    //window.location.reload(); // works, but obviously we lose all url vars
-    // Seems like cef is configured to deny page changes
-}
+// I don't want to pollute Steam\clientui with additional files and we don't have enough of those files yet to warrant a folder for them yet, so I'm putting them in here for now
 
-
-
-// ____________________________________________________________________________________________________
 //
-//     Environment & Config
-// ____________________________________________________________________________________________________
+// js-cookie 2.2.1
 //
 
-var UrlVars = new URLSearchParams(window.location.search);
+// Being the vile and ass-backwards language it is, javascript has zero ability to get a cookie by name
+!function(e){var n;if("function"==typeof define&&define.amd&&(define(e),n=!0),"object"==typeof exports&&(module.exports=e(),n=!0),!n){var t=window.Cookies,o=window.Cookies=e();o.noConflict=function(){return window.Cookies=t,o}}}(function(){function e(){for(var e=0,n={};e<arguments.length;e++){var t=arguments[e];for(var o in t)n[o]=t[o]}return n}function n(e){return e.replace(/(%[0-9A-Z]{2})+/g,decodeURIComponent)}return function t(o){function r(){}function i(n,t,i){if("undefined"!=typeof document){"number"==typeof(i=e({path:"/"},r.defaults,i)).expires&&(i.expires=new Date(1*new Date+864e5*i.expires)),i.expires=i.expires?i.expires.toUTCString():"";try{var c=JSON.stringify(t);/^[\{\[]/.test(c)&&(t=c)}catch(e){}t=o.write?o.write(t,n):encodeURIComponent(String(t)).replace(/%(23|24|26|2B|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g,decodeURIComponent),n=encodeURIComponent(String(n)).replace(/%(23|24|26|2B|5E|60|7C)/g,decodeURIComponent).replace(/[\(\)]/g,escape);var f="";for(var u in i)i[u]&&(f+="; "+u,!0!==i[u]&&(f+="="+i[u].split(";")[0]));return document.cookie=n+"="+t+f}}function c(e,t){if("undefined"!=typeof document){for(var r={},i=document.cookie?document.cookie.split("; "):[],c=0;c<i.length;c++){var f=i[c].split("="),u=f.slice(1).join("=");t||'"'!==u.charAt(0)||(u=u.slice(1,-1));try{var a=n(f[0]);if(u=(o.read||o)(u,a)||n(u),t)try{u=JSON.parse(u)}catch(e){}if(r[a]=u,e===a)break}catch(e){}}return e?r[e]:r}}return r.set=i,r.get=function(e){return c(e,!1)},r.getJSON=function(e){return c(e,!0)},r.remove=function(n,t){i(n,"",e(t,{expires:-1}))},r.defaults={},r.withConverter=t,r}(function(){})});
 
 
 
@@ -83,8 +62,17 @@ var UrlVars = new URLSearchParams(window.location.search);
 // ____________________________________________________________________________________________________
 //
  
-let IframeErrorInducedReloadCountMax = 3;
-let IframeErrorInducedReloadCount = UrlVars.get("IframeErrorInducedReloadCount") ?? 0;
+var IframeErrorInducedReloadCountMax = 3;
+var IframeErrorInducedReloadCount = 0;
+
+let ieirCount = Cookies.get("IframeErrorInducedReloadCount");
+if (ieirCount != null) {
+    IframeErrorInducedReloadCount = parseInt(ieirCount); }
+
+if (IframeErrorInducedReloadCount > 0)
+{
+    console.log(`This is Iframe Error Induced automatic reload attempt ${IframeErrorInducedReloadCount}/${IframeErrorInducedReloadCountMax}`);
+}
 
 
 
@@ -57171,49 +57159,6 @@ function LoadChat(strURL) {
     // start load
     let iframe = document.getElementById(g_strFrame);
     iframe.src = strURL;
-
-
-    //
-    // Iframe page failure detection
-    //
-
-    // See gh issue #5
-
-    // For reasons™, chromium never raises onerror for iframes and instead raises onload when an unhandled exception occurs while an iframe is loading
-    // This means we are prevented from simply listening for an error from within the iframe
-    // Instead, our only option is to employ the following:
-    // 1. The iframe document must post a window message after it has completed loading that indicates.
-    // 2. We listen to the iframe's onload. If onload is raised before we receive the posted message from the iframe's document, we conclude it experienced an unhandled exception.
-    // The inner friends.js already does #1 (ChatJavascriptIntialized) and we already listen for it (OnMessageFromFrame) so that makes this easier
-
-    // If we detect the iframe failed to load, we will assume the most likely known scenario: Valve's race condition as noted in issue #5
-    // Per that assumption, the injected SteamClient interface is likely borked, and the only way to regenerate it is to refresh ourself (the outer Steam\clientui\index_friends.html document, not the inner remote\public\index.html iframe)
-    // Note that this this is a stronger refresh than the blue "Retry Connection" button that appears when the Valve code "detects" the inner iframe failed (by ugly fixed timeout)
-    // That button only reloads the iframe and is thus only suitable for handling network issues
-
-    // To avoid refreshing indefinitely to no avail, we will pass the number of refresh counts as GET params to the new url on each reload, and cease reloading past a threshold
-
-    iframe.addEventListener("load", function ()
-    {
-        console.log("@@@@ load", IsChatJavascriptIntialized);
-        if (!IsChatJavascriptIntialized)
-        {
-            console.log("[!!!] An unhandled exception occurred while the inner document was loading [!!!]");
-            if (IframeErrorInducedReloadCount < IframeErrorInducedReloadCountMax)
-            {
-                let retryCount = IframeErrorInducedReloadCount + 1;
-                console.log(`Reloading outer document (attempt ${retryCount}/${IframeErrorInducedReloadCountMax})`);
-                ReloadKeepUrlsVarsAndSet({
-                    "IframeErrorInducedReloadCount": retryCount,
-                });
-            }
-            else
-            {
-                console.log("Maximum number of outer document reloads reached");
-            }
-        }
-    });
-    
 }
 function LoadFrameTimeout() {
     console.log('Failed to load chat!');
@@ -57471,7 +57416,58 @@ function Init() {
         let unAccountID = yield SteamClient.WebChat.GetCurrentUserAccountID();
         shared_domutil_popupmanager__WEBPACK_IMPORTED_MODULE_0__.g_PopupManager.SetCurrentLoggedInAccountID(unAccountID);
         g_eUIMode = yield SteamClient.WebChat.GetUIMode();
-        StartChat('tracked_frame_friends_chat');
+        
+
+        //
+        // Iframe page failure detection
+        //
+
+        // See gh issue #5
+
+        // For reasons™, chromium never raises onerror for iframes and instead raises onload when an unhandled exception occurs while an iframe is loading
+        // This means we are prevented from simply listening for an error from within the iframe
+        // Instead, our only option is to employ the following:
+        // 1. The iframe document must post a window message after it has completed loading that indicates.
+        // 2. We listen to the iframe's onload. If onload is raised before we receive the posted message from the iframe's document, we conclude it experienced an unhandled exception.
+        // The inner friends.js already does #1 (ChatJavascriptIntialized) and we already listen for it (OnMessageFromFrame) so that makes this easier
+
+        // If we detect the iframe failed to load, we will assume the most likely known scenario: Valve's race condition as noted in issue #5
+        // Per that assumption, the injected SteamClient interface is likely borked, and the only way to regenerate it is to refresh ourself (the outer Steam\clientui\index_friends.html document, not the inner remote\public\index.html iframe)
+        // Note that this this is a stronger refresh than the blue "Retry Connection" button that appears when the Valve code "detects" the inner iframe failed (by ugly fixed timeout)
+        // That button only reloads the iframe and is thus only suitable for handling network issues
+
+        // We will only reload a limited number of times, definition of insanity
+
+        let iframe = document.getElementById("tracked_frame_friends_chat");
+        iframe.addEventListener("load", function()
+        {
+            console.log("@@@@ load", IsChatJavascriptIntialized);
+            if (!IsChatJavascriptIntialized)
+            {
+                console.log("[!!!] An unhandled exception occurred while the inner document was loading [!!!]");
+                if (IframeErrorInducedReloadCount < IframeErrorInducedReloadCountMax)
+                {
+                    let retryCount = IframeErrorInducedReloadCount + 1;
+                    console.log(`Reloading outer document (attempt ${retryCount}/${IframeErrorInducedReloadCountMax})`);
+                
+                    // Cookies are the only way to pass data to new instance of this document; urlvars don't work because we are prevented from loading a different web page
+                    // Which means we have to deal with the fact that cookies persist, so we'll make this one expire shortly
+                    // 8 seconds is probably long enough to allow for a page reload 99% of the time while also being short enough to expire between exiting Steam and relaunching it even on fast disks
+                    Cookies.set("IframeErrorInducedReloadCount", retryCount, {expires: new Date(new Date().getTime() + 8000)} );
+                
+                    // reload() is the only thing that works, which is why we have to use cookies
+                    // assign(), replace(), location= and location.href= all do absolutely nothing. I'm assuming steamwebhelper has cef configured to deny web pages the ability to navigate elsewhere.
+                    window.location.reload();
+                }
+                else
+                {
+                    console.log("Maximum number of outer document reloads reached");
+                }
+            }
+        });
+
+
+        StartChat("tracked_frame_friends_chat");
     });
 }
 document.addEventListener('DOMContentLoaded', () => Init());
