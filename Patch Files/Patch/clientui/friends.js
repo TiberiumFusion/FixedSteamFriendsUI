@@ -57437,11 +57437,11 @@ function Init() {
         // The inner friends.js already does #1 (ChatJavascriptIntialized) and we already listen for it (OnMessageFromFrame) so that makes this easier
 
         // If we detect the iframe failed to load, we will assume the most likely known scenario: Valve's race condition as noted in issue #5
-        // Per that assumption, the injected SteamClient interface is likely borked, and the only way to regenerate it is to refresh ourself (the outer Steam\clientui\index_friends.html document, not the inner remote\public\index.html iframe)
-        // Note that this this is a stronger refresh than the blue "Retry Connection" button that appears when the Valve code "detects" the inner iframe failed (by ugly fixed timeout)
-        // That button only reloads the iframe and is thus only suitable for handling network issues
+        // Per that assumption, the injected SteamClient interface is borked, and the only way to regenerate it is to refresh ourself (the outer Steam\clientui\index_friends.html document, not the inner remote\public\index.html iframe)
+        // Note that this is a stronger refresh than the blue "Retry Connection" button that appears when the Valve code "detects" the inner iframe failed (by ugly fixed timeout)
+        // Normally, that button only reloads the iframe and is thus only suitable for handling network issues (this can be changed with RETRY_CONNECTION_BUTTON_STRONGER_RELOAD)
 
-        // We will only reload a limited number of times, definition of insanity
+        // We will only reload a limited number of times
 
         let iframe = document.getElementById("tracked_frame_friends_chat");
         iframe.addEventListener("load", function()
