@@ -2,7 +2,9 @@
 // Fixed FriendsUI that works after valve's Sept 21 2023 changes to the steam website
 // By TiberiumFusion
 
-const PATCH_ENABLE = true // set to false to quickly bypass the entire patch and run friends in vanilla form
+const PATCH_ENABLE = true // Set to false to quickly bypass the entire patch and run friends in vanilla form
+
+const RETRY_CONNECTION_BUTTON_STRONGER_RELOAD = true; // When true, clicking the blue Retry Connection button will reload the entire FriendsUI. When false (default Valve behavior), it will send a meager reload message to the inner document js.
 
 
 // ____________________________________________________________________________________________________
@@ -43304,7 +43306,10 @@ function LoadingState() {
 function RetryState() {
     let fnRetry = () => {
         console.log("OnRetryClick");
-        window.parent.postMessage({ message: 'ChatReloadRequest', state: undefined }, 'https://steamloopback.host');
+        if (RETRY_CONNECTION_BUTTON_STRONGER_RELOAD) {
+            window.location.reload(); }
+        else {
+            window.parent.postMessage({ message: 'ChatReloadRequest', state: undefined }, 'https://steamloopback.host'); }
     };
     return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", null,
         react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { className: "cautionIcon" },
