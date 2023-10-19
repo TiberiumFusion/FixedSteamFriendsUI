@@ -300,6 +300,41 @@ function OnWebuiConfigLoaded(de)
 
 // ____________________________________________________________________________________________________
 //
+//     Compatibility shims
+// ____________________________________________________________________________________________________
+//
+
+// --------------------------------------------------
+//   Browser.GetBrowserID()
+//   > Needed by:
+//     - Dec 2022 steam client (1674790765, 7.72.78.29), possibly older ones, possibly newer ones up to (excluding) July 2023
+// --------------------------------------------------
+
+// In the May 2023 steam client, steamwebhelper injects a function binding with symbol name "Browser.GetBrowserID"
+// In the Dec 2022 steam client, steamwebhelper injects a function binding with symbol name "Window.GetBrowserID"
+// The late July snapshot of steam-chat.com that I have (which is the basis of this file) exclusively uses Browser.GetBrowserID with the expectation that it is *not* running on the Dec 2022 client
+// Evidently, Valve changed the name of this symbol. Accordingly, there must exist some version of steam-chat.com, circa between Dec 2022 and July 2023, where the js tries both Window.GetBrowserID and Browser.GetBrowserID during the transition.
+// Unfortunately, I do not have such a version of steam-chat.com to compare with. So any additional abstraction logic Valve may have included is unknown to me.
+
+func_SteamClient_Browser_GetBrowserID = null;
+
+function Compat_SteamClient_Browser_GetBrowserID(steamClient)
+{
+    if ("GetBrowserID" in steamClient.Browser) {
+        return steamClient.Browser.GetBrowserID(); }
+    else if ("Window" in SteamClient && "GetBrowserID" in SteamClient.Window) {
+        return steamClient.Window.GetBrowserID(); }
+    else {
+        console.error("[!!!] Failed to find GetBrowserID [!!!]"); }
+    // We don't store or reassign the GetBrowserID() binding and have to re-eval it every time because:
+    // 1. Browser is always injected into this page before this script runs, but Window is not, so Window.GetBrowserID does not exist here at the top of this script. Other CEF frames (like sharedjscontext) get Window.*, but we (friendsui) do not.
+    // 2. SteamClient is not the only SteamClient in existence. Other steamwebhelper windows have their own SteamClient and for some reason Valve likes accessing other windows' SteamClients instead of making a proper interface. Multiple objects here in this file store references to these other windows' SteamClients and call GetBrowserID() on them (where the Window.* interface does exist).
+}
+
+
+
+// ____________________________________________________________________________________________________
+//
 //     Main
 // ____________________________________________________________________________________________________
 //
@@ -21058,7 +21093,7 @@ var CLSTAMP = "8200419";
 				class I extends l.K3 {
 					constructor(e, t) {
 						var n;
-						super("hoverpopup", { title: "hover", html_class: "friendsui-container HoverPopup client_chat_frame", body_class: "HoverPopupBody Hover" + e.className, replace_existing_popup: !0, target_browser: t, window_opener_id: null === (n = e.target.ownerDocument.defaultView) || void 0 === n ? void 0 : n.SteamClient.Browser.GetBrowserID(), eCreationFlags: (0, l.sB)(l.iJ.Tooltip) }), (this.m_hoverProps = e);
+						super("hoverpopup", { title: "hover", html_class: "friendsui-container HoverPopup client_chat_frame", body_class: "HoverPopupBody Hover" + e.className, replace_existing_popup: !0, target_browser: t, window_opener_id: null === (n = e.target.ownerDocument.defaultView) || void 0 === n ? void 0 : Compat_SteamClient_Browser_GetBrowserID(n.SteamClient), eCreationFlags: (0, l.sB)(l.iJ.Tooltip) }), (this.m_hoverProps = e);
 					}
 					UpdateParamsBeforeShow(e) {
 						let t = c.sH(this.m_hoverProps.target.ownerDocument.defaultView, this.m_hoverProps.target.getBoundingClientRect());
@@ -30983,7 +31018,7 @@ var CLSTAMP = "8200419";
 						void 0 !== n.left && (s += ",left=" + n.left), void 0 !== n.top && (s += ",top=" + n.top), (s += ",resizeable,status=0,toolbar=0,menubar=0,location=0");
 						let l = "about:blank",
 							m = [];
-						m.push("createflags=" + t.eCreationFlags), t.minWidth && m.push("minwidth=" + t.minWidth), t.minHeight && m.push("minheight=" + t.minHeight), t.maxWidth && t.maxWidth != 1 / 0 && m.push("maxwidth=" + t.maxWidth), t.maxHeight && t.maxHeight != 1 / 0 && m.push("maxheight=" + t.maxHeight), t.target_browser ? (m.push("pid=" + t.target_browser.m_unPID), m.push("browser=" + t.target_browser.m_nBrowserID), t.target_browser.m_eBrowserType ? m.push("browserType=" + t.target_browser.m_eBrowserType) : t.browserType && m.push("browserType=" + t.browserType), t.availscreenwidth && t.availscreenheight && (m.push("screenavailwidth=" + t.availscreenwidth), m.push("screenavailheight=" + t.availscreenheight))) : t.browserType && m.push("browserType=" + t.browserType), t.strVROverlayKey && m.push("vrOverlayKey=" + t.strVROverlayKey), t.strRestoreDetails && m.push("restoredetails=" + t.strRestoreDetails), t.window_opener_id && m.push("openerid=" + t.window_opener_id), t.parent_container_popup_id && m.push("parentcontainerpopupid=" + t.parent_container_popup_id), t.center_on_window && void 0 === n.left && void 0 === n.top && m.push("centerOnBrowserID=" + t.center_on_window.SteamClient.Browser.GetBrowserID()), t.strUserAgent && m.push("useragent=" + t.strUserAgent + "/" + (0, c.MR)(d.De.LAUNCHER_TYPE)), t.hwndParent && m.push("hwndParent=" + t.hwndParent), t.bPinned && m.push("pinned=true"), t.bModal && m.push("modal=true"), m && (l += "?" + m.join("&"));
+						m.push("createflags=" + t.eCreationFlags), t.minWidth && m.push("minwidth=" + t.minWidth), t.minHeight && m.push("minheight=" + t.minHeight), t.maxWidth && t.maxWidth != 1 / 0 && m.push("maxwidth=" + t.maxWidth), t.maxHeight && t.maxHeight != 1 / 0 && m.push("maxheight=" + t.maxHeight), t.target_browser ? (m.push("pid=" + t.target_browser.m_unPID), m.push("browser=" + t.target_browser.m_nBrowserID), t.target_browser.m_eBrowserType ? m.push("browserType=" + t.target_browser.m_eBrowserType) : t.browserType && m.push("browserType=" + t.browserType), t.availscreenwidth && t.availscreenheight && (m.push("screenavailwidth=" + t.availscreenwidth), m.push("screenavailheight=" + t.availscreenheight))) : t.browserType && m.push("browserType=" + t.browserType), t.strVROverlayKey && m.push("vrOverlayKey=" + t.strVROverlayKey), t.strRestoreDetails && m.push("restoredetails=" + t.strRestoreDetails), t.window_opener_id && m.push("openerid=" + t.window_opener_id), t.parent_container_popup_id && m.push("parentcontainerpopupid=" + t.parent_container_popup_id), t.center_on_window && void 0 === n.left && void 0 === n.top && m.push("centerOnBrowserID=" + Compat_SteamClient_Browser_GetBrowserID(t.center_on_window.SteamClient)), t.strUserAgent && m.push("useragent=" + t.strUserAgent + "/" + (0, c.MR)(d.De.LAUNCHER_TYPE)), t.hwndParent && m.push("hwndParent=" + t.hwndParent), t.bPinned && m.push("pinned=true"), t.bModal && m.push("modal=true"), m && (l += "?" + m.join("&"));
 						let h = (t.owner_window || window).open(l, e, s);
 						if (!h) return console.error(`Failed to create popup, browser/CEF may be blocking popups for "${window.location.origin}"`), {};
 						let u = "";
@@ -47675,7 +47710,7 @@ var CLSTAMP = "8200419";
 											l,
 											c = t.popupWidth || 500,
 											m = t.popupHeight || 400;
-										if (d.De.IN_CLIENT && (null === (r = null === (o = null == i ? void 0 : i.SteamClient) || void 0 === o ? void 0 : o.Browser) || void 0 === r ? void 0 : r.GetBrowserID)) l = i.SteamClient.Browser.GetBrowserID();
+										if (d.De.IN_CLIENT && (null === (r = null === (o = null == i ? void 0 : i.SteamClient) || void 0 === o ? void 0 : o.Browser) || void 0 === r ? void 0 : r.GetBrowserID)) l = Compat_SteamClient_Browser_GetBrowserID(i.SteamClient);
 										else {
 											let e = i.screen;
 											(a = (e.availWidth - c) / 2), (s = (e.availHeight - m) / 2);
@@ -47803,7 +47838,7 @@ var CLSTAMP = "8200419";
 					const { instance: t, browserInfo: n, children: i } = e,
 						a = r().useRef(),
 						l = (0, u.Wy)().ownerWindow,
-						c = l.SteamClient.Browser.GetBrowserID(),
+						c = Compat_SteamClient_Browser_GetBrowserID(l.SteamClient),
 						m = r().useCallback(
 							(e) => {
 								const { options: n, position: i } = t,
