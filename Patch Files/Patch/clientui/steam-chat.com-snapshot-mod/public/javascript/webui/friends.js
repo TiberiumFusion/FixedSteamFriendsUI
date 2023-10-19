@@ -322,7 +322,7 @@ function Compat_SteamClient_Browser_GetBrowserID(steamClient)
 {
     if ("GetBrowserID" in steamClient.Browser) {
         return steamClient.Browser.GetBrowserID(); }
-    else if ("Window" in SteamClient && "GetBrowserID" in SteamClient.Window) {
+    else if ("Window" in steamClient && "GetBrowserID" in steamClient.Window) {
         return steamClient.Window.GetBrowserID(); }
     else {
         console.error("[!!!] Failed to find GetBrowserID [!!!]"); }
