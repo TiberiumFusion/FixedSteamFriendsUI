@@ -30882,7 +30882,15 @@ var CLSTAMP = "8200419";
 							: Promise.resolve(!1);
 					}
 					IsMaximized() {
-						return this.m_popup && !this.m_popup.closed && this.m_popup.SteamClient && this.m_popup.SteamClient.Window && this.m_popup.SteamClient.Window.IsWindowMinimized
+						//return this.m_popup && !this.m_popup.closed && this.m_popup.SteamClient && this.m_popup.SteamClient.Window && this.m_popup.SteamClient.Window.IsWindowMinimized
+						// Can you spot the Valve bug?                                                                                                                           
+						//                                                                                                                                                       ^
+                        //                                                                                                                                                       |
+                        //                                                                                                                                                  here it is!
+                        //
+                        // So this is yet another one of Valve's pathetic "we make billions of dollars hand of over fist but cannot be fucked to spent 3 seconds proofreading our copy & paste code" errors
+                        // This is causing errors when running under the Dec 2022 client, where IsWindowMaximized does not exist
+                        return this.m_popup && !this.m_popup.closed && this.m_popup.SteamClient && this.m_popup.SteamClient.Window && this.m_popup.SteamClient.Window.IsWindowMaximized // fixed
 							? new Promise((e, t) => {
 									this.m_popup.SteamClient.Window.IsWindowMaximized((t) => {
 										e(t);
