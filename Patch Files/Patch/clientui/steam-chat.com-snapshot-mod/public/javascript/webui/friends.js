@@ -328,7 +328,7 @@ function Compat_SteamClient_Browser_GetBrowserID(steamClient)
         console.error("[!!!] Failed to find GetBrowserID [!!!]"); }
     // We don't store or reassign the GetBrowserID() binding and have to re-eval it every time because:
     // 1. Browser is always injected into this page before this script runs, but Window is not, so Window.GetBrowserID does not exist here at the top of this script. Other CEF frames (like sharedjscontext) get Window.*, but we (friendsui) do not.
-    // 2. SteamClient is not the only SteamClient in existence. Other steamwebhelper windows have their own SteamClient and for some reason Valve likes accessing other windows' SteamClients instead of making a proper interface. Multiple objects here in this file store references to these other windows' SteamClients and call GetBrowserID() on them (where the Window.* interface does exist).
+    // 2. SteamClient is not the only SteamClient in existence. Other steamwebhelper windows have their own SteamClient and for some reason Valve likes accessing other windows' SteamClients instead of making a proper to communicate across frames. Multiple objects here in this file store references to these other windows' SteamClients and call GetBrowserID() on them (where the Window.* interface does exist).
 }
 
 
@@ -345,7 +345,7 @@ function Compat_SteamClient_Browser_GetBrowserID(steamClient)
 
 /**** (c) Valve Corporation. Use is governed by the terms of the Steam Subscriber Agreement http://store.steampowered.com/subscriber_agreement/.
  ****/
-// Wow. Fuck you Valve. You are beyond pathetic for placing tiny EULA stubs into the internal files of your product. Do you seriously expect all of your 100 million users to open every single fucking file in C:\Program Files (x86)\Steam\* and scour every single one of those 10,000 files for up to 10,000 legally binding EULA links and then read all of them? Go off yourselves in a toy submarine or whatever it is you rich autistic fuckwads do to kill yourselves these days.
+// Wow. Fuck you Valve. You are beyond pathetic for placing tiny EULA stubs into the internal files of your product. Do you seriously expect all of your 132 million users to open every single fucking file in C:\Program Files (x86)\Steam\* and scour every single one of those 10,000 files for up to 10,000 legally binding EULA links and then read all of them? Go off yourselves in a toy submarine or whatever it is you rich autistic fuckwads do to kill yourselves these days.
 var CLSTAMP = "8200419";
 (() => {
 	var e,
