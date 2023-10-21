@@ -57440,6 +57440,7 @@ function Init() {
         // Per that assumption, the injected SteamClient interface is borked, and the only way to regenerate it is to refresh ourself (the outer Steam\clientui\index_friends.html document, not the inner remote\public\index.html iframe)
         // Note that this is a stronger refresh than the blue "Retry Connection" button that appears when the Valve code "detects" the inner iframe failed (by ugly fixed timeout)
         // Normally, that button only reloads the iframe and is thus only suitable for handling network issues (this can be changed with RETRY_CONNECTION_BUTTON_STRONGER_RELOAD)
+        // - Related note: I have upgraded the blue retry connection button to perform the same kind of full/strong reload that we're doing here. This behavior is enabled by RETRY_CONNECTION_BUTTON_STRONGER_RELOAD.
 
         // We will only reload a limited number of times
 
@@ -57453,19 +57454,29 @@ function Init() {
                 {
                     let retryCount = IframeErrorInducedReloadCount + 1;
                     console.log(`Reloading outer document (attempt ${retryCount}/${IframeErrorInducedReloadCountMax})`);
-                
-                    // Cookies are the only way to pass data to new instance of this document; urlvars don't work because we are prevented from loading a different web page
-                    // Which means we have to deal with the fact that cookies persist, so we'll make this one expire shortly
-                    // 8 seconds is probably long enough to allow for a page reload 99% of the time while also being short enough to expire between exiting Steam and relaunching it even on fast disks
-                    Cookies.set("IframeErrorInducedReloadCount", retryCount, {expires: new Date(new Date().getTime() + 8000)} );
-                
-                    // reload() is the only thing that works, which is why we have to use cookies
-                    // assign(), replace(), location= and location.href= all do absolutely nothing. I'm assuming steamwebhelper has cef configured to deny web pages the ability to navigate elsewhere.
-                    window.location.reload();
+                    
+                    // Graduated delay between page reloads to increase coverage likelihood on slower systems
+                    let reloadDelay = 2000 * Math.pow(IframeErrorInducedReloadCount, 2); // milliseconds
+                    
+                    setTimeout(function()
+                        {
+                            // Cookies are the only way to pass data to new instance of this document; urlvars don't work because we are prevented from loading a different web page
+                            // Which means we have to deal with the fact that cookies persist, so we'll make this one expire shortly
+                            // 8 seconds is probably long enough to allow for a page reload 99% of the time while also being short enough to expire between exiting Steam and relaunching it even on fast disks
+                            Cookies.set("IframeErrorInducedReloadCount", retryCount, {expires: new Date(new Date().getTime() + 8000)} );
+                            
+                            // reload() is the only thing that works, which is why we have to use cookies
+                            // assign(), replace(), location= and location.href= all do absolutely nothing. I'm assuming steamwebhelper has cef configured to deny web pages the ability to navigate elsewhere.
+                            window.location.reload();
+                        },
+                        reloadDelay
+                    );
                 }
                 else
                 {
-                    console.log("Maximum number of outer document reloads reached");
+                    console.log("Maximum number of consecutive automatic outer document reloads reached");
+                    if (RETRY_CONNECTION_BUTTON_STRONGER_RELOAD) {
+                        console.log("Use 'Retry Connection' button to manually reload"); }
                 }
             }
         });
