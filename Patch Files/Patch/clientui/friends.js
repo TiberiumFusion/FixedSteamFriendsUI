@@ -43306,10 +43306,15 @@ function LoadingState() {
 function RetryState() {
     let fnRetry = () => {
         console.log("OnRetryClick");
-        if (RETRY_CONNECTION_BUTTON_STRONGER_RELOAD) {
-            window.location.reload(); }
-        else {
-            window.parent.postMessage({ message: 'ChatReloadRequest', state: undefined }, 'https://steamloopback.host'); }
+        if (RETRY_CONNECTION_BUTTON_STRONGER_RELOAD)
+        {
+            Cookies.remove("IframeErrorInducedReloadCount", {path: ""} );
+            window.location.reload();
+        }
+        else
+        {
+            window.parent.postMessage({ message: 'ChatReloadRequest', state: undefined }, 'https://steamloopback.host');
+        }
     };
     return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", null,
         react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { className: "cautionIcon" },
