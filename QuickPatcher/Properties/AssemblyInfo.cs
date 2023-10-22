@@ -52,11 +52,12 @@ using System.Windows;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 
+
 // Versioning dichotomy:
 // - The QuickPatcher application's version goes in the File Version slot
 // - The embedded patch files' version goes in the Product Version slot
 
-[assembly: AssemblyVersion("1.1.0.0")] // QP
-[assembly: AssemblyFileVersion("1.1.0.0")] // QP
+[assembly: AssemblyVersion("1.1.1.0")] // QP
+[assembly: AssemblyFileVersion("1.1.1.0")] // QP
 
-[assembly: AssemblyInformationalVersion("1.1.0.0")] // embedded patch files
+[assembly: AssemblyInformationalVersion("1.2.0.0")] // embedded patch files
