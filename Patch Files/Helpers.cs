@@ -21,7 +21,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.PatchFilesPackager
         }
 
         // Obligatory directory copy boilerplate
-        public static void CopyDirectory(string sourcePath, string destPath, bool recursive = true)
+        public static void CopyDirectory(string sourcePath, string destPath, bool recursive = true, bool skipHiddenFiles = false)
         {
             DirectoryInfo sourceDi = new DirectoryInfo(sourcePath);
             if (!sourceDi.Exists)
@@ -33,6 +33,9 @@ namespace TiberiumFusion.FixedSteamFriendsUI.PatchFilesPackager
 
                 foreach (FileInfo file in sourceDir.GetFiles())
                 {
+                    if (skipHiddenFiles && file.Attributes.HasFlag(FileAttributes.Hidden))
+                        continue;
+
                     string fileDestPath = Path.Combine(destDirPath, file.Name);
                     file.CopyTo(fileDestPath);
                 }

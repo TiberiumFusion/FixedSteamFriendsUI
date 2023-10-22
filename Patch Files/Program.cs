@@ -118,7 +118,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.PatchFilesPackager
 
             try
             {
-                Helpers.CopyDirectory(inputFilesRootDirPath, buildWorkingDirPath, true);
+                Helpers.CopyDirectory(inputFilesRootDirPath, buildWorkingDirPath, true, true);
             }
             catch (Exception e)
             {
