@@ -54,7 +54,7 @@
     <None Include="App.config" />
     <None Include="build\PatchPayload_v1.0.0-{9e2017aa-091c-423f-8ff3-37d340e97c35}.zip" />
     <None Include="build\PatchPayload_v1.1.0-{146983a4-25d3-43f6-b05d-7e1c0620758d}.zip" />
-    <None Include="build\PatchPayload_v1.2.0-{33959a10-3a63-42d1-a3c2-d827d3f3fd77}.zip" />
+    <None Include="build\PatchPayload_v1.2.0-{68c67e12-e61e-4148-a5af-91b0e2c223b7}.zip" />
     <None Include="Patch\clientui\steam-chat.com-snapshot-mod\public\shared\fonts\MotivaSans-Black.ttf" />
     <None Include="Patch\clientui\steam-chat.com-snapshot-mod\public\shared\fonts\MotivaSans-Bold.ttf" />
     <None Include="Patch\clientui\steam-chat.com-snapshot-mod\public\shared\fonts\MotivaSans-BoldItalic.ttf" />
