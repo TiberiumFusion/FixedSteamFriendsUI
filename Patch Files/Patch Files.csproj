@@ -54,6 +54,7 @@
     <None Include="App.config" />
     <None Include="build\PatchPayload_v1.0.0-{9e2017aa-091c-423f-8ff3-37d340e97c35}.zip" />
     <None Include="build\PatchPayload_v1.1.0-{146983a4-25d3-43f6-b05d-7e1c0620758d}.zip" />
+    <None Include="build\PatchPayload_v1.2.0-{33959a10-3a63-42d1-a3c2-d827d3f3fd77}.zip" />
     <None Include="Patch\clientui\steam-chat.com-snapshot-mod\public\shared\fonts\MotivaSans-Black.ttf" />
     <None Include="Patch\clientui\steam-chat.com-snapshot-mod\public\shared\fonts\MotivaSans-Bold.ttf" />
     <None Include="Patch\clientui\steam-chat.com-snapshot-mod\public\shared\fonts\MotivaSans-BoldItalic.ttf" />
@@ -146,19 +147,12 @@
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\shared\css\shared_global.css" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\steam_at_mention.m4a" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\steam_chatroom_notification.m4a" />
-    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\steam_phonecall %281%29.m4a" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\steam_phonecall.m4a" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\steam_rpt_join.m4a" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\steam_rpt_leave.m4a" />
-    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\steam_ui_ptt_short_01_quiet %281%29.m4a" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\steam_ui_ptt_short_01_quiet.m4a" />
-    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\steam_ui_ptt_short_02_quiet %281%29.m4a" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\steam_ui_ptt_short_02_quiet.m4a" />
-    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\steam_voice_channel_enter %281%29.m4a" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\steam_voice_channel_enter.m4a" />
-    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\steam_voice_channel_exit %281%29.m4a" />
-    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\steam_voice_channel_exit %282%29.m4a" />
-    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\steam_voice_channel_exit %283%29.m4a" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\steam_voice_channel_exit.m4a" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\ui_steam_message_old_smooth.m4a" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\ui_steam_smoother_friend_join.m4a" />
@@ -168,6 +162,6 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>"$(TargetPath)" "$(ProjectDir)\" /skipzip</PostBuildEvent>
+    <PostBuildEvent>"$(TargetPath)" "$(ProjectDir)\"</PostBuildEvent>
   </PropertyGroup>
 </Project>
