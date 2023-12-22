@@ -1,0 +1,30 @@
+{
+	// This is JSON5, not JSON
+	// See: https://json5.org/
+	// Among many things, the JSON spec does not include these // comments, so this file should fail to parse with standard JSON libraries
+	
+	
+	// ____________________________________________________________________________________________________
+	//
+	//     Patch metadata
+	// ____________________________________________________________________________________________________
+	//
+	
+	// This is a copypasta from Steam\clientui\friends.js
+	// And thus must be manually updated for each patch release
+	
+	PatchMetadata: {
+		"ScraperMagic": "{A0806671-AC87-4543-A2B6-51BC55CEE900}",
+		"Level0": {
+			"PatchType": "{62C3D4C0-8A0B-4602-820E-7020B8473037}",
+			"Version": "<<![Version]>>",
+			"VersionGuid": "<<![VersionGuid]>>",
+			"ReleaseDate": "<<![ReleaseDate]>>",
+			"ReleaseDateFriendly": "<<![ReleaseDateFriendly]>>",
+			"CoreBase": "8601984",
+			"PayloadName": "steam-chat.com-snapshot-mod-<<![VersionGuid]>>",
+			"PayloadRootIndexFilename": "index.html"
+		}
+	}
+	
+}

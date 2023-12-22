@@ -65,12 +65,12 @@
     <None Include="Patch\clientui\steam-chat.com-snapshot-mod\public\shared\fonts\MotivaSans-RegularItalic.ttf" />
     <None Include="Patch\clientui\steam-chat.com-snapshot-mod\public\shared\fonts\MotivaSans-Thin.ttf" />
     <None Include="Patch\clientui\steam-chat.com-snapshot-mod\staticdata.json5" />
+    <None Include="Patch\clientui\steam-chat.com-snapshot-mod\_support_\staticdata.json5" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Patch\clientui\friends.js" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\favicon.ico" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\index.html" />
-    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\json5.js" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\css\webui\461.css" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\css\webui\broadcastapp.css" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\css\webui\friends.css" />
