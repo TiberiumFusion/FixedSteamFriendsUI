@@ -37919,13 +37919,22 @@ var CLSTAMP = "8601984";
 				const r = 5;
 				function a(e, t) {
 					{
-						try {
+						/*try {
 							if (window.parent != window) {
 								const t = window.parent;
 								if (t.__SHARED_FRIENDSUI_GLOBALS && t.__SHARED_FRIENDSUI_GLOBALS[e]) return t.__SHARED_FRIENDSUI_GLOBALS[e];
 								(0, o.X)(!1, `SharedFriendsUIGlobal "${e}" not initialized by parent, proceeding with local copy`);
 							}
-						} catch (e) {}
+						} catch (e) {}*/
+						
+						// ^ Valve fuck-up
+						// - The commented out block only works correctly when friends is running in the sharedjscontext created by a pure cef desktopui Steam client (June 2023 and later)
+						// - On half-vgui half-cef Steam clients (Oct 30 2019 - May 31 2023), the commented out block is cross-domain scripting violation
+						//   - Because of the xss attack attempt (steam-chat.com to steamloopback.host), CEF aborts the function early, which prevents the 2 lines below from running and clobbering existing valid data with uninitialized garbage
+						//   - Valve has been relying on this invalid behavior induced by their fuck-up since early 2023 at least
+						// - This is likely why the miniprofile has been broken in FriendsUI since early 2023. I don't remeber the exact date Valve broke it, but the correlation is obvious.
+						// - I'd like to find a copy of friends.js from late 2022 aka before Valve broke this code, so we can know how to properly show the miniprofile.
+						
 						const n = window;
 						return n.__SHARED_FRIENDSUI_GLOBALS || (n.__SHARED_FRIENDSUI_GLOBALS = {}), (0, o.X)(!n.__SHARED_FRIENDSUI_GLOBALS[e], `Unexpected second call to SharedFriendsUIGlobal for "${e}"`), n.__SHARED_FRIENDSUI_GLOBALS[e] || (n.__SHARED_FRIENDSUI_GLOBALS[e] = t()), n.__SHARED_FRIENDSUI_GLOBALS[e];
 					}
