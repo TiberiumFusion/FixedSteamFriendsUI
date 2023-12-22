@@ -157,6 +157,8 @@
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\ui_steam_message_old_smooth.m4a" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\ui_steam_smoother_friend_join.m4a" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\sounds\webui\ui_steam_smoother_friend_online.m4a" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\_support_\lib\js-cookie-2.2.1.min.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\_support_\lib\json5-2.2.3.min.js" />
     <Content Include="TemplateDirectives.xml" />
   </ItemGroup>
   <ItemGroup />
