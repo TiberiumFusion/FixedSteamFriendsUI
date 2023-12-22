@@ -190,7 +190,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.PatchFilesPackager
             string[] targets = new string[]
             {
                 @"clientui\friends.js",
-                @"clientui\steam-chat.com-snapshot-mod\staticdata.json5",
+                @"clientui\steam-chat.com-snapshot-mod\_support_\staticdata.json5",
             };
 
             foreach (string targetSubpath in targets)

@@ -64,7 +64,6 @@
     <None Include="Patch\clientui\steam-chat.com-snapshot-mod\public\shared\fonts\MotivaSans-Regular.ttf" />
     <None Include="Patch\clientui\steam-chat.com-snapshot-mod\public\shared\fonts\MotivaSans-RegularItalic.ttf" />
     <None Include="Patch\clientui\steam-chat.com-snapshot-mod\public\shared\fonts\MotivaSans-Thin.ttf" />
-    <None Include="Patch\clientui\steam-chat.com-snapshot-mod\staticdata.json5" />
     <None Include="Patch\clientui\steam-chat.com-snapshot-mod\_support_\staticdata.json5" />
   </ItemGroup>
   <ItemGroup>
@@ -164,6 +163,6 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>"$(TargetPath)" "$(ProjectDir)\"</PostBuildEvent>
+    <PostBuildEvent>"$(TargetPath)" "$(ProjectDir)\" /skipzip</PostBuildEvent>
   </PropertyGroup>
 </Project>
