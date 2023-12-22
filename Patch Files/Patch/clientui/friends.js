@@ -47,7 +47,9 @@ if (PATCH_ENABLE)
 // ____________________________________________________________________________________________________
 //
 
-// I don't want to pollute Steam\clientui with additional files and we don't have enough of those files yet to warrant a folder for them yet, so I'm putting them in here for now
+// There isn't really any clean way to include one js file in another in this context (i.e. libraries)
+// We could modify clientui\index_friends.html and add <script> tags for the files we need, but that increased the number of modified files which necessitates changes to the patch install procedure etc etc and I dont want to do that
+// So instead we are just going to inline any libraries this file needs right here in the file
 
 //
 // js-cookie 2.2.1
