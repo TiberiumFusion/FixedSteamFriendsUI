@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CefSharp.Common.NETCore" Version="109.1.110" />
+    <PackageReference Include="CefSharp.OffScreen.NETCore" Version="109.1.110" />
+    <PackageReference Include="CurlThin" Version="0.0.7" />
+    <PackageReference Include="CurlThin.Native" Version="0.0.8" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.55" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="AmendSnapshot\JsDeMinifier\**">
+      <TargetPath>JsDeMinifier\%(RecursiveDir)\%(Filename)%(Extension)</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>
