@@ -58760,7 +58760,7 @@ var CLSTAMP = "8601984";
 				9753: "shared_danish-json",
 				9775: "friendsui_danish-json",
 				9818: "friendsui_swedish-json",
-			}[e] || e) +
+			}[e] || e) /*+
 			".js?contenthash=" +
 			{
 				461: "5b5baa93b912ebc74f5a",
@@ -58827,8 +58827,9 @@ var CLSTAMP = "8601984";
 				9753: "f71dc4b0e6d3607991da",
 				9775: "660b7785225eab50cda3",
 				9818: "f7b856f8c101aa9cae33",
-			}[e]),
-		(s.miniCssF = (e) => "css/webui/" + (4679 === e ? "broadcastapp" : e) + ".css?contenthash=" + { 461: "75a6e9ff11215c0f2a0b", 4679: "91bab1d0e1f2b9ab1eb5" }[e]),
+			}[e]*/),
+		(s.miniCssF = (e) => "css/webui/" + (4679 === e ? "broadcastapp" : e) + ".css" /*".css?contenthash=" + { 461: "75a6e9ff11215c0f2a0b", 4679: "91bab1d0e1f2b9ab1eb5" }[e]*/),
+		// We must strip the contenthash GET param because Valve redacts old versions and returns a 404 for those requests, instead of ignoring the contenthash and just serving the current version instead (which is what they do for their .js files only)
 		(s.g = (function () {
 			if ("object" == typeof globalThis) return globalThis;
 			try {
