@@ -5242,7 +5242,7 @@ var CLSTAMP = "8601984";
 							let t = this.m_groupVoiceActiveMembers.HasMember(e);
 							this.VoiceChatStore.OnUserLeftChatRoomVoiceChat(this.m_ulGroupID, this.m_ulChatID, e, t), e != i && (n = !0);
 						}),
-							this.BVoiceActive() && (t ? g.Ul.AudioPlaybackManager.PlayAudioURL(r.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_enter.m4a?v=1") : n && g.Ul.AudioPlaybackManager.PlayAudioURL(r.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_exit.m4a?v=1")),
+							this.BVoiceActive() && (t ? g.Ul.AudioPlaybackManager.PlayAudioURL( TFP.Resources.SelectCdnResourceUrl(r.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_voice_channel_enter.m4a?v=1", "Root", "JsSounds") ) : n && g.Ul.AudioPlaybackManager.PlayAudioURL( TFP.Resources.SelectCdnResourceUrl(r.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_voice_channel_exit.m4a?v=1", "Root", "JsSounds") )),
 							(this.m_rtLastMessageReceived = e.time_last_message()),
 							(this.m_strLastMessage = e.last_message()),
 							(this.m_accountIDLastMessage = e.accountid_last_message()),
@@ -5391,10 +5391,10 @@ var CLSTAMP = "8601984";
 						return g.Ul.FriendStore.GetPlayer(e.unAccountID).is_blocked;
 					}
 					PlayChatRoomNotificationSound() {
-						g.Ul.FriendStore.GetUserDoNotDisturb() || g.Ul.AudioPlaybackManager.PlayAudioURL(r.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_chatroom_notification.m4a?v=1");
+						g.Ul.FriendStore.GetUserDoNotDisturb() || g.Ul.AudioPlaybackManager.PlayAudioURL( TFP.Resources.SelectCdnResourceUrl(r.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_chatroom_notification.m4a?v=1", "Root", "JsSounds") );
 					}
 					PlayAtMentionSound() {
-						g.Ul.FriendStore.GetUserDoNotDisturb() || g.Ul.AudioPlaybackManager.PlayAudioURL(r.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_at_mention.m4a?v=1");
+						g.Ul.FriendStore.GetUserDoNotDisturb() || g.Ul.AudioPlaybackManager.PlayAudioURL( TFP.Resources.SelectCdnResourceUrl(r.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_at_mention.m4a?v=1", "Root", "JsSounds") );
 					}
 					OnReceivedNewMessage(e, t, n, i) {
 						if (this.BShouldTrackUnreadMessages()) {
@@ -8162,10 +8162,10 @@ var CLSTAMP = "8601984";
 						t == d.fi.k_EPersonaStateOffline && n != d.fi.k_EPersonaStateOffline && e.BShowOnlineNotification() && I.Ul.NotificationManager.DisplayNotificationFromFriend(e, { title: e.display_name, body: (0, O.Xx)("#Friend_StateChange_Online"), tag: "state_" + e.accountid, state: "online", steamid: e.persona.m_steamid.ConvertTo64BitString() });
 					}
 					PlayJoinGameSound() {
-						I.Ul.FriendStore.GetUserDoNotDisturb() || I.Ul.AudioPlaybackManager.PlayAudioURL(o.De.COMMUNITY_CDN_URL + "public/sounds/webui/ui_steam_smoother_friend_join.m4a");
+						I.Ul.FriendStore.GetUserDoNotDisturb() || I.Ul.AudioPlaybackManager.PlayAudioURL( TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/ui_steam_smoother_friend_join.m4a", "Root", "JsSounds") );
 					}
 					PlayFriendOnlineSound() {
-						I.Ul.FriendStore.GetUserDoNotDisturb() || I.Ul.AudioPlaybackManager.PlayAudioURL(o.De.COMMUNITY_CDN_URL + "public/sounds/webui/ui_steam_smoother_friend_online.m4a");
+						I.Ul.FriendStore.GetUserDoNotDisturb() || I.Ul.AudioPlaybackManager.PlayAudioURL( TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/ui_steam_smoother_friend_online.m4a", "Root", "JsSounds") );
 					}
 					FillPerFriendNotificationSettingsFromMessage(e, t) {
 						(e.Notifications_ShowInGame = t.notifications_showingame()), (e.Notifications_ShowMessage = t.notifications_showmessages()), (e.Notifications_ShowOnline = t.notifications_showonline()), (e.Notifications_SendMobile = t.notifications_sendmobile()), (e.Sounds_PlayInGame = t.sounds_showingame()), (e.Sounds_PlayMessage = t.sounds_showmessages()), (e.Sounds_PlayOnline = t.sounds_showonline());
@@ -8639,7 +8639,7 @@ var CLSTAMP = "8601984";
 							}, 11e3));
 					}
 					PlayFriendMessageSound() {
-						d.Ul.FriendStore.GetUserDoNotDisturb() || d.Ul.AudioPlaybackManager.PlayAudioURL(r.De.COMMUNITY_CDN_URL + "public/sounds/webui/ui_steam_message_old_smooth.m4a");
+						d.Ul.FriendStore.GetUserDoNotDisturb() || d.Ul.AudioPlaybackManager.PlayAudioURL( TFP.Resources.SelectCdnResourceUrl(r.De.COMMUNITY_CDN_URL, "public/sounds/webui/ui_steam_message_old_smooth.m4a", "Root", "JsSounds") );
 					}
 					OnReceivedNewMessage(e, t, n, i) {
 						if (!e.BIsLocalEcho() && e.unAccountID != this.self.accountid) {
@@ -11319,7 +11319,7 @@ var CLSTAMP = "8601984";
 					Zt = n(20745),
 					Qt = n(29052),
 					Yt = n(30523);
-				const $t = n.p + "javascript/webui/noisegate-audio-worklet.js?contenthash=0402518ac687e1a73afd",
+				const $t = TFP.Resources.SelectCdnResourceUrl(n.p, "javascript/webui/noisegate-audio-worklet.js?contenthash=0402518ac687e1a73afd", "Root_Public", "LibraryJs"),
 					Jt = new Yt.s("AudioPlaybackManager");
 				class en {
 					constructor() {
@@ -12771,7 +12771,7 @@ var CLSTAMP = "8601984";
 						return [...Array.from(this.m_nonGuestSessions.values()), ...Array.from(this.m_guestSessions.values())];
 					}
 					SessionStopped(e) {
-						O.Debug(`SessionStopped: ${JSON.stringify(e)}`), this.GetSessionForPlayer(e) && (this.ClearSessionForPlayer(e), se.AudioPlaybackManager.PlayAudioURL(o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_rpt_leave.m4a")), this.ClearControllerSlotsWithPlayer(e);
+						O.Debug(`SessionStopped: ${JSON.stringify(e)}`), this.GetSessionForPlayer(e) && (this.ClearSessionForPlayer(e), se.AudioPlaybackManager.PlayAudioURL( TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_rpt_leave.m4a", "Root", "JsSounds") )), this.ClearControllerSlotsWithPlayer(e);
 					}
 					SessionJoined(e, t) {
 						O.Debug(`SessionJoined: ${JSON.stringify(e)} - ${t}`);
@@ -12780,7 +12780,7 @@ var CLSTAMP = "8601984";
 						if (!0 === n.bJoined) return;
 						(n.bJoined = !0), (n.rtJoined = Date.now() / 1e3), (n.strAvatarHash = t), (0, w.U5)("RemotePlay.BRemotePlayTogetherGuestOnPhoneOrTablet") && SteamClient.RemotePlay.BRemotePlayTogetherGuestOnPhoneOrTablet(e.steamid, e.guestid).then((e) => (n.bMobile = e));
 						let i = new c.K(e.steamid).GetAccountID();
-						0 != i && (e.guestid && n.playerID.steamid !== e.steamid && ((n.playerID = e), (n.friend = se.FriendStore.GetPlayer(i))), i !== se.FriendStore.self.accountid && se.AudioPlaybackManager.PlayAudioURL(o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_rpt_join.m4a"));
+						0 != i && (e.guestid && n.playerID.steamid !== e.steamid && ((n.playerID = e), (n.friend = se.FriendStore.GetPlayer(i))), i !== se.FriendStore.self.accountid && se.AudioPlaybackManager.PlayAudioURL( TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_rpt_join.m4a", "Root", "JsSounds") ));
 					}
 					PlayerUsedInput(e, t) {
 						let n = this.GetSessionForPlayer(e);
@@ -15464,7 +15464,7 @@ var CLSTAMP = "8601984";
 								for (let e of Array.from(this.m_mapOneOnOneCallsWaitingJoinOrAccept.keys())) {
 									let n = this.m_mapOneOnOneCallsWaitingJoinOrAccept.get(e);
 									if (null != n && n.voice_chatid == t) {
-										this.LogMsg("(VoiceChat) OneOnOne VoiceChat we were invited too with " + e + " has ended and is no longer joinable."), h.Ul.AudioPlaybackManager.PlayAudioURL(o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_exit.m4a?v=1");
+										this.LogMsg("(VoiceChat) OneOnOne VoiceChat we were invited too with " + e + " has ended and is no longer joinable."), h.Ul.AudioPlaybackManager.PlayAudioURL( TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_voice_channel_exit.m4a?v=1", "Root", "JsSounds") );
 										let t = Number(e);
 										this.DeleteOneOnOneCallWaitingJoinOrAccept(t);
 										let n = h.Ul.ChatStore.GetFriendChat(t, !1),
@@ -15477,7 +15477,7 @@ var CLSTAMP = "8601984";
 										let e = h.Ul.ChatStore.GetFriendChat(this.m_VoiceCallState.m_targetAccountID, !1);
 										null == e || this.m_VoiceCallState.m_bPostedOneOnOneEndedMsg || ((this.m_VoiceCallState.m_bPostedOneOnOneEndedMsg = !0), e.AddVoiceChannelInviteMsg(this.m_CMInterface.steamid.GetAccountID(), h.Ul.GetServerRTime32(), (0, L.Xx)("#FriendMsg_VoiceChannelEnded")));
 									}
-									0 != this.m_VoiceCallState.m_targetAccountID && this.m_VoiceCallState.m_eState > T.k_EVoiceCallState_RequestedPermission && h.Ul.AudioPlaybackManager.PlayAudioURL(o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_exit.m4a?v=1"), this.LogMsg("(VoiceChat) Got voice chat end notification from server for active chatid"), this.EndVoiceChatInternal(!1);
+									0 != this.m_VoiceCallState.m_targetAccountID && this.m_VoiceCallState.m_eState > T.k_EVoiceCallState_RequestedPermission && h.Ul.AudioPlaybackManager.PlayAudioURL( TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_voice_channel_exit.m4a?v=1", "Root", "JsSounds") ), this.LogMsg("(VoiceChat) Got voice chat end notification from server for active chatid"), this.EndVoiceChatInternal(!1);
 								}
 								return w.s.k_EResultOK;
 							}),
@@ -15524,12 +15524,12 @@ var CLSTAMP = "8601984";
 								if (this.m_VoiceCallState.m_eState >= T.k_EVoiceCallState_RequestedPermission) {
 									let t = new p.K(e.Body().steamid_partner());
 									if (e.Body().voicechat_id() != this.m_VoiceCallState.m_voiceChatID) this.LogMsg("(VoiceChat) Got response from " + t.GetAccountID() + " but for different voice chat than we are in, ignoring. ");
-									else if (t.GetAccountID() == this.m_VoiceCallState.m_targetAccountID && 1 == e.Body().accepted_request()) this.LogMsg("(VoiceChat) Got acceptance from " + t.GetAccountID() + " " + e.Hdr().steamid()), h.Ul.AudioPlaybackManager.PlayAudioURL(o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_enter.m4a?v=1"), this.OnVoiceChatAccepted(!0);
+									else if (t.GetAccountID() == this.m_VoiceCallState.m_targetAccountID && 1 == e.Body().accepted_request()) this.LogMsg("(VoiceChat) Got acceptance from " + t.GetAccountID() + " " + e.Hdr().steamid()), h.Ul.AudioPlaybackManager.PlayAudioURL( TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_voice_channel_enter.m4a?v=1", "Root", "JsSounds") ), this.OnVoiceChatAccepted(!0);
 									else {
 										this.LogMsg("(VoiceChat) Rejected by " + t.GetAccountID());
 										let e = h.Ul.ChatStore.GetFriendChat(t.GetAccountID(), !1),
 											n = h.Ul.FriendStore.GetFriend(t.GetAccountID());
-										null != e && null != n && ((this.m_VoiceCallState.m_bPostedOneOnOneEndedMsg = !0), e.AddVoiceChannelInviteMsg(t.GetAccountID(), h.Ul.GetServerRTime32(), (0, L.Xx)("#FriendMsg_VoiceChannelEndedExplicit", n.display_name))), this.DeleteOneOnOneCallWaitingJoinOrAccept(t.GetAccountID()), h.Ul.AudioPlaybackManager.PlayAudioURL(o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_exit.m4a?v=1"), this.OnVoiceChatAccepted(!1);
+										null != e && null != n && ((this.m_VoiceCallState.m_bPostedOneOnOneEndedMsg = !0), e.AddVoiceChannelInviteMsg(t.GetAccountID(), h.Ul.GetServerRTime32(), (0, L.Xx)("#FriendMsg_VoiceChannelEndedExplicit", n.display_name))), this.DeleteOneOnOneCallWaitingJoinOrAccept(t.GetAccountID()), h.Ul.AudioPlaybackManager.PlayAudioURL( TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_voice_channel_exit.m4a?v=1", "Root", "JsSounds") ), this.OnVoiceChatAccepted(!1);
 									}
 								}
 								return w.s.k_EResultOK;
@@ -15548,7 +15548,7 @@ var CLSTAMP = "8601984";
 							"undefined" != typeof SteamClient && null === this.m_hRegisterForPushToTalkStateChange && null != SteamClient && null != SteamClient.WebChat && null != SteamClient.WebChat.RegisterForPushToTalkStateChange && (this.m_hRegisterForPushToTalkStateChange = SteamClient.WebChat.RegisterForPushToTalkStateChange(this.OnPushToTalkStateChange));
 					}
 					InitiateFriendChat(e) {
-						this.BPartnerHasRequestedAndIsInOneOnOneChat(e) ? this.AcceptPartnersOneOnOneChatRequest(e) : (this.InitiateVoiceChat(e, null), h.Ul.AudioPlaybackManager.PlayAudioURL(o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_phonecall.m4a?v=1"));
+						this.BPartnerHasRequestedAndIsInOneOnOneChat(e) ? this.AcceptPartnersOneOnOneChatRequest(e) : (this.InitiateVoiceChat(e, null), h.Ul.AudioPlaybackManager.PlayAudioURL( TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_phonecall.m4a?v=1", "Root", "JsSounds") ));
 					}
 					InitiateRoomChat(e, t) {
 						this.InitiateVoiceChat(0, { groupID: e, chatID: t });
@@ -15942,7 +15942,7 @@ var CLSTAMP = "8601984";
 						((this.m_bPushToTalkEnabled && null != this.m_MicInputGainNode && !this.m_bVoicePTTStateEnabled) || (this.m_bPushToMuteEnabled && null != this.m_MicInputGainNode && this.m_bVoicePTTStateEnabled)) && this.m_MicInputGainNode.gain.setValueAtTime(this.GetCurrentVoiceInputGainTarget(), this.m_AudioContext.currentTime + 0.2);
 					}
 					DebouncedToggleMicMuting() {
-						this.ToggleMicMuting(), this.GetPushToTalkOrMuteSoundsEnabled() && (this.IsMicMuted() ? h.Ul.AudioPlaybackManager.PlayAudioURL(o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_ui_ptt_short_02_quiet.m4a") : h.Ul.AudioPlaybackManager.PlayAudioURL(o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_ui_ptt_short_01_quiet.m4a"));
+						this.ToggleMicMuting(), this.GetPushToTalkOrMuteSoundsEnabled() && (this.IsMicMuted() ? h.Ul.AudioPlaybackManager.PlayAudioURL( TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_ui_ptt_short_02_quiet.m4a", "Root", "JsSounds") ) : h.Ul.AudioPlaybackManager.PlayAudioURL( TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_ui_ptt_short_01_quiet.m4a", "Root", "JsSounds") ));
 					}
 					OnPushToTalkStateChange(e) {
 						let t = e,
@@ -15954,8 +15954,8 @@ var CLSTAMP = "8601984";
 									(this.m_bPushToTalkEnabled || this.m_bPushToMuteEnabled) &&
 										null != this.m_MicInputGainNode &&
 										(this.m_bVoicePTTStateEnabled
-											? (this.GetPushToTalkOrMuteSoundsEnabled() && h.Ul.AudioPlaybackManager.PlayAudioURL(o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_ui_ptt_short_01_quiet.m4a"), this.m_bPushToMuteEnabled ? (this.m_hPushToTalkReleaseTimeout = SetBackgroundTimeout(this.OnPushToTalkReleased, 100)) : (this.m_MicInputGainNode.gain.setValueAtTime(this.GetCurrentVoiceInputGainTarget(), this.m_AudioContext.currentTime), 0 != this.m_hPushToTalkReleaseTimeout && ClearBackgroundTimeout(this.m_hPushToTalkReleaseTimeout)))
-											: (this.GetPushToTalkOrMuteSoundsEnabled() && h.Ul.AudioPlaybackManager.PlayAudioURL(o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_ui_ptt_short_02_quiet.m4a"), this.m_bPushToMuteEnabled ? (this.m_MicInputGainNode.gain.setValueAtTime(this.GetCurrentVoiceInputGainTarget(), this.m_AudioContext.currentTime), 0 != this.m_hPushToTalkReleaseTimeout && ClearBackgroundTimeout(this.m_hPushToTalkReleaseTimeout)) : (this.m_hPushToTalkReleaseTimeout = SetBackgroundTimeout(this.OnPushToTalkReleased, 100)))))
+											? (this.GetPushToTalkOrMuteSoundsEnabled() && h.Ul.AudioPlaybackManager.PlayAudioURL( TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_ui_ptt_short_01_quiet.m4a", "Root", "JsSounds") ), this.m_bPushToMuteEnabled ? (this.m_hPushToTalkReleaseTimeout = SetBackgroundTimeout(this.OnPushToTalkReleased, 100)) : (this.m_MicInputGainNode.gain.setValueAtTime(this.GetCurrentVoiceInputGainTarget(), this.m_AudioContext.currentTime), 0 != this.m_hPushToTalkReleaseTimeout && ClearBackgroundTimeout(this.m_hPushToTalkReleaseTimeout)))
+											: (this.GetPushToTalkOrMuteSoundsEnabled() && h.Ul.AudioPlaybackManager.PlayAudioURL( TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_ui_ptt_short_02_quiet.m4a", "Root", "JsSounds") ), this.m_bPushToMuteEnabled ? (this.m_MicInputGainNode.gain.setValueAtTime(this.GetCurrentVoiceInputGainTarget(), this.m_AudioContext.currentTime), 0 != this.m_hPushToTalkReleaseTimeout && ClearBackgroundTimeout(this.m_hPushToTalkReleaseTimeout)) : (this.m_hPushToTalkReleaseTimeout = SetBackgroundTimeout(this.OnPushToTalkReleased, 100)))))
 								: e && null != this.m_MicInputGainNode && this.DebouncedToggleMicMuting();
 					}
 					GetCurrentVoiceInputGainTarget() {
@@ -16495,7 +16495,7 @@ var CLSTAMP = "8601984";
 							});
 					}
 					PlayRingSound(e) {
-						this.m_mapOneOnOneCallsWaitingJoinOrAccept.get(e).audio_buffer = h.Ul.AudioPlaybackManager.PlayAudioURLWithRepeats(o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_phonecall.m4a?v=1", 1);
+						this.m_mapOneOnOneCallsWaitingJoinOrAccept.get(e).audio_buffer = h.Ul.AudioPlaybackManager.PlayAudioURLWithRepeats( Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_phonecall.m4a?v=1", "Root", "JsSounds") , 1);
 					}
 					IsVoiceActive(e, t) {
 						return !!this.m_VoiceCallState.BMatchingCall(e, t) && this.m_VoiceCallState.m_eState != T.k_EVoiceCallState_None;
@@ -54780,7 +54780,7 @@ var CLSTAMP = "8601984";
 					r = n(69427),
 					a = n(22430),
 					s = n.n(a);
-				const l = n.p + "images/webui/8669e97b288da32670e77181618c3dfb.png";
+				const l = TFP.Resources.SelectCdnResourceUrl(n.p, "images/webui/8669e97b288da32670e77181618c3dfb.png", "Root_Public", "JsImages");
 				var c = n(60595);
 				const d = o().memo(function (e) {
 					const { className: t, size: n, string: a, position: d, static: u, msDelayAppear: h } = e;
@@ -58887,7 +58887,7 @@ var CLSTAMP = "8601984";
 				var e = (e) =>
 						new Promise((t, n) => {
 							var i = s.miniCssF(e),
-								o = s.p + i;
+								o = TFP.Resources.SelectCdnResourceUrl(s.p, i, "Root_Public", "JsCss");
 							if (
 								((e, t) => {
 									for (var n = document.getElementsByTagName("link"), i = 0; i < n.length; i++) {
@@ -58948,7 +58948,14 @@ var CLSTAMP = "8601984";
 					else {
 						var o = new Promise((n, o) => (i = e[t] = [n, o]));
 						n.push((i[2] = o));
-						var r = s.p + s.u(t),
+						//var r = s.p + s.u(t),
+						//	a = new Error();
+						let host = s.p;
+						let filePath = s.u(t);
+						let category = "CoreJs";
+						if (filePath.indexOf("-json.js") != -1) { // this logic path is used to load both .js and -json.js files
+							category = "JsonJs"; }
+						var r = TFP.Resources.SelectCdnResourceUrl(host, filePath, "Root_Public", category),
 							a = new Error();
 						s.l(
 							r,

@@ -145,28 +145,38 @@
 	Resources.SelectCdnResourceUrl = function(remoteRootPath, resourcePath, remoteRootPathType, resourceCategory, forceHost = null)
 	{
 		let local = false;
-		if (forceHost == this.CdnResourceLocation.Local) {
-			local = true; }
-		else if (forceHost == this.CdnResourceLocation.Remote) {
-			local = false; }
-		else {
-			local = this.UseLocalAssetCopies[resourceCategory] ?? false; }
+		if (forceHost == this.CdnResourceLocation.Local || this.CdnResourceLocation[forceHost] == this.CdnResourceLocation.Local)
+		{
+			local = true;
+		}
+		else if (forceHost == this.CdnResourceLocation.Remote || this.CdnResourceLocation[forceHost] == this.CdnResourceLocation.Remote)
+		{
+			local = false;
+		}
+		else
+		{
+			let resCat = typeof (resourceCategory) == "string" ? this.CdnResourceCategory[resourceCategory] : resourceCategory;
+			if (resCat == null) {
+				throw new Error("Invalid value for param resourceCategory", resourceCategory); }
+
+			local = this.UseLocalAssetCopies[resCat];
+		}
 	
 		if (local)
 		{
 			let resourceUrl = null;
-			if (remoteRootPathType == this.CdnResourceRootPathType.Root)
+			if (remoteRootPathType == this.CdnResourceRootPathType.Root || this.CdnResourceRootPathType[remoteRootPathType] == this.CdnResourceRootPathType.Root)
 			{
 				console.log("Use LOCAL (root) asset: ", remoteRootPath, resourcePath, this.CdnResourceCategory[resourceCategory]);
 				resourceUrl = this.LOCAL_ROOT + resourcePath;
 			}
-			else if (remoteRootPathType == CdnResourceRootPathType.Root_Public)
+			else if (remoteRootPathType == this.CdnResourceRootPathType.Root_Public || this.CdnResourceRootPathType[remoteRootPathType] == this.CdnResourceRootPathType.Root_Public)
 			{
 				console.log("Use LOCAL (root/public) asset: ", remoteRootPath, resourcePath, this.CdnResourceCategory[resourceCategory]);
 				resourceUrl = this.LOCAL_VALVE_PUBLIC_PATH + resourcePath;
 			}
 			else {
-				throw new Error("Invalid value for param remoteRootPathType"); }
+				throw new Error("Invalid value for param remoteRootPathType", remoteRootPathType); }
 		
 			if (this.LocalAssetFallbackToRemote) // verify that the local asset can be retrieved; if not, use remote asset instead
 			{
