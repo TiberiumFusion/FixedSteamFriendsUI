@@ -7864,7 +7864,7 @@ var CLSTAMP = "8601984";
 								this.m_bInitialPersonaStatesLoaded || this.m_InitialAppInfoPromises.push(o), !this.m_bInitialPersonaStatesLoaded && i.size && (console.log("Preloading Game Rich Presence for AppIDs:", Array.from(i)), i.forEach((e) => I.Ul.AppInfoStore.GetRichPresenceLoc(e)));
 							}),
 							(0, y.EH)(() => {
-								let e = I.Ul.ParentalStore.BIsFriendsBlocked() || I.Ul.SettingsStore.IsSteamInTournamentMode();
+								let e = I.Ul.ParentalStore.BIsFriendsBlocked() || /*I.Ul.SettingsStore.IsSteamInTournamentMode()*/ TFP.Compat.IsSteamInTournamentMode();
 								this.OnParentalLockChanged(e);
 							}),
 							this.InitializeIdleTracking(),
@@ -9409,7 +9409,7 @@ var CLSTAMP = "8601984";
 						return this.DisplayNotification(Object.assign({ icon: e.persona.avatar_url_medium }, t), (t) => e.OpenChatDialog(t), n);
 					}
 					BNotificationsPermitted() {
-						return !u.Ul.ParentalStore.BIsFriendsBlocked() && !u.Ul.SettingsStore.IsSteamInTournamentMode();
+						return !u.Ul.ParentalStore.BIsFriendsBlocked() && /*!u.Ul.SettingsStore.IsSteamInTournamentMode()*/ TFP.Compat.IsSteamInTournamentMode();
 					}
 					RequestNotificationPermission() {
 						return Promise.resolve(!0);
@@ -11582,7 +11582,8 @@ var CLSTAMP = "8601984";
 						return !this.m_container && this.m_popup.window && (this.m_container = new Cn(this.m_popup.window)), this.m_container;
 					}
 					Show(e) {
-						u.Ul.ParentalStore.BIsFriendsBlocked() || u.Ul.SettingsStore.IsSteamInTournamentMode() ? console.log("Blocked popup due to parental controls or tournament mode") : this.m_popup.Show(e);
+						//u.Ul.ParentalStore.BIsFriendsBlocked() || u.Ul.SettingsStore.IsSteamInTournamentMode() ? console.log("Blocked popup due to parental controls or tournament mode") : this.m_popup.Show(e);
+						u.Ul.ParentalStore.BIsFriendsBlocked() || TFP.Compat.IsSteamInTournamentMode() ? console.log("Blocked popup due to parental controls") : this.m_popup.Show(e);
 					}
 					Close() {
 						this.m_popup.Close();
@@ -11876,7 +11877,8 @@ var CLSTAMP = "8601984";
 							}, 1e3)));
 					}
 					ShowPopupFriendsList(e, t, n, i) {
-						if (this.m_FriendsUIApp.ParentalStore.BIsFriendsBlocked() || this.m_FriendsUIApp.SettingsStore.IsSteamInTournamentMode()) return void console.log("Blocked friends list popup due to parental controls or tournament mode");
+						//if (this.m_FriendsUIApp.ParentalStore.BIsFriendsBlocked() || this.m_FriendsUIApp.SettingsStore.IsSteamInTournamentMode()) return void console.log("Blocked friends list popup due to parental controls or tournament mode");
+						if (this.m_FriendsUIApp.ParentalStore.BIsFriendsBlocked() || TFP.Compat.IsSteamInTournamentMode()) return void console.log("Blocked friends list popup due to parental controls");
 						const o = !t && n ? D.IF.k_EWindowBringToFrontAndForceOS : D.IF.k_EWindowBringToFrontInvalid;
 						let r = this.m_mapFriendsListPopups.get(e.m_unPID);
 						if (r) return void r.Focus(o);
@@ -11938,7 +11940,8 @@ var CLSTAMP = "8601984";
 						t && t.popup.GetWindow() && (e.ui_state().set_friends_list_width(t.popup.GetWindow().outerWidth), e.ui_state().set_friends_list_height(t.popup.GetWindow().outerHeight));
 					}
 					ShowChatUnreadMessages(e) {
-						if (this.m_FriendsUIApp.ParentalStore.BIsFriendsBlocked() || this.m_FriendsUIApp.SettingsStore.IsSteamInTournamentMode) return void console.log("Blocked friends list popup due to parental controls or tournament mode");
+						//if (this.m_FriendsUIApp.ParentalStore.BIsFriendsBlocked() || this.m_FriendsUIApp.SettingsStore.IsSteamInTournamentMode) return void console.log("Blocked friends list popup due to parental controls or tournament mode");
+						if (this.m_FriendsUIApp.ParentalStore.BIsFriendsBlocked() || TFP.Compat.IsSteamInTournamentMode()) return void console.log("Blocked friends list popup due to parental controls");
 						let t = this.m_FriendsUIApp.ChatStore.GetChatToActivateForOldestUnread(e);
 						return t ? (console.log("ShowChatUnreadMessages - showing chat " + t.unique_id), void this.m_FriendsUIApp.UIStore.ShowAndOrActivateChat(e, t, !0)) : this.ShowPopupFriendsList(e, !1, !0);
 					}
@@ -12932,7 +12935,7 @@ var CLSTAMP = "8601984";
 					x = n(47812);
 				class U {
 					constructor(e) {
-						(this.m_bReady = !1), (this.m_FriendsSettings = void 0), (this.m_CommunityPreferences = void 0), (this.m_StorePreferences = void 0), (this.m_bSteamIsInTournamentMode = !1), (this.m_unTimerUploadCommunityPreferences = void 0), (this.m_rgOnReadyCallbacks = []), (this.m_bFriendSettingsReady = !1), (0, r.rC)(this), (this.m_Storage = e), o.De.IN_CLIENT ? (this.m_iFriendSettingsStore = new H(this, this.OnFriendSettingsChanged.bind(this))) : (this.m_iFriendSettingsStore = new W(this, this.OnFriendSettingsChanged.bind(this))), (this.m_bSteamIsInTournamentMode = !1), o.De.IN_CLIENT && SteamClient.System.IsSteamInTournamentMode().then((e) => (this.m_bSteamIsInTournamentMode = e));
+						(this.m_bReady = !1), (this.m_FriendsSettings = void 0), (this.m_CommunityPreferences = void 0), (this.m_StorePreferences = void 0), (this.m_bSteamIsInTournamentMode = !1), (this.m_unTimerUploadCommunityPreferences = void 0), (this.m_rgOnReadyCallbacks = []), (this.m_bFriendSettingsReady = !1), (0, r.rC)(this), (this.m_Storage = e), o.De.IN_CLIENT ? (this.m_iFriendSettingsStore = new H(this, this.OnFriendSettingsChanged.bind(this))) : (this.m_iFriendSettingsStore = new W(this, this.OnFriendSettingsChanged.bind(this))), (this.m_bSteamIsInTournamentMode = !1), o.De.IN_CLIENT /*&& SteamClient.System.IsSteamInTournamentMode().then((e) => (this.m_bSteamIsInTournamentMode = e))*/;
 						{
 							let e = new N.n8();
 							this.m_CommunityPreferences = { bParenthesizeNicknames: e.parenthesize_nicknames(), eTextFilterSetting: e.text_filter_setting(), bTextFilterIgnoreFriends: e.text_filter_ignore_friends(), content_descriptor_preferences: { content_descriptors_to_exclude: [] } };
@@ -12965,7 +12968,7 @@ var CLSTAMP = "8601984";
 						return !o.De.IN_CLIENT || (!!this.BReady() && "object" == typeof this.m_FriendsSettings.featuresEnabled && !!this.m_FriendsSettings.featuresEnabled.hasOwnProperty(e) && this.m_FriendsSettings.featuresEnabled[e]);
 					}
 					IsSteamInTournamentMode() {
-						return this.m_bSteamIsInTournamentMode;
+						return /*this.m_bSteamIsInTournamentMode*/ TFP.Compat.IsSteamInTournamentMode();
 					}
 					BAlwaysShowChatsInNewWindow() {
 						return this.m_FriendsSettings.bAlwaysNewChatWindow;
@@ -14127,7 +14130,7 @@ var CLSTAMP = "8601984";
 							this.SerializePopupState(), (this.m_bShuttingDown = !0);
 						}),
 							(0, a.EH)(() => {
-								let e = r.Ul.ParentalStore.BIsFriendsBlocked() || r.Ul.SettingsStore.IsSteamInTournamentMode();
+								let e = r.Ul.ParentalStore.BIsFriendsBlocked() || /*r.Ul.SettingsStore.IsSteamInTournamentMode()*/ TFP.Compat.IsSteamInTournamentMode();
 								this.OnFriendsParentalLockChanged(e);
 							}),
 							this.StartWinterSaleCountdown();
@@ -14502,7 +14505,7 @@ var CLSTAMP = "8601984";
 					RestorePopupState() {
 						return (0, i.mG)(this, void 0, void 0, function* () {
 							if (r.Ul.IsGamepadUIActive()) return;
-							if (((0, _.X)(!this.m_bRestoredPopupState, "Second restore popup state"), (0, _.X)(!this.m_bRestoringPopups, "RestorePopupState called while already restoring"), r.Ul.ParentalStore.BIsFriendsBlocked() || r.Ul.SettingsStore.IsSteamInTournamentMode())) return;
+							if (((0, _.X)(!this.m_bRestoredPopupState, "Second restore popup state"), (0, _.X)(!this.m_bRestoringPopups, "RestorePopupState called while already restoring"), r.Ul.ParentalStore.BIsFriendsBlocked() || /*r.Ul.SettingsStore.IsSteamInTournamentMode()*/ TFP.Compat.IsSteamInTournamentMode())) return;
 							if (((this.m_bRestoringPopups = !0), this.m_stateToRestoreFrom)) return this.RestoreFromStateObject(this.m_stateToRestoreFrom, !1), (this.m_stateToRestoreFrom = void 0), void (this.m_bRestoringPopups = !1);
 							let e = yield r.Ul.SettingsStore.GetObjectFromLocalStorageWhenReady(S),
 								t = !1;
@@ -29140,7 +29143,7 @@ var CLSTAMP = "8601984";
 						e && t ? (this.props.tabset.tabCount > 0 && ((m = !0), (r = a.Ul.UIStore.BIsFriendsListCollapsed(this.m_browserContext))), (_ += " singlewindow"), (g = u.createElement("div", { className: "singleWindowDivider" + (r ? " friendsListCollapsed" : ""), onMouseDown: this.OnGrabberMouseDown, onTouchStart: this.OnGrabberTouchStart }))) : e ? (_ += " responsive_friends") : t && (_ += " responsive_chats"), this.state.bIsResizingWindow && (_ += " resizingSingleWindow"), h && (_ += " TheaterMode"), this.props.popup && this.props.popup.focused && (_ += " focused"), a.Ul.CMInterface.BDisconnected() && !a.Ul.FriendStore.BIsOfflineMode() && (_ += " errorDisconnected");
 						let C = this.props.popup && this.props.popup.window,
 							f = r ? { width: 0, transition: "width 0.32s ease-in-out, opacity 0.32s ease-in-out" } : { width: s.g_FriendsUIDesktopApp.UIDisplayPrefs.nFriendsListSingleWindowWidthPx + "px" };
-						return a.Ul.SettingsStore.IsSteamInTournamentMode()
+						return /*a.Ul.SettingsStore.IsSteamInTournamentMode()*/ TFP.Compat.IsSteamInTournamentMode()
 							? u.createElement("div", { className: _, ref: this.m_refRoot }, u.createElement(De.SV, null, u.createElement(st, { popup: this.props.popup ? this.props.popup.window : void 0 })))
 							: a.Ul.ParentalStore.BIsFriendsBlocked()
 								? o.De.IN_CLIENT
