@@ -57619,8 +57619,9 @@ var CLSTAMP = "8601984";
 				}
 				function d(e = a) {
 					const t = {},
-						n = m("config", e);
+						n = m("config", e); // reads in the JSON string defined on <div id="webui_config" data-config="..."/> in index.html
 					n && (delete n.SESSIONID, Object.assign(r.De, n), (t.config = !0));
+					TFP.Hooks.OnWebuiConfigLoaded(r.De); // hook into this logic path; needed for making non-english display languages work
 					const i = m("userinfo", e);
 					i && (Object.assign(r.L7, i), (t.userConfig = !0), r.L7.is_support && _() && (r.L7.is_support = !1));
 					const o = m("broadcast", e);
@@ -58760,8 +58761,8 @@ var CLSTAMP = "8601984";
 				9753: "shared_danish-json",
 				9775: "friendsui_danish-json",
 				9818: "friendsui_swedish-json",
-			}[e] || e) /*+
-			".js?contenthash=" +
+			}[e] || e) +
+			".js" /*".js?contenthash=" +
 			{
 				461: "5b5baa93b912ebc74f5a",
 				699: "ca920acefe1840657583",

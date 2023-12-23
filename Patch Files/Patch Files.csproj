@@ -159,6 +159,7 @@
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\_support_\lib\js-cookie-2.2.1.min.js" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\_support_\lib\json5-2.2.3.min.js" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\_support_\pre\inner-friends.js\compat.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\_support_\pre\inner-friends.js\hooks.js" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\_support_\pre\inner-friends.js\init.js" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\_support_\pre\inner-friends.js\meta.js" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\_support_\pre\inner-friends.js\helpers.js" />
