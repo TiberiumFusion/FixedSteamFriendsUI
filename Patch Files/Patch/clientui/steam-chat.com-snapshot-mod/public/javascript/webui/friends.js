@@ -47637,7 +47637,7 @@ var CLSTAMP = "8601984";
 								a = Array.from(r).filter((t) => t.ownerDocument.defaultView == e.ownerDocument.defaultView).length > 0;
 							n ? r.add(e) : r.delete(e);
 							const s = Array.from(r).filter((t) => t.ownerDocument.defaultView == e.ownerDocument.defaultView).length > 0;
-							s != a && (null === (o = null === (i = e.ownerDocument.defaultView) || void 0 === i ? void 0 : i.SteamClient) || void 0 === o || TFP.Compat.SteamClient_OpenVR_SetOverlayInteractionAffordance(o, t, s));
+							s != a && (null === (o = null === (i = e.ownerDocument.defaultView) || void 0 === i ? void 0 : i.SteamClient) || void 0 === o || /*o.OpenVR.SetOverlayInteractionAffordance(t, s)*/ TFP.Compat.SteamClient_OpenVR_SetOverlayInteractionAffordance(o, t, s));
 						}
 					}
 				}
