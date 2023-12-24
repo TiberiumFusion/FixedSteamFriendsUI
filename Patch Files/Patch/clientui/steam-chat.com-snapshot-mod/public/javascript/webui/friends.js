@@ -47098,7 +47098,11 @@ var CLSTAMP = "8601984";
 						});
 					}
 					InitSteamEngineLanguages() {
-						null != this.m_WebUIServiceTransport && (this.m_WebUIServiceTransport.messageHandlers.RegisterServiceNotificationHandler(_.gi.NotifyTextFilterDictionaryChangedHandler, this.OnTextFilterDictionaryChanged), this.InitSteamEngineLanguage(u.De.LANGUAGE), "english" !== u.De.LANGUAGE && this.InitSteamEngineLanguage("english"));
+						/*null != this.m_WebUIServiceTransport && (this.m_WebUIServiceTransport.messageHandlers.RegisterServiceNotificationHandler(_.gi.NotifyTextFilterDictionaryChangedHandler, this.OnTextFilterDictionaryChanged), this.InitSteamEngineLanguage(u.De.LANGUAGE), "english" !== u.De.LANGUAGE && this.InitSteamEngineLanguage("english"));*/
+						// Sept 21 2023 and later versions of steam-chat.com use this method (and several others) to do some kind of networking on the censorship feature of steam chat
+						// This interface causes a bunch of "SendMsg: Attempted to send message but socket wasn't ready" errors under the May 2023 client (and presumably all other vgui clients), likely due to the lack of injected/exposed interface from steamclient.dll/friendsui.dll in those older steam clients. And Valve does not care to put this behavior behind a compatibility check.
+						// The late July 2023 version of steam-chat.com is missing this interface, so evidently it is not critical to running steam chat or even the censorship feature it interacts with. And indeed, simply disabling the entry point to this code prevents the errors from occuring in the May 2023 client, and chat censorship still works perfectly fine.
+						// This is part 1 of two locations where this interface must be disabled. Scroll down to the next comment block for part 2.
 					}
 					OnTextFilterDictionaryChanged(e) {
 						return (
@@ -47213,7 +47217,8 @@ var CLSTAMP = "8601984";
 					LoadLanguage(e) {
 						return (0, i.mG)(this, void 0, void 0, function* () {
 							let t = "";
-							if (null != this.m_WebUIServiceTransport) {
+							//if (null != this.m_WebUIServiceTransport) {
+							if (false) { // part 2 of disabling the broken web socket behavior
 								{
 									const t = yield this.GetSteamEngineTextFilterDictionary(e, "banned");
 									this.m_strBannedWords += t.Body().dictionary();
