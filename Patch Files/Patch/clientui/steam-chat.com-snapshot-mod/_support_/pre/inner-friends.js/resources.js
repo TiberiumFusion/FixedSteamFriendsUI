@@ -107,14 +107,14 @@
 		// CSS
 		//
 
-		[Resources.CdnResourceCategory.Css]: true, // same rationale as LibraryJs
+		[Resources.CdnResourceCategory.JsCss]: true, // same rationale as LibraryJs
 
 		//
 		// Resources loaded by Valve JS
 		//
 
-		[Resources.CdnResourceCategory.Images]: true, // false is safe until valve eventually redacts the files we request, but why take that risk?
-		[Resources.CdnResourceCategory.Sounds]: true, // ditto
+		[Resources.CdnResourceCategory.JsImages]: true, // false is safe until valve eventually redacts the files we request, but why take that risk?
+		[Resources.CdnResourceCategory.JsSounds]: true, // ditto
 
 		// Note: all resources in static files (notably, CSS) will always be retrieved from remote, since we have no way to rewrite the URLs in those files on the fly
 	};
