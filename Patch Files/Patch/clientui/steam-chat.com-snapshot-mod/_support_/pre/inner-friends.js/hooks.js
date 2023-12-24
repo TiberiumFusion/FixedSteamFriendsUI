@@ -62,7 +62,7 @@
         // Since the snapshot was captured in the US, our index.html has COUNTRY set to US
         // Again, this appears to be a non-issue since there were never any reports of non US users of this patch experiencing specific issues that US users never experienced
 
-        // However, we may as well set this correctly, especially since WebChat.GetWebChatURL() includes a `cc` param which is set to a string like "US"
+        // However, we may as well set this correctly, especially since WebChat.GetWebChatURL() includes a `cc` param which is set to a string like "US" which seems like exactly what goes in COUNTRY
         // Since the COUNTRY field in this baked-in-hypertext json is "US" in my snapshots, presumably there is a 1:1 mapping here between COUNTRY and Valve's country code string
 
         let cc = TFP.Config.ForwardCountryCode;
