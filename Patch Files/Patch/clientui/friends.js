@@ -57089,25 +57089,29 @@ function StartChat(strFrame) {
 	
 	// Alternatively, we could patch friendsui.dll into returning a different string for GetWebChatURL()
 	// But that takes more effort, and it might(?) trigger VAC
+
+    // Also of note: there is also an injected WebChat.GetWebChatLanguage() method, which presumably (untested) returns strings like "english" or "russian"
 	
 	if (PATCH_ENABLE)
 	{
-        // First, we need to get the actual url from getwebchat since it conveniently has the `l` GET param set on it
-        // And I don't know of any other injected method that more cleanly/directly gets the Steam client's chosen display language
+        // First, we need to get the actual url from getwebchat since it conveniently has the `l` and `cc` GET params set on it
+        // And I don't know of any other injected method that more cleanly/directly gets the Steam client's chosen display language & country
         SteamClient.WebChat.GetWebChatURL().then((url) => // GetWebChatURL() is not synchronous because that would make too much sense
         {
             console.log("Original GetWebChatURL: ", url);
 
-            let urlParams = new URLSearchParams(url.split('?')[1]); // split() because URLSearchParams is too stupid to understand urls with search params; it only understands search params without a url
+            let urlParams = new URLSearchParams(url.split('?')[1]); // split() because URLSearchParams is too stupid to understand urls with search params; it only understands search params without a url. Great.
             let displayLanguage = urlParams.get("l") ?? "english"; // english is a fallback present on all computers
+            let countryCode = urlParams.get("cc") ?? "US"; // the steam-chat.com snapshots I capture are captured in the US so "US" is what is baked into the hypertext wherever this string is used
             
             // Now we can build the new url
             let payloadRootUrl = "https://steamloopback.host/" + TfusionPatchMetadataJson.Level0.PayloadName + "/" // must have trailing slash! (for payload's friends.js logic)
 		
 		    let iframeSrc = payloadRootUrl + TfusionPatchMetadataJson.Level0.PayloadRootIndexFilename
 			    + "?DisplayLanguage=" + encodeURIComponent(displayLanguage)
+			    + "&CountryCode=" + encodeURIComponent(countryCode)
 			    + "&PayloadRootUrl=" + encodeURIComponent(payloadRootUrl);
-		
+		    
 		    SteamClient.WebChat.GetWebChatURL = function() {
 			    return new Promise( function(succeed, fail) {
 				    succeed(iframeSrc);
