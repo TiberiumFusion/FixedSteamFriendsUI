@@ -16495,7 +16495,7 @@ var CLSTAMP = "8601984";
 							});
 					}
 					PlayRingSound(e) {
-						this.m_mapOneOnOneCallsWaitingJoinOrAccept.get(e).audio_buffer = h.Ul.AudioPlaybackManager.PlayAudioURLWithRepeats( Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_phonecall.m4a?v=1", "Root", "JsSounds") , 1);
+						this.m_mapOneOnOneCallsWaitingJoinOrAccept.get(e).audio_buffer = h.Ul.AudioPlaybackManager.PlayAudioURLWithRepeats( TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_phonecall.m4a?v=1", "Root", "JsSounds") , 1);
 					}
 					IsVoiceActive(e, t) {
 						return !!this.m_VoiceCallState.BMatchingCall(e, t) && this.m_VoiceCallState.m_eState != T.k_EVoiceCallState_None;
