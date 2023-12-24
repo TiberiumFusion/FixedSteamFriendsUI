@@ -9409,7 +9409,7 @@ var CLSTAMP = "8601984";
 						return this.DisplayNotification(Object.assign({ icon: e.persona.avatar_url_medium }, t), (t) => e.OpenChatDialog(t), n);
 					}
 					BNotificationsPermitted() {
-						return !u.Ul.ParentalStore.BIsFriendsBlocked() && /*!u.Ul.SettingsStore.IsSteamInTournamentMode()*/ TFP.Compat.IsSteamInTournamentMode();
+						return !u.Ul.ParentalStore.BIsFriendsBlocked() && /*!u.Ul.SettingsStore.IsSteamInTournamentMode()*/ !TFP.Compat.IsSteamInTournamentMode();
 					}
 					RequestNotificationPermission() {
 						return Promise.resolve(!0);
