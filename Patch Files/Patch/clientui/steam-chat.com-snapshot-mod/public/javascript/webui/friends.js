@@ -23922,7 +23922,7 @@ var CLSTAMP = "8601984";
 				class b extends l.K3 {
 					constructor(e, t) {
 						var n;
-						super("hoverpopup", { title: "hover", html_class: "friendsui-container HoverPopup client_chat_frame", body_class: "HoverPopupBody Hover" + e.className, replace_existing_popup: !0, target_browser: t, window_opener_id: null === (n = e.target.ownerDocument.defaultView) || void 0 === n ? void 0 : n.SteamClient.Browser.GetBrowserID(), eCreationFlags: (0, l.sB)(l.iJ.Tooltip) }), (this.m_hoverProps = e);
+						super("hoverpopup", { title: "hover", html_class: "friendsui-container HoverPopup client_chat_frame", body_class: "HoverPopupBody Hover" + e.className, replace_existing_popup: !0, target_browser: t, window_opener_id: null === (n = e.target.ownerDocument.defaultView) || void 0 === n ? void 0 : /*n.SteamClient.Browser.GetBrowserID()*/ TFP.Compat.SteamClient_Browser_GetBrowserID(n.SteamClient), eCreationFlags: (0, l.sB)(l.iJ.Tooltip) }), (this.m_hoverProps = e);
 					}
 					UpdateParamsBeforeShow(e) {
 						let t = c.sH(this.m_hoverProps.target.ownerDocument.defaultView, this.m_hoverProps.target.getBoundingClientRect());
@@ -34651,7 +34651,7 @@ var CLSTAMP = "8601984";
 							t.strRestoreDetails && c.push("restoredetails=" + t.strRestoreDetails),
 							t.window_opener_id && c.push("openerid=" + t.window_opener_id),
 							t.parent_container_popup_id && c.push("parentcontainerpopupid=" + t.parent_container_popup_id),
-							t.center_on_window && void 0 === n.left && void 0 === n.top && c.push("centerOnBrowserID=" + t.center_on_window.SteamClient.Browser.GetBrowserID()),
+							t.center_on_window && void 0 === n.left && void 0 === n.top && c.push("centerOnBrowserID=" + /*t.center_on_window.SteamClient.Browser.GetBrowserID()*/ TFP.Compat.SteamClient_Browser_GetBrowserID(t.center_on_window.SteamClient)),
 							t.strUserAgent && c.push("useragent=" + t.strUserAgent + "/" + (0, d.MR)(u.De.LAUNCHER_TYPE)),
 							t.hwndParent && c.push("hwndParent=" + t.hwndParent),
 							t.bPinned && c.push("pinned=true"),
@@ -53461,7 +53461,8 @@ var CLSTAMP = "8601984";
 											l,
 											c = t.popupWidth || 500,
 											d = t.popupHeight || 400;
-										if (m.De.IN_CLIENT && (null === (r = null === (o = null == i ? void 0 : i.SteamClient) || void 0 === o ? void 0 : o.Browser) || void 0 === r ? void 0 : r.GetBrowserID)) l = i.SteamClient.Browser.GetBrowserID();
+										//if (m.De.IN_CLIENT && (null === (r = null === (o = null == i ? void 0 : i.SteamClient) || void 0 === o ? void 0 : o.Browser) || void 0 === r ? void 0 : r.GetBrowserID)) l = i.SteamClient.Browser.GetBrowserID();
+										if (m.De.IN_CLIENT && TFP.Compat.SteamClient_HasGetBrowserID(i.SteamClient)) l = TFP.Compat.SteamClient_Browser_GetBrowserID(i.SteamClient);
 										else {
 											let e = i.screen;
 											(a = (e.availWidth - c) / 2), (s = (e.availHeight - d) / 2);
@@ -53590,7 +53591,7 @@ var CLSTAMP = "8601984";
 					const { instance: t, browserInfo: n, children: i } = e,
 						a = r().useRef(),
 						l = (0, h.Wy)().ownerWindow,
-						c = l.SteamClient.Browser.GetBrowserID(),
+						c = /*l.SteamClient.Browser.GetBrowserID()*/ TFP.Compat.SteamClient_Browser_GetBrowserID(l.SteamClient),
 						d = r().useCallback(
 							(e) => {
 								const { options: n, position: i } = t,

@@ -26,7 +26,7 @@
 
     Compat.SteamClient_Browser_GetBrowserID = function(steamClient)
     {
-        if ("GetBrowserID" in steamClient.Browser)
+        if ("Browser" in steamClient && "GetBrowserID" in steamClient.Browser)
         {
             return steamClient.Browser.GetBrowserID();
         }
@@ -42,6 +42,16 @@
         // We don't store or reassign the GetBrowserID() binding and have to re-eval it every time because:
         // 1. Browser is always injected into the steam-chat.com page before any scripts run, but Window is not, so Window.GetBrowserID doesn't exist yet. Other CEF frames (like sharedjscontext) get Window.* prior to script execution, but we (FriendsUI) do not.
         // 2. FriendsUI's SteamClient is not the only SteamClient in existence. Other steamwebhelper windows each have their own SteamClient, and for some reason Valve likes accessing other windows' SteamClients instead of making a proper way to communicate across frames. Multiple objects in Valve's JS store references to these other windows' SteamClients and call GetBrowserID() on them (where the Window.* interface does exist).
+    }
+
+    // Companion to the above. Returns true if either Browser.GetBrowserID() or Window.GetBrowserID() exists on the provided SteamClient.
+    // For use replacing Valve code that wants to check if GetBrowserID exists and only does so on SteamClient.Browser (ignoring SteamClient.Window)
+    Compat.SteamClient_HasGetBrowserID = function(steamClient)
+    {
+        return (
+               ("Browser" in steamClient && "GetBrowserID" in steamClient.Browser)
+            || ("Window" in steamClient && "GetBrowserID" in steamClient.Window)
+        );
     }
 
 
