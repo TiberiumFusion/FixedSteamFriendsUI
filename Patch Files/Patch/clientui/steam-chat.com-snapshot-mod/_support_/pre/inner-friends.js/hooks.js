@@ -71,6 +71,65 @@
             console.log("Switching from snapshot default country code 'US' to '" + cc + "' per the Steam client's decision");
             parsedJson.COUNTRY = cc;
         }
+
+
+        //
+        // Other fields
+        //
+
+        // There's a lot of fields in webui_config's json string
+        // In native form it is nasty and hard to read due to all the XML escapes and lack of linebreaks, so here's a nicely formatted sample of the one from the 8601984 snapshot
+        /*
+            {
+                "EUNIVERSE": 1,
+                "WEB_UNIVERSE": "public",
+                "LANGUAGE": "english",
+                "COUNTRY": "US",
+                "MEDIA_CDN_COMMUNITY_URL": "https:\/\/cdn.cloudflare.steamstatic.com\/steamcommunity\/public\/",
+                "MEDIA_CDN_URL": "https:\/\/cdn.cloudflare.steamstatic.com\/",
+                "COMMUNITY_CDN_URL": "https:\/\/community.cloudflare.steamstatic.com\/",
+                "COMMUNITY_CDN_ASSET_URL": "https:\/\/cdn.cloudflare.steamstatic.com\/steamcommunity\/public\/assets\/",
+                "STORE_CDN_URL": "https:\/\/store.cloudflare.steamstatic.com\/",
+                "PUBLIC_SHARED_URL": "https:\/\/community.cloudflare.steamstatic.com\/public\/shared\/",
+                "COMMUNITY_BASE_URL": "https:\/\/steamcommunity.com\/",
+                "CHAT_BASE_URL": "https:\/\/steam-chat.com\/",
+                "STORE_BASE_URL": "https:\/\/store.steampowered.com\/",
+                "STORE_CHECKOUT_BASE_URL": "https:\/\/checkout.steampowered.com\/",
+                "IMG_URL": "https:\/\/community.cloudflare.steamstatic.com\/public\/images\/",
+                "STEAMTV_BASE_URL": "https:\/\/steam.tv\/",
+                "HELP_BASE_URL": "https:\/\/help.steampowered.com\/",
+                "PARTNER_BASE_URL": "https:\/\/partner.steamgames.com\/",
+                "STATS_BASE_URL": "https:\/\/partner.steampowered.com\/",
+                "INTERNAL_STATS_BASE_URL": "https:\/\/steamstats.valve.org\/",
+                "IN_CLIENT": true,
+                "USE_POPUPS": true,
+                "STORE_ICON_BASE_URL": "https:\/\/cdn.cloudflare.steamstatic.com\/steam\/apps\/",
+                "WEBAPI_BASE_URL": "https:\/\/api.steampowered.com\/",
+                "TOKEN_URL": "https:\/\/steam-chat.com\/chat\/clientjstoken",
+                "BUILD_TIMESTAMP": 1703193195,
+                "PAGE_TIMESTAMP": 1703279325,
+                "IN_TENFOOT": false,
+                "IN_GAMEPADUI": false,
+                "IN_CHROMEOS": false,
+                "IN_MOBILE_WEBVIEW": false,
+                "PLATFORM": "unknown",
+                "BASE_URL_STORE_CDN_ASSETS": "https:\/\/cdn.cloudflare.steamstatic.com\/store\/",
+                "EREALM": 1,
+                "LOGIN_BASE_URL": "https:\/\/login.steampowered.com\/",
+                "AVATAR_BASE_URL": "https:\/\/avatars.cloudflare.steamstatic.com\/",
+                "FROM_WEB": true,
+                "WEBSITE_ID": "Community",
+                "BASE_URL_SHARED_CDN": "https:\/\/shared.cloudflare.steamstatic.com\/",
+                "CLAN_CDN_ASSET_URL": "https:\/\/clan.cloudflare.steamstatic.com\/",
+                "SNR": "2_chat_clientui_"
+            }
+         */
+
+        // Presumably, all of these fields are assigned by Valve's unknown PHP code that generates the https://steam-chat.com/chat/clientui/index.html file
+        // And thus, presumably, all are tailored to the conditions of the web browser which made the request to that URL
+        // Since the snapshots are captured by me in the US, there may be discrepancies between the values seen above and what someone in a different country would get
+        // However, I have not received any reports of weird issues that happen only to non-US users, so evidently these US-generated values are good and work in other notable countries where users are using this patch
+        // So it seems they are safe to leave as is for now, though this may change in the future if more research is conducted on how the steam-chat.com service works
     }
 
     
