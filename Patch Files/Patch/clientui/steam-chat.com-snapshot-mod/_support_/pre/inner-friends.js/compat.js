@@ -87,7 +87,7 @@
     // Not present in the injected interface created by friendsui.dll in the May 2023 client. Unknown which client introduces this method.
     // Appears to be related to vr junk and has nothing to do with actual steam chat functionality, so shimming this with a nop is fine
 
-    Compat.OpenVR_SetOverlayInteractionAffordance = function(steamClient, unknown1, unknown2)
+    Compat.SteamClient_OpenVR_SetOverlayInteractionAffordance = function(steamClient, unknown1, unknown2)
     {
         if ("SetOverlayInteractionAffordance" in steamClient.OpenVR)
         {
