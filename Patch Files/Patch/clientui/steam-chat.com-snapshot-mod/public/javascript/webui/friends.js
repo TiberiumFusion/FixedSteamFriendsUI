@@ -13946,7 +13946,7 @@ var CLSTAMP = "8601984";
 							let e = h.Ul.UIStore.GetPerContextChatData(l);
 							d = e.BUsePopups();
 						}
-						if (i && d) this.ShowPopup(a, c, l);
+						if (i && d) this.ShowPopup(a, c, l); // In 1.x.x versions of the patch (based on 8200419), I disabled this since mini profiles threw errors. In this version of steam-chat.com (8601984), the mini profile error no longer occurs, so we can leave them enabled.
 						else {
 							let e = r.createElement(o.yd, {
 								hoverInstance: c,
@@ -34497,7 +34497,15 @@ var CLSTAMP = "8601984";
 							: Promise.resolve(!1);
 					}
 					IsMaximized() {
-						return this.m_popup && !this.m_popup.closed && this.m_popup.SteamClient && this.m_popup.SteamClient.Window && this.m_popup.SteamClient.Window.IsWindowMinimized
+						//return this.m_popup && !this.m_popup.closed && this.m_popup.SteamClient && this.m_popup.SteamClient.Window && this.m_popup.SteamClient.Window.IsWindowMinimized
+						// Can you spot the Valve bug?                                                                                                                           
+						//                                                                                                                                                       ^
+                        //                                                                                                                                                       |
+                        //                                                                                                                                                  here it is!
+                        //
+                        // So this is yet another one of Valve's pathetic "we make billions of dollars hand of over fist but we cannot be fucked to spend 5 seconds testing or proofreading our copy & paste code" errors
+                        // This is causing errors when running under the Dec 2022 client, where IsWindowMaximized does not exist
+                        return this.m_popup && !this.m_popup.closed && this.m_popup.SteamClient && this.m_popup.SteamClient.Window && this.m_popup.SteamClient.Window.IsWindowMaximized // fixed
 							? new Promise((e, t) => {
 									this.m_popup.SteamClient.Window.IsWindowMaximized((t) => {
 										e(t);
