@@ -47110,7 +47110,7 @@ var CLSTAMP = "8601984";
 						// Sept 21 2023 and later versions of steam-chat.com use this method (and several others) to do some kind of networking on the censorship feature of steam chat
 						// This interface causes a bunch of "SendMsg: Attempted to send message but socket wasn't ready" errors under the May 2023 client (and presumably all other vgui clients), likely due to the lack of injected/exposed interface from steamclient.dll/friendsui.dll in those older steam clients. And Valve does not care to put this behavior behind a compatibility check.
 						// The late July 2023 version of steam-chat.com is missing this interface, so evidently it is not critical to running steam chat or even the censorship feature it interacts with. And indeed, simply disabling the entry point to this code prevents the errors from occuring in the May 2023 client, and chat censorship still works perfectly fine.
-						// This is part 1 of two locations where this interface must be disabled. Scroll down to the next comment block for part 2.
+						// This is part 1 of two locations where this interface must be disabled. Scroll down to the next comment for part 2.
 					}
 					OnTextFilterDictionaryChanged(e) {
 						return (
