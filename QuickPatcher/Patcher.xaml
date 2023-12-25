@@ -504,13 +504,43 @@
 
                 <DockPanel DockPanel.Dock="Top" Margin="8,0">
                     
-                    <!-- Patch payload information -->
+                    <!-- Patch version information and selector -->
                     <GroupBox DockPanel.Dock="Top" Header="Patch payload:">
                         <StackPanel>
+                            <StackPanel.Resources>
+                                <CollectionViewSource x:Key="PayloadFilesSorted" Source="{Binding PatcherState.PayloadRepo.PayloadFiles}">
+                                    <CollectionViewSource.SortDescriptions>
+                                        <syscom:SortDescription PropertyName="PatchVersion" />
+                                    </CollectionViewSource.SortDescriptions>
+                                </CollectionViewSource>
+                            </StackPanel.Resources>
                             <TextBlock>
-                                This application will install the following FriendsUI patch:
+                                Select a version of the FriendsUI patch to install:
                             </TextBlock>
-                            <local:PatchMetadataSheet Margin="0,4,0,0" PatchMetadata="{DynamicResource PayloadPatchMetadata}" />
+                            <ComboBox Height="38" Margin="0,4,0,0" ItemsSource="{Binding Source={StaticResource PayloadFilesSorted}}" SelectedItem="{Binding PatcherState.PatchPayloadToInstall, Mode=TwoWay}" VerticalContentAlignment="Center">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <DockPanel Margin="2,0">
+                                            <WrapPanel DockPanel.Dock="Top">
+                                                <TextBlock Text="{Binding PatchTypeDisplayName, Mode=OneWay}"/>
+                                                <TextBlock Margin="6,0,0,0" FontFamily="Segoe UI Semibold">
+                                                    v<Run Text="{Binding PatchVersion, Mode=OneWay}"></Run>
+                                                </TextBlock>
+                                            </WrapPanel>
+                                            <TextBlock DockPanel.Dock="Top" Margin="0,1,0,0" Text="{Binding FileName}" Opacity="0.62" FontSize="11" TextTrimming="CharacterEllipsis" FontStyle="Italic" />
+                                        </DockPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                                <ComboBox.ItemContainerStyle>
+                                    <Style TargetType="ComboBoxItem">
+                                        <Setter Property="Padding" Value="3"/>
+                                        <Setter Property="BorderBrush" Value="#33000000"/>
+                                        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                                    </Style>
+                                </ComboBox.ItemContainerStyle>
+                            </ComboBox>
+                            <TextBlock Margin="0,6,0,0">Patch details:</TextBlock>
+                            <local:PatchMetadataSheet Margin="0,4,0,0" PatchMetadata="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}, Path=PatchToInstallMetadata}" />
                         </StackPanel>
                     </GroupBox>
                     

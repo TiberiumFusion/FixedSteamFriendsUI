@@ -55,6 +55,20 @@ namespace TiberiumFusion.FixedSteamFriendsUI.QuickPatcher.StaticData
             return GuidToInfo[guid];
         }
 
+        public static bool TryGetPatchTypeInfo(Guid guid, out PatchTypeInfo patchTypeInfo)
+        {
+            if (GuidToInfo.TryGetValue(guid, out PatchTypeInfo value))
+            {
+                patchTypeInfo = value;
+                return true;
+            }
+            else
+            {
+                patchTypeInfo = null;
+                return false;
+            }
+        }
+
         public static PatchTypeInfo GetPatchTypeInfo(PatchType type)
         {
             return TypeToInfo[type];

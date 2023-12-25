@@ -7,14 +7,14 @@
         xmlns:local="clr-namespace:TiberiumFusion.FixedSteamFriendsUI.QuickPatcher"
         mc:Ignorable="d"
         UseLayoutRounding="True"
-        Title="FriendsUI Quick Patcher" Width="950" Height="620" Background="#FFF0F0F0">
+        Title="FriendsUI Quick Patcher" Width="950" Height="660" Background="#FFF0F0F0">
     
     <DockPanel x:Name="RootElement">
 
         <ScrollViewer x:Name="ScrollHost" VerticalScrollBarVisibility="Visible">
             <Canvas x:Name="Canvas" MinHeight="{Binding ElementName=Patcher, Path=ActualHeight}">
                 <Canvas.Resources>
-                    <sys:Double x:Key="ScrollContentMinHeight">570</sys:Double> <!-- Patcher is allowed to grow to this height before we clamp it and the scroll bars engage -->
+                    <sys:Double x:Key="ScrollContentMinHeight">610</sys:Double> <!-- Patcher is allowed to grow to this height before we clamp it and the scroll bars engage -->
                 </Canvas.Resources>
                 <local:Patcher x:Name="Patcher" Width="{Binding ElementName=Canvas, Path=ActualWidth}" MinHeight="{Binding ElementName=ScrollHost, Path=ActualHeight}">
                     <local:Patcher.Style>

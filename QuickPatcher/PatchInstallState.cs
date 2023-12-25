@@ -70,7 +70,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.QuickPatcher
         }
 
         
-        public async Task<int> InstallPatchAsync(string steamRootDirPath)
+        public async Task<int> InstallPatchAsync(string steamRootDirPath, PatchPayloadFileInfo patchPayloadToInstall)
         {
             if (AnyOperationInProgress)
                 throw new InvalidOperationException("A patch install or uninstall is already in progress. Only one patch install/uninstall can run at time.");
@@ -95,7 +95,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.QuickPatcher
             {
                 try
                 {
-                    return PatchInstaller.InstallPatch(steamRootDirPath,
+                    return PatchInstaller.InstallPatch(steamRootDirPath, patchPayloadToInstall,
                         (m) => uiContext.Send(x => InstallLog.LogItem(m), null), // All patch install attempts write to the same log (our log)
                         (c, t) => uiContext.Send(x => NotifyInstallProgress(c, t), null)
                     );

@@ -63,7 +63,6 @@ namespace TiberiumFusion.FixedSteamFriendsUI.QuickPatcher
 
 
             PresentSteamStateDefaults();
-            PresentPayload();
             PresentBeforeInstallingPatch();
             PresentBeforeUninstallingPatch();
 
@@ -78,11 +77,18 @@ namespace TiberiumFusion.FixedSteamFriendsUI.QuickPatcher
                 if (e.PropertyName == "SteamState")
                 {
                     PresentSteamState();
+                    PresentInstallVersionComboNotices();
                     NotifyLiveStatePropertiesChanged();
                 }
             };
             PatcherState.SteamStateLiveRefresh += PatcherState_SteamStateLiveRefresh;
             PatcherState.SteamStateIsSteamRunningChanged += PatcherState_SteamStateIsSteamRunningChanged;
+
+            PatcherState.PatchPayloadToInstallChanged += (s, e) =>
+            {
+                NotifyPropertyChanged("PatchToInstallMetadata");
+                PresentInstallVersionComboNotices();
+            };
             
 
             PatchInstallState.PropertyChanged += (s, e) =>
@@ -101,42 +107,17 @@ namespace TiberiumFusion.FixedSteamFriendsUI.QuickPatcher
         //
 
         // ----------------------------------------------------------------------
-        //   Patch payload
+        //   Metadata of patch version the user wants to install
         // ----------------------------------------------------------------------
 
-        public PatchMetadata PayloadPatchMetadata
+        public PatchMetadata PatchToInstallMetadata
         {
-            get { return (PatchMetadata)this.Resources["PayloadPatchMetadata"]; }
-            set { this.Resources["PayloadPatchMetadata"] = value; NotifyPropertyChanged("PayloadPatchMetadata"); }
-        }
-
-        private void PresentPayload()
-        {
-            // Decompress the friends.js and read its patch metadata
-            using (Stream payloadZip = BinaryResources.GetPatchPayload())
+            get
             {
-                using (ZipArchive ar = new ZipArchive(payloadZip))
-                {
-                    var friendsJs = ar.GetEntry(@"clientui\friends.js");
-                    using (MemoryStream ms = new MemoryStream())
-                    {
-                        using (Stream entry = friendsJs.Open())
-                        {
-                            entry.CopyTo(ms);
-                        }
-                        string friendsJsContents = Encoding.UTF8.GetString(ms.ToArray());
-
-                        PatchMetadata pm;
-                        Exception parseError;
-                        if (!PatchMetadata.TryScrapeFromString(friendsJsContents, out pm, out parseError))
-                        {
-                            Debug.WriteLine("[!!!] Failed to scrape-parse PatchMetadata for payload patch [!!!]");
-                            Debug.WriteLine(parseError);
-                        }
-
-                        PayloadPatchMetadata = pm;
-                    }
-                }
+                if (PatcherState.PatchPayloadToInstall != null)
+                    return PatcherState.PatchPayloadToInstall.PatchMetadata;
+                else
+                    return null;
             }
         }
         
@@ -362,15 +343,36 @@ namespace TiberiumFusion.FixedSteamFriendsUI.QuickPatcher
 
                 Vis_UninstallPatch = Visibility.Collapsed;
                 Vis_DirtyBackupFriendsJs = Visibility.Collapsed;
-
-                Vis_DowngradeWarning = Visibility.Collapsed;
-                Vis_NogradeWarning = Visibility.Collapsed;
-                Vis_UpgradeWarning = Visibility.Collapsed;
             }
 
             if (live)
             {
 
+            }
+        }
+
+        private void PresentInstallVersionComboNotices()
+        {
+            Vis_DowngradeWarning = Visibility.Collapsed;
+            Vis_NogradeWarning = Visibility.Collapsed;
+            Vis_UpgradeWarning = Visibility.Collapsed;
+
+            if (PatchToInstallMetadata != null)
+            {
+                if (PatcherState.SteamState.ClientUiFriendsJsExists)
+                {
+                    ClientUiFriendsJsState friendsJsState = PatcherState.SteamState.ClientUiFriendsJsState;
+
+                    if (friendsJsState.PatchStatus == ClientUiFriendsJsPatchStatus.AnyPatchInstalled)
+                    {
+                        if (PatchToInstallMetadata.Level0.Version < friendsJsState.PatchMetadata.Level0.Version)
+                            Vis_DowngradeWarning = Visibility.Visible;
+                        else if (PatchToInstallMetadata.Level0.Version == friendsJsState.PatchMetadata.Level0.Version)
+                            Vis_NogradeWarning = Visibility.Visible;
+                        else if (PatchToInstallMetadata.Level0.Version > friendsJsState.PatchMetadata.Level0.Version)
+                            Vis_UpgradeWarning = Visibility.Visible;
+                    }
+                }
             }
         }
 
@@ -458,13 +460,6 @@ namespace TiberiumFusion.FixedSteamFriendsUI.QuickPatcher
                     else
                     {
                         Vis_ModifiedFriendsJs_WithMetadata = Visibility.Visible;
-
-                        if (PayloadPatchMetadata.Level0.Version < friendsJsState.PatchMetadata.Level0.Version)
-                            Vis_DowngradeWarning = Visibility.Visible;
-                        else if (PayloadPatchMetadata.Level0.Version == friendsJsState.PatchMetadata.Level0.Version)
-                            Vis_NogradeWarning = Visibility.Visible;
-                        else if (PayloadPatchMetadata.Level0.Version > friendsJsState.PatchMetadata.Level0.Version)
-                            Vis_UpgradeWarning = Visibility.Visible;
                     }
                     
                     //
@@ -727,7 +722,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.QuickPatcher
 
             PatcherState.SteamState.SuspendAutoRefresh();
 
-            await PatchInstallState.InstallPatchAsync(PatcherState.SteamRootDirPath);
+            await PatchInstallState.InstallPatchAsync(PatcherState.SteamRootDirPath, PatcherState.PatchPayloadToInstall);
             
             PatchInstallState.InstallProgress -= PatchInstallState_InstallProgress;
             PresentAfterInstallingPatch();

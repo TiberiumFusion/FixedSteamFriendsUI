@@ -27,7 +27,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.QuickPatcher
         public const int Result_Error = 1;
         public const int Result_SteamRunning = 2;
 
-        public static int InstallPatch(string steamRootDirPath, LogItemDelegate postLogItem = null, NotifyInstallProgress postNotifyProgress = null)
+        public static int InstallPatch(string steamRootDirPath, PatchPayloadFileInfo patchPayloadToInstall, LogItemDelegate postLogItem = null, NotifyInstallProgress postNotifyProgress = null)
         {
             void log(string message)
             {
@@ -159,9 +159,9 @@ namespace TiberiumFusion.FixedSteamFriendsUI.QuickPatcher
 
             try
             {
-                using (Stream payloadZip = BinaryResources.GetPatchPayload())
+                using (FileStream payloadZipFs = File.Open(patchPayloadToInstall.FilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
-                    using (ZipArchive ar = new ZipArchive(payloadZip))
+                    using (ZipArchive ar = new ZipArchive(payloadZipFs))
                     {
                         int initialProgress = pCur;
                         double progressSegment = 60.0; // from 20 to 80

@@ -38,6 +38,32 @@ namespace TiberiumFusion.FixedSteamFriendsUI.QuickPatcher
             OnPropertyChanged("SteamState");
         }
 
+        private PatchPayloadDiskRepository _PayloadRepo;
+        public PatchPayloadDiskRepository PayloadRepo
+        {
+            get { return _PayloadRepo; }
+            set
+            {
+                if (_PayloadRepo != value)
+                {
+                    SetProperty(ref _PayloadRepo, value);
+                    PatchPayloadToInstall = _PayloadRepo.PayloadFiles.FirstOrDefault();
+                }
+            }
+        }
+
+
+        private PatchPayloadFileInfo _PatchPayloadToInstall;
+        public PatchPayloadFileInfo PatchPayloadToInstall
+        {
+            get { return _PatchPayloadToInstall; }
+            set
+            {
+                SetProperty(ref _PatchPayloadToInstall, value);
+                NotifyPatchPayloadToInstallChanged();
+            }
+        }
+
 
 
         // ____________________________________________________________________________________________________
@@ -58,6 +84,12 @@ namespace TiberiumFusion.FixedSteamFriendsUI.QuickPatcher
             SteamStateIsSteamRunningChanged?.Invoke(this, new EventArgs());
         }
 
+        public event EventHandler PatchPayloadToInstallChanged;
+        public void NotifyPatchPayloadToInstallChanged()
+        {
+            PatchPayloadToInstallChanged?.Invoke(this, new EventArgs());
+        }
+
 
 
         // ____________________________________________________________________________________________________
@@ -70,7 +102,14 @@ namespace TiberiumFusion.FixedSteamFriendsUI.QuickPatcher
 
         public PatcherState()
         {
-            
+            PayloadRepo = new PatchPayloadDiskRepository( Path.Combine(Directory.GetCurrentDirectory(), "PatchPayloads") );
+            PayloadRepo.PayloadFilesChanged += (s, e) =>
+            {
+                if (PatchPayloadToInstall == null)
+                    SetPatchPayloadToInstallToLatestVersion();
+            };
+
+            SetPatchPayloadToInstallToLatestVersion();
         }
         
         public void Dispose()
@@ -153,6 +192,14 @@ namespace TiberiumFusion.FixedSteamFriendsUI.QuickPatcher
                 FswSteamRootDirPath = null;
             }
 
+        }
+
+        private void SetPatchPayloadToInstallToLatestVersion()
+        {
+            if (PayloadRepo.PayloadFiles.Count > 0)
+            {
+                PatchPayloadToInstall = PayloadRepo.PayloadFiles.OrderBy(i => i.PatchVersion).Last();
+            }
         }
         
     }

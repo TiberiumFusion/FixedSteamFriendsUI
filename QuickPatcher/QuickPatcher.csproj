@@ -65,7 +65,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="BinaryResources.cs" />
     <Compile Include="ClientUiFriendsJsState.cs" />
     <Compile Include="ForcedSteamClientUpdateTip.xaml.cs">
       <DependentUpon>ForcedSteamClientUpdateTip.xaml</DependentUpon>
@@ -91,7 +90,9 @@
     <Compile Include="PatchMetadataSheet.xaml.cs">
       <DependentUpon>PatchMetadataSheet.xaml</DependentUpon>
     </Compile>
+    <Compile Include="PatchPayloadFileInfo.cs" />
     <Compile Include="PatchTypeGuidToDisplayName.cs" />
+    <Compile Include="PatchPayloadDiskRepository.cs" />
     <Compile Include="StaticData\PatchTypes.cs" />
     <Compile Include="StaticData\SteamClientNotableVersions.cs" />
     <Compile Include="SteamExeVersionStatus.cs" />
