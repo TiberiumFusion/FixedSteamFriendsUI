@@ -95,6 +95,7 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 
                 <TextBlock Grid.Column="0" Opacity="0.7">Patch Type:</TextBlock>
@@ -108,6 +109,9 @@
                 
                 <TextBlock Grid.Row="3" Grid.Column="0" Opacity="0.7">GUID:</TextBlock>
                 <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding PatchMetadata.Level0.VersionGuid}" FontFamily="Segoe UI Mono" />
+                
+                <TextBlock Grid.Row="4" Grid.Column="0" Opacity="0.7">Valve Version:</TextBlock>
+                <TextBlock Grid.Row="4" Grid.Column="2" Text="{Binding PatchMetadata.Level0.CoreBase}" FontFamily="Segoe UI Mono" />
             </Grid>
             
         </Grid>
