@@ -148,9 +148,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\Patch Files\build\PatchPayload_v1.2.0-{68c67e12-e61e-4148-a5af-91b0e2c223b7}.zip">
-      <Link>Resources\Patch\PatchPayload_v1.2.0-{68c67e12-e61e-4148-a5af-91b0e2c223b7}.zip</Link>
-    </EmbeddedResource>
     <None Include="app.config" />
     <None Include="app.manifest" />
     <None Include="packages.config" />
@@ -158,6 +155,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Resources\PatchPayloads\PatchPayload_v1.2.0-{68c67e12-e61e-4148-a5af-91b0e2c223b7}.zip" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\OpenFolder_16x.png" />
@@ -188,4 +186,7 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "$(ProjectDir)Resources\PatchPayloads" "$(TargetDir)PatchPayloads\" /s /y</PostBuildEvent>
+  </PropertyGroup>
 </Project>
