@@ -19,7 +19,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.AmendSnapshot
     public static class Fixer
     {
 
-        public static bool PreserveOriginalCopyOfModifiedFiles = false;
+        public static bool PreserveOriginalCopyOfModifiedFiles = true;
 
 
         // ____________________________________________________________________________________________________
