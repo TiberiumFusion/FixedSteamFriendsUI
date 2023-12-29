@@ -365,12 +365,15 @@ namespace TiberiumFusion.FixedSteamFriendsUI.QuickPatcher
 
                     if (friendsJsState.PatchStatus == ClientUiFriendsJsPatchStatus.AnyPatchInstalled)
                     {
-                        if (PatchToInstallMetadata.Level0.Version < friendsJsState.PatchMetadata.Level0.Version)
-                            Vis_DowngradeWarning = Visibility.Visible;
-                        else if (PatchToInstallMetadata.Level0.Version == friendsJsState.PatchMetadata.Level0.Version)
-                            Vis_NogradeWarning = Visibility.Visible;
-                        else if (PatchToInstallMetadata.Level0.Version > friendsJsState.PatchMetadata.Level0.Version)
-                            Vis_UpgradeWarning = Visibility.Visible;
+                        if (friendsJsState.PatchMetadata != null)
+                        {
+                            if (PatchToInstallMetadata.Level0.Version < friendsJsState.PatchMetadata.Level0.Version)
+                                Vis_DowngradeWarning = Visibility.Visible;
+                            else if (PatchToInstallMetadata.Level0.Version == friendsJsState.PatchMetadata.Level0.Version)
+                                Vis_NogradeWarning = Visibility.Visible;
+                            else if (PatchToInstallMetadata.Level0.Version > friendsJsState.PatchMetadata.Level0.Version)
+                                Vis_UpgradeWarning = Visibility.Visible;
+                        }
                     }
                 }
             }
