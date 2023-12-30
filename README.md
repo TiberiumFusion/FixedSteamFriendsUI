@@ -6,7 +6,7 @@ Patch-and-patcher project which makes modern Steam friends/chat work again in St
 
 
 ## Brief
-The Steam client's modern friends/chat feature includes a remotely controlled timebomb. Valve set this timebomb off on September 21st, 2023, breaking modern Steam friends/chat for all vgui-capable Steam clients.
+The Steam client's modern friends/chat feature is remotely controlled by Valve. On September 21st, 2023, Valve exercised this power to break modern Steam friends/chat for all vgui-capable Steam clients.
 
 This project restores modern Steam friends/chat to working order for those affected Steam clients, by redirecting the Steam client to run a patched version of friends/chat instead of Valve's broken version.
 
