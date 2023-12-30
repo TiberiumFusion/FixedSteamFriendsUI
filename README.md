@@ -1,13 +1,14 @@
 # FixedSteamFriendsUI
-Patch-and-patcher project which makes Steam friends & chat work again after Valve broke it on Sept 21 2023.
+Patch-and-patcher project which makes modern Steam friends/chat work again in Steam clients abandoned by Valve.
 <br/>If you use the May/June/July/August 2023 Steam clients (or earlier) in vgui mode, this patch is for you.
 
-![Drafting 2](https://github.com/TiberiumFusion/FixedSteamFriendsUI/assets/6332277/7bf49a4b-0740-4d67-abeb-9695ad150ba6)
+![Drafting](https://github.com/TiberiumFusion/FixedSteamFriendsUI/assets/6332277/12d8238a-93a9-4cc0-9a85-248085d0397b)
+
 
 ## Brief
-On September 21st 2023, Valve pushed some untested, intern-level code to worldwide production, breaking modern Steam friends/chat for all Steam clients which use the FriendsUI PWA interop to `steam-chat.com`. This project restores modern Steam friends/chat to working order for those affected Steam clients, by redirecting FriendsUI to run a functional, modified snapshot of the PWA instead of Valve's broken version.
+The Steam client's modern friends/chat feature includes a timebomb. Valve set this timebomb off on September 21st, 2023, breaking modern Steam friends/chat for all vgui-capable Steam clients.
 
-The patch is a semi-permanent "install and forget" type. It's easy to install & remove, it's VAC safe, and most importantly, it restores all features of modern Steam friends/chat to working order. No more `-nofriendsui` compromise!
+This project restores modern Steam friends/chat to working order for those affected Steam clients, by redirecting the Steam client to run a patched version of friends/chat instead of Valve's broken version.
 
 ## How to use
 All documentation and how-to information, including [installation instructions](https://github.com/TiberiumFusion/FixedSteamFriendsUI/wiki/How-to-Install), is located on the [Wiki](https://github.com/TiberiumFusion/FixedSteamFriendsUI/wiki).
