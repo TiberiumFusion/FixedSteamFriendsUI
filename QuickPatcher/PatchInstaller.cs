@@ -132,6 +132,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.QuickPatcher
                     scratchDirPath = Path.Combine(steamState.ClientUiDirPath, "__patchtemp" + Guid.NewGuid().ToString().Substring(0, 8));
                     log("Using alternate scratch dir: " + scratchDirPath);
                     log("Retrying...");
+                    scratchDirRetryCount++;
                     goto ClearScratchDir;
                 }
             }
