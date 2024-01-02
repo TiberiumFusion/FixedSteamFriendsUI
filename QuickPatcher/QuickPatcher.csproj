@@ -188,6 +188,7 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(ProjectDir)Resources\PatchPayloads" "$(TargetDir)PatchPayloads\" /s /y</PostBuildEvent>
+    <PostBuildEvent>rmdir "$(TargetDir)PatchPayloads\" /s /q
+xcopy "$(ProjectDir)Resources\PatchPayloads" "$(TargetDir)PatchPayloads\" /s /y</PostBuildEvent>
   </PropertyGroup>
 </Project>
