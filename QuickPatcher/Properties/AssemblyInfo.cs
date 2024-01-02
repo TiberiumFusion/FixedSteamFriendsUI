@@ -7,12 +7,12 @@ using System.Windows;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Fixed FriendsUI Quick Patcher")]
+[assembly: AssemblyTitle("Fixed Steam FriendsUI Quick Patcher")]
 [assembly: AssemblyDescription("Convenience program for quickly installing my FriendsUI fix patch")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("TiberiumFusion")]
-[assembly: AssemblyProduct("Fixed FriendsUI Quick Patcher")]
-[assembly: AssemblyCopyright("Copyright © TiberiumFusion 2023")]
+[assembly: AssemblyProduct("Fixed Steam FriendsUI Quick Patcher")]
+[assembly: AssemblyCopyright("Copyright © TiberiumFusion 2024")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -57,7 +57,7 @@ using System.Windows;
 // - The QuickPatcher application's version goes in the File Version slot
 // - The embedded patch files' version goes in the Product Version slot
 
-[assembly: AssemblyVersion("1.2.0.0")] // QP
-[assembly: AssemblyFileVersion("1.2.0.0")] // QP
+[assembly: AssemblyVersion("1.2.0.1")] // QP
+[assembly: AssemblyFileVersion("1.2.0.1")] // QP
 
 [assembly: AssemblyInformationalVersion("2.0.1.0")] // embedded patch files
