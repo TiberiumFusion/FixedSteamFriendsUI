@@ -13924,7 +13924,13 @@ var CLSTAMP = "8601984";
 								t.visible && (t.popupWindow || (t.popupWindow = new o.zd(e, t, n)), t.popupWindow.Show());
 							}, 250),
 							(t.m_BlurHandler = () => {
-								this.HideByElement(t.m_OwningElement);
+								//this.HideByElement(t.m_OwningElement);
+								// This appears to be Valve's attempt to add a visual effect when a miniprofile is displayed. I don't know what the intended effect is, but it possibly is meant to blur the parent window which created the miniprofile, which is pretty retarded.
+								// Regardless, it doesn't work properly in the December 2022 client. It ends up making the miniprofile immediately close itself, since the miniprofile's m_OwningElement is itself. But only when the window which created the miniprofile popup has focus. If a different window has focus, the miniprofile works properly. Clearly a symptom of some more rootward problem.
+								// This problem does not occur in the May 2023 client
+								// This effect appears to be written expressly for pure shit steam clients and thus has no reason to attempt itself on vgui capable Steam clients. In fact, despite not causing any problems in the May 2023, it does absolutely nothing to affect the look & behavior of the miniprofiles. They are the same whether or not this code is disabled/enabled.
+								// Accordingly, disabling this code fixes the aforementioned issue under the Dec 2022 client and renders no changes to the unaffected clients
+								// So I'm disabling this permanently and leaving it at that
 							}),
 							t.m_OwningElement.ownerDocument.defaultView.addEventListener("blur", t.m_BlurHandler),
 							(t.m_VisibilityHandler = (e) => {
