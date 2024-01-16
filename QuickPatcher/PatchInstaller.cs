@@ -245,6 +245,8 @@ namespace TiberiumFusion.FixedSteamFriendsUI.QuickPatcher
                         log("Failed to delete old payload folder from the previously installed version of the patch.");
                         log("Path: " + oldPayloadDirPath);
                         log("Exception details: " + e.ToString());
+                        if (e.Message.Contains("The directory is not empty"))
+                            log("This error typically indicates that another program is holding a lock on some files (but not all) in the old payload folder. Not all files & subfolders could be deleted as a result. Explorer can sometimes cause this if you are browsing the to-be-deleted files.");
                         log("You can safely ignore this error, or you can manually delete the old payload folder yourself. The old payload folder has been made inactive and is no longer in use.");
                     }
                 }
