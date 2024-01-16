@@ -57,7 +57,7 @@ using System.Windows;
 // - The QuickPatcher application's version goes in the File Version slot
 // - The embedded patch files' version goes in the Product Version slot
 
-[assembly: AssemblyVersion("1.2.0.1")] // QP
-[assembly: AssemblyFileVersion("1.2.0.1")] // QP
+[assembly: AssemblyVersion("1.2.0.2")] // QP
+[assembly: AssemblyFileVersion("1.2.0.2")] // QP
 
-[assembly: AssemblyInformationalVersion("2.0.1.0")] // embedded patch files
+[assembly: AssemblyInformationalVersion("2.0.2.0")] // embedded patch files
