@@ -4,7 +4,7 @@
 
 const PATCH_ENABLE = true; // Set to false to quickly bypass the entire patch and run friends in vanilla form
 
-const RETRY_CONNECTION_BUTTON_STRONGER_RELOAD = true; // When true, clicking the blue Retry Connection button will reload the entire FriendsUI. When false (default Valve behavior), it will send a meager reload message to the inner document js.
+const RETRY_CONNECTION_BUTTON_STRONGER_RELOAD = true; // When true, clicking the blue Retry Connection button will reload the entire FriendsUI. When false, it will send a meager reload message to the inner document js (default Valve behavior).
 
 
 // ____________________________________________________________________________________________________
@@ -101,9 +101,10 @@ var IsChatJavascriptIntialized = false;
 // ____________________________________________________________________________________________________
 //
 
-// ------                                                                                                                            ----- //
-// ==================================================  Modified Valve friends.js below  ================================================== //
-// ------                                                                                                                            ----- //
+
+// ============================================================  Modified Valve friends.js below  ============================================================
+// From the May 2023 client, dated 2023-03-10
+
 
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
