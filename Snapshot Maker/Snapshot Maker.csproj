@@ -31,4 +31,8 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Procedures\AmendSnapshot\JsDeMinifier\lib\prettier%403.2.5\plugins\" />
+  </ItemGroup>
+
 </Project>
