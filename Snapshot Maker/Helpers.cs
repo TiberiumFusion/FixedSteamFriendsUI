@@ -49,7 +49,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
             }
         }
 
-        public static void LogOK(bool onlyIfOpenLine = false)
+        public static void LogOK(string tail = "", bool onlyIfOpenLine = false)
         {
             if (onlyIfOpenLine)
             {
@@ -57,10 +57,10 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
                     return;
             }
 
-            LogLine(" OK");
+            LogLine( " OK" + (string.IsNullOrWhiteSpace(tail) ? "" : " " + tail) );
         }
 
-        public static void LogERROR(bool onlyIfOpenLine = false)
+        public static void LogERROR(string tail = "", bool onlyIfOpenLine = false)
         {
             if (onlyIfOpenLine)
             {
@@ -68,7 +68,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
                     return;
             }
 
-            LogLine(" ERROR");
+            LogLine( " ERROR" + (string.IsNullOrWhiteSpace(tail) ? "" : " " + tail) );
         }
 
         public static void WriteLogToFile(string path)

@@ -70,7 +70,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
             {
                 throw new CurlHttpRequestFailedException(ccPerform, url);
             }
-
+            
             byte[] response = responseBuffer.Stream.ToArray();
             responseBuffer.Dispose();
 
@@ -82,6 +82,13 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
             return Encoding.UTF8.GetString(FetchResource(url));
         }
 
+
+        public static int GetLastFetchHttpCode()
+        {
+            int code;
+            CurlNative.Easy.GetInfo(HCurlEasy, CURLINFO.RESPONSE_CODE, out code);
+            return code;
+        }
 
     }
 
