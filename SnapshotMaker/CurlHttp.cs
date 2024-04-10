@@ -13,7 +13,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
     {
         // For some obnoxious reason, Valve has configured steam-chat.com to be 1) always HTTPS and 2) use an extremely tiny set of cipher suites
 
-        // As of 2023-12-18, they are:
+        // As of 2023-12-18 / 2024-04-10, they are:
         // TLS 1.2
         //   TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (0xc030)        ECDH   secp256r1 (eq. 3072 bits RSA)   FS  256
         //   TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 (0xc02f)        ECDH   secp256r1 (eq. 3072 bits RSA)   FS  128
@@ -26,15 +26,14 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
         // None of these are supported by Schannel, which means we cannot use any http/web client api in .NET. Great. Thanks Valve! Thanks Microsoft!
 
         // So I'm using "CurlThin" instead, not because I want to, but because it appears to be the only ready-made, alternate HTTP(S) client available for .NET
-        // Unfortunately, CurlThin targets the amorphous .NET Standard 2.0, but it fails to do so properly, because its PInvoke to libcurl.dll exclusively uses the .NET Core calling convention.
-        // Which means CurlThin is incompatible with .NET 4.6+. Which is why this is unfortunately a .NET Core project.
+        // Note: I'm using my fork of CurlThin (CurlThin-tfusion), since CurlThin is abandoned and has some significant flaws and bugs
 
         // This class provides a more convenient interface to using CurlThin for our purposes
 
         public static void Initialize()
         {
             // CurlThin is a fitting name. There is zero abstraction, it is extremely procedural, and all managed calls directly map to exports from libcurl.dll.
-            CurlResources.Init(); // Which means libcurl.dll (and its dependencies) must be in our path, so this method deploys libcurl.dll, libssl-1_1-x64.dll, libcrypto-1_1-x64.dll, and curl-ca-bundle.crt to the working directory.
+            CurlResources.Init(); // Which means libcurl.dll (and its dependencies) must be in our path, so this method deploys the appropriate libcurl.dll (x86 or x64) and curl-ca-bundle.crt to the working directory.
 
             // Now that the PEs are deployed, the curl library must be loaded and initialized
             CURLcode ccGlobalInit = CurlNative.Init();

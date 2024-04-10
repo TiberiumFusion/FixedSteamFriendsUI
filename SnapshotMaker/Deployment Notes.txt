@@ -1,0 +1,5 @@
+For running SnapshotMaker on non-development machines:
+> Basics
+	- .NET Framework 4.7.2 or greater
+> CefSharp
+	- MSVC v142 or greater

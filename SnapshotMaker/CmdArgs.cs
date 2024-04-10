@@ -13,7 +13,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
 
         public bool WriteLogFileToSnapshot = true;
 
-        public string Stages = "sap"; // 's' = scrape, 'a' = amend, 'p' = pre-patch
+        public string Stages = "sap"; // 's' = scrape, 'a' = amend, 'p' = patch
 
 
         //

@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickPatcher", "QuickPatche
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Patch Files", "Patch Files\Patch Files.csproj", "{2C5398C0-EC81-41E4-A1BD-AF5544A56551}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Snapshot Maker", "Snapshot Maker\Snapshot Maker.csproj", "{2B32AF8E-13CB-438B-A1AE-91B36FC8FF7D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnapshotMaker", "SnapshotMaker\SnapshotMaker.csproj", "{6817AB40-0944-4E8E-B9DD-B5FEA1F3E5B2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{2C5398C0-EC81-41E4-A1BD-AF5544A56551}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C5398C0-EC81-41E4-A1BD-AF5544A56551}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2C5398C0-EC81-41E4-A1BD-AF5544A56551}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2B32AF8E-13CB-438B-A1AE-91B36FC8FF7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2B32AF8E-13CB-438B-A1AE-91B36FC8FF7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2B32AF8E-13CB-438B-A1AE-91B36FC8FF7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2B32AF8E-13CB-438B-A1AE-91B36FC8FF7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6817AB40-0944-4E8E-B9DD-B5FEA1F3E5B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6817AB40-0944-4E8E-B9DD-B5FEA1F3E5B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6817AB40-0944-4E8E-B9DD-B5FEA1F3E5B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6817AB40-0944-4E8E-B9DD-B5FEA1F3E5B2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

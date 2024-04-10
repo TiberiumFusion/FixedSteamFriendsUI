@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<Project>
+    <ItemGroup>
+        <Content Include="Procedures\AmendSnapshot\JsDeMinifier\**">
+            <TargetPath>JsDeMinifier\%(RecursiveDir)\%(Filename)%(Extension)</TargetPath>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+</Project>

@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.PatchSnapshot;
 using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot;
 using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.AmendSnapshot;
 using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.CaptureSnapshot;
@@ -21,7 +22,6 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
         internal static readonly bool CatchUnhandledExceptions = true;
         #endif
 
-
         public const int RESULT_SUCCESS = 0;
         public const int RESULT_ERROR = 1;
 
@@ -35,12 +35,20 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
 
             string logFileName = string.Format( "Snapshot Maker Log - {0} (stages={1}).txt", startTime.ToString("yyyy-MM-dd HH꞉mm꞉ss.fff"), cmdArgs.Stages.ToUpper() );
 
-            LogLine("Snapshot Maker (v" + Assembly.GetExecutingAssembly().GetName().Version + ") :: Started at " + startTime.ToString("G") + "\n");
+            LogLine("Snapshot Maker (v" + Assembly.GetExecutingAssembly().GetName().Version + ") :: Started at " + startTime.ToString("G"));
+            LogLine("Args: " + (args.Length > 0 ? string.Join(" ", args) : "(none)"));
+
+            LogLine("");
 
 
             // --------------------------------------------------
             //   Configuration
             // --------------------------------------------------
+
+            // Stages to perform
+            bool StageScrape = cmdArgs.Stages.Contains("s");
+            bool StageAmend = cmdArgs.Stages.Contains("a");
+            bool StagePatch = cmdArgs.Stages.Contains("p");
 
             // Local output folder for the snapshot
             string outputPath = "snapshot";
@@ -80,11 +88,6 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
                 [ResourceCategory.JsImages] = true,
 
             };
-
-            // Stages to perform
-            bool StageScrape = cmdArgs.Stages.Contains('s');
-            bool StageAmend = cmdArgs.Stages.Contains('a');
-            bool StagePrePatch = cmdArgs.Stages.Contains('p');
 
 
             // --------------------------------------------------
@@ -144,13 +147,38 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
 
 
             // --------------------------------------------------
+            //   Patch snapshot
+            // --------------------------------------------------
+
+            if (StagePatch)
+            {
+                // Automated patching of some spots that are tedious to do manually and can be automated without significant effort
+                // Notable examples include the many CDN asset fetches in friends.js and easy shim sites like tournament mode
+
+                LogLine("\n---------- |  Patching Snapshot  | ----------");
+
+                try
+                {
+                    Patcher patcher = new Patcher();
+                }
+                catch (Exception e) when (CatchUnhandledExceptions)
+                {
+                    LogERROR(onlyIfOpenLine: true);
+                    LogLine("[!!!] An unhandled exception occurred during the patch operation [!!!]");
+                    LogLine(e.ToString());
+                    return RESULT_ERROR;
+                }
+            }
+
+
+            // --------------------------------------------------
             //   Snapshot complete and ready for use
             // --------------------------------------------------
 
             Log("\nSnapshot Maker :: Finished at " + DateTime.Now.ToString("G"));
 
             if (cmdArgs.WriteLogFileToSnapshot)
-                WriteLogToFile( Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), outputPath, logFileName)) );
+                WriteLogToFile(Path.Combine(outputPath, logFileName));
 
 
             return RESULT_SUCCESS;

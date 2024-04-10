@@ -79,7 +79,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
                 CurrentLogMessage = "";
             }
 
-            File.WriteAllText(path, string.Join('\n', LogMessages) + '\n');
+            File.WriteAllText(path, string.Join("\n", LogMessages) + '\n');
         }
 
 

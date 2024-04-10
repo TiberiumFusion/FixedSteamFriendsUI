@@ -64,7 +64,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
             //
             // index.html
             //
-
+            
             if (ResourceTypesToModify[ResourceCategory.Html])
             {
                 LogLine("Fixing URLs in \"index.html\"");
@@ -133,7 +133,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
                     string cssRaw = File.ReadAllText(cssMotivaSansPathFull, Encoding.UTF8);
 
                     MatchCollection matchedSrcUrls = CssFontFaceUrlFinder.Matches(cssRaw);
-                    foreach (Match match in matchedSrcUrls.Reverse())
+                    foreach (Match match in matchedSrcUrls.Cast<Match>().Reverse())
                     {
                         string urlStartMagic = "url('";
                         int urlStartPos = match.Value.IndexOf(urlStartMagic) + urlStartMagic.Length;
@@ -143,7 +143,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
 
                         string urlFull = match.Value.Substring(urlStartPos, urlEndPos - urlStartPos); // https://community.cloudflare.steamstatic.com/public/shared/fonts/MotivaSans-Regular.ttf?v=4.015
                         string urlRelToRoot = GetValveResourcePath(urlFull); // public/shared/fonts/MotivaSans-Regular.ttf
-                        string urlRelToCssFile = Path.GetRelativePath(Path.GetDirectoryName(cssMotivaSansPathRel), urlRelToRoot).Replace('\\', '/');
+                        string urlRelToCssFile = Microsoft.IO.Path.GetRelativePath(Path.GetDirectoryName(cssMotivaSansPathRel), urlRelToRoot).Replace('\\', '/');
 
                         LogLine("- " + urlRelToRoot);
 
@@ -156,7 +156,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
                     LogOK();
                 }
             }
-
+            
 
             // --------------------------------------------------
             //   De-minify the Valve JS files we need to modify
@@ -186,7 +186,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
 
                 string[] deminTargetsPaths = new string[]
                 {
-                "public/javascript/webui/friends.js", // so far this is the only file that a human needs to modify, so it's the only one needing deminification
+                    "public/javascript/webui/friends.js", // so far this is the only file that a human needs to modify, so it's the only one needing deminification
                 };
 
 
@@ -200,6 +200,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
                 string targetWebpageUrl = Path.Combine(Directory.GetCurrentDirectory(), @"JsDeMinifier\Main.html");
 
                 // CefSharp configuration
+                string cefBinDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "CefBin");
                 CefSettings cefSettings = new CefSettings();
                 cefSettings.WindowlessRenderingEnabled = true;
                 cefSettings.CefCommandLineArgs.Add("disable-application-cache"); // don't cache retrieved resources
@@ -233,7 +234,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
                 cefBrowser.JavascriptObjectRepository.NameConverter = null; // Stop CefSharp from annoyingly changing symbol names on us
 
                 JsInteropBridge jib = new JsInteropBridge();
-                cefBrowser.JavascriptObjectRepository.Register("JsInteropBridge", jib, BindingOptions.DefaultBinder);
+                cefBrowser.JavascriptObjectRepository.Register("JsInteropBridge", jib, true, BindingOptions.DefaultBinder);
 
                 Task<JavascriptResponse> jBindTask = cefBrowser.EvaluateScriptAsync(@"BindInteropCommunication();"); // Interop requires a handshake from both C# and JS realms in order to create a binding
                 jBindTask.Wait(); // wait for script evaluation to complete
