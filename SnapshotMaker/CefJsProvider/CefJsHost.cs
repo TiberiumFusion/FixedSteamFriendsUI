@@ -29,14 +29,17 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.CefJsProvider
         // APIs
         private List<Api> Apis;
         public JsDeMinifier ApiJsDeMinifier { get; private set; }
+        public ValveFriendsJsRewriter ApiValveFriendsJsRewriter { get; private set; }
 
         public CefJsHost()
         {
             ApiJsDeMinifier = new JsDeMinifier();
+            ApiValveFriendsJsRewriter = new ValveFriendsJsRewriter();
 
             Apis = new List<Api>()
             {
                 ApiJsDeMinifier,
+                ApiValveFriendsJsRewriter,
             };
         }
 
@@ -139,6 +142,8 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.CefJsProvider
                 }
             }
 
+
+            IsInitialized = true;
         }
 
     }

@@ -91,6 +91,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CefJsProvider\Api.cs" />
+    <Compile Include="CefJsProvider\Apis\ValveFriendsJsRewriter.cs" />
     <Compile Include="CefJsProvider\Apis\JsDeMinifier.cs" />
     <Compile Include="CefJsProvider\CefJsHost.cs" />
     <Compile Include="CefJsProvider\Exceptions.cs" />
@@ -113,6 +114,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="CefJsProviderWebFiles\Api\ValveFriendsJsRewriter.js" />
     <Content Include="CefJsProviderWebFiles\lib\prettier%403.2.5\plugins\babel.js" />
     <Content Include="CefJsProviderWebFiles\lib\prettier%403.2.5\plugins\estree.js" />
     <Content Include="CefJsProviderWebFiles\lib\prettier%403.2.5\standalone.js" />

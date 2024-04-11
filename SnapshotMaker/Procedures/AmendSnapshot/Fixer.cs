@@ -31,10 +31,28 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
         /// </summary>
         public Dictionary<ResourceCategory, bool> ResourceTypesToModify;
 
+        public enum FileWriteMode
+        {
+            /// <summary>
+            /// Overwrite the original file with the modified data.
+            /// </summary>
+            Overwrite,
+
+            /// <summary>
+            /// Rename the original file with ".original" suffix, then write the modified data to the original file name.
+            /// </summary>
+            Backup,
+
+            /// <summary>
+            /// Leave the original file untouched. Write the modified file to a new file name, next to the original file.
+            /// </summary>
+            Increment,
+        }
+
         /// <summary>
-        /// Move the original version of modified file to a new file name, then write the modified version at the original file name.
+        /// If false, modified versions of files will overwrite the originals. If true, modified Move the original version of modified file to a new file name, then write the modified version at the original file name.
         /// </summary>
-        public bool PreserveOriginalCopyOfModifiedFiles = true;
+        public FileWriteMode ModifiedFileWriteMode = FileWriteMode.Increment;
 
         public enum Task
         {
@@ -42,6 +60,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
             RelativePathsInRootHtml,
             RelativePathsInCssFontFaceUrls,
             DeMinifyTargetJs,
+            RewriteValveInnerFriendsJs,
         }
 
         /// <summary>
@@ -98,6 +117,8 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
                 LogLine("Fixing URLs in \"index.html\"");
 
                 string rootHtmlPath = QualifyPathWebFile(snapshotDirectoryPath, "index.html");
+
+                // todo: use GetPathForHighestIncrementOfFile() here
 
                 HtmlDocument rootHtml = new HtmlDocument();
                 rootHtml.LoadHtml(File.ReadAllText(rootHtmlPath, Encoding.UTF8));
@@ -157,6 +178,8 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
                 if (File.Exists(cssMotivaSansPathFull))
                 {
                     LogLine("Fixing URLs in \"" + cssMotivaSansPathRel + "\"...");
+                    
+                    // todo: use GetPathForHighestIncrementOfFile() here
 
                     string cssRaw = File.ReadAllText(cssMotivaSansPathFull, Encoding.UTF8);
 
@@ -185,90 +208,183 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
                 }
             }
 
-            
 
-            // --------------------------------------------------
-            //   De-minify the Valve JS files we need to modify
-            // --------------------------------------------------
+            //
+            // JS processing
+            //
 
-            // Symbol names are unrecoverable, but we can at least reintroduce a small amount of code formatting to Valve's bastardized javascript
-            // For this purpose afaik there is only one deminifer that 1) uses Babel and 2) doesn't crash on excessively massive javascript files like Valve's friends.js
-            // And that is prettier.io
-
-            // Unfortunately, like many deminifiers, prettier.io is implemented in (chromezilla) javascript itself, and thus is an absolute pain in the ass to get running outside of a web browser
-            // There is a web user interface which exposes all options and it works, and that's what I've used so far, but the point of this Snapshot Maker is to automate all of this, so we need to use prettier.io's library API instead
-            // prettier.io is available as a standard javascript file and has a basic interface described here: https://prettier.io/docs/en/browser
-
-            // Now all we need is a way to run this fucking javascript... and since it's chromezilla javascript and not normal javascript, it will break anything that isn't chromezilla
-            // Enter CefSharp, which provides the CEF flavor of chromezilla through a C# interface. It's unofficial, messy, and has some painful usage patterns, but it seems to be the only ready-made option available.
-            // Here we are using the "OffScreen" variant of CefSharp, which is unfortunately the smallest one available. There is no variant which strips away all the cancer & bloat and leaves just the smoke belching V8 behind.
-
-
-            if (EnabledTasks[Task.DeMinifyTargetJs] && ResourceTypesToModify[ResourceCategory.Js])
+            if (ResourceTypesToModify[ResourceCategory.Js])
             {
-                LogLine("\nPreparing to de-minify javascript");
-
-
-                //
-                // Configuration
-                //
-
-                string[] deminTargetsPaths = new string[]
+                if (EnabledTasks[Task.DeMinifyTargetJs])
                 {
-                    "public/javascript/webui/friends.js", // so far this is the only file that a human needs to modify, so it's the only one needing deminification
-                };
+                    // --------------------------------------------------
+                    //   De-minify the Valve JS files we need to modify
+                    // --------------------------------------------------
+
+                    // Symbol names are unrecoverable, but we can at least reintroduce a small amount of code formatting to Valve's bastardized javascript
+                    // For this purpose afaik there is only one deminifer that 1) uses Babel and 2) doesn't crash on excessively massive javascript files like Valve's friends.js
+                    // And that is prettier.io
+
+                    // Unfortunately, like many deminifiers, prettier.io is implemented in (chromezilla) javascript itself, and thus is an absolute pain in the ass to get running outside of a web browser
+                    // There is a web user interface which exposes all options and it works, and that's what I've used so far, but the point of this Snapshot Maker is to automate all of this, so we need to use prettier.io's library API instead
+                    // prettier.io is available as a standard javascript file and has a basic interface described here: https://prettier.io/docs/en/browser
+
+                    // Now all we need is a way to run this fucking javascript... and since it's chromezilla javascript and not normal javascript, it will break anything that isn't chromezilla
+                    // Enter CefSharp, which provides the CEF flavor of chromezilla through a C# interface. It's unofficial, messy, and has some painful usage patterns, but it seems to be the only ready-made option available.
+                    // Here we are using the "OffScreen" variant of CefSharp, which is unfortunately the smallest one available. There is no variant which strips away all the cancer & bloat and leaves just the smoke belching V8 behind.
 
 
-                //
-                // Ensure our cef js host is initialized
-                //
-
-                CefJsHost cefJsHost = Program.SharedCefJsHost;
-                cefJsHost.Initialize(); // will silently abort if already initialized
+                    LogLine("\nPreparing to de-minify javascript");
 
 
-                //
-                // Deminify the javascript we need to process, using pretter.io
-                //
+                    //
+                    // Configuration
+                    //
 
-                foreach (string deminTargetPath in deminTargetsPaths)
+                    string[] deminTargetsPaths = new string[]
+                    {
+                        "public/javascript/webui/friends.js", // so far this is the only file that a human needs to modify, so it's the only one needing deminification
+                    };
+
+
+                    //
+                    // Ensure our cef js host is initialized
+                    //
+
+                    CefJsHost cefJsHost = Program.SharedCefJsHost;
+                    cefJsHost.Initialize(); // will silently abort if already initialized
+
+
+                    //
+                    // Deminify the javascript we need to process, using pretter.io
+                    //
+
+                    foreach (string deminTargetPath in deminTargetsPaths)
+                    {
+                        Log("De-minifying \"" + deminTargetPath + "\"...");
+
+                        // Validate and read in file
+                        string deminTargetFullPath = QualifyPathWebFile(snapshotDirectoryPath, deminTargetPath);
+                        if (!File.Exists(deminTargetFullPath))
+                            throw new FileNotFoundException("De-minify target \"" + deminTargetPath + "\" does not exist in snapshot directory \"" + snapshotDirectoryPath + "\"", deminTargetFullPath);
+
+                        string rawJs = File.ReadAllText(GetPathForHighestIncrementOfFile(deminTargetFullPath), Encoding.UTF8);
+
+                        // Deminify the javascript
+                        string deminifiedJs = null;
+                        try
+                        {
+                            deminifiedJs = cefJsHost.ApiJsDeMinifier.DeMin(rawJs);
+                        }
+                        catch (CefSharpJavascriptEvalExceptionException e)
+                        {
+                            LogERROR();
+                            LogLine("[!!!] JS threw an exception [!!!]");
+                            LogLine(e.ToString());
+                            continue; // Swallow exceptions and move on to the next deminify target
+                        }
+                        catch (CefSharpJavascriptEvalFailureException e)
+                        {
+                            LogERROR();
+                            LogLine("[!!!] JS experienced a non-halting eval failure [!!!]");
+                            LogLine(e.ToString());
+                            continue;
+                        }
+                        catch (PretterIoFailureException e)
+                        {
+                            LogERROR();
+                            LogLine("[!!!] prettier.io returned null [!!!]");
+                            LogLine(e.ToString());
+                            continue;
+                        }
+
+                        // Write deminified js to disk
+                        try
+                        {
+                            WriteModifiedFileUtf8(deminTargetFullPath, deminifiedJs);
+                        }
+                        catch (Exception e)
+                        {
+                            LogERROR();
+                            LogLine("[!!!] An unhandled exception occurred while writing the de-minified javascript back to the disk [!!!]");
+                            LogLine(e.ToString());
+                            continue;
+                        }
+
+                        LogOK();
+                    }
+                }
+
+
+                if (EnabledTasks[Task.RewriteValveInnerFriendsJs])
                 {
-                    Log("Deminifying \"" + deminTargetPath + "\"...");
+                    // --------------------------------------------------
+                    //   Rewrite parts of the inner Valve friends.js code
+                    // --------------------------------------------------
+
+                    // In other words, automate the code editing at the various patch locations that would otherwise need to be done by a human
+
+                    // There are absolutely zero modern javascript AST manipulation tools for .NET. But there are dozens in javascript itself.
+                    // So tragically, once again, we have to use CEF to do this. I'm using babel for this purpose.
+
+                    // The interop here is very similar to the deminification process
+
+
+                    LogLine("\nPreparing to rewrite inner friends.js javascript");
+
+
+                    //
+                    // Ensure our cef js host is initialized
+                    //
+
+                    CefJsHost cefJsHost = Program.SharedCefJsHost;
+                    cefJsHost.Initialize(); // will silently abort if already initialized
+
+
+                    //
+                    // Deminify the javascript we need to process, using pretter.io
+                    //
+
+                    string targetJsPath = "public/javascript/webui/friends.js";
+                    
+                    Log("Rewriting \"" + targetJsPath + "\"...");
 
                     // Validate and read in file
-                    string deminTargetFullPath = QualifyPathWebFile(snapshotDirectoryPath, deminTargetPath);
-                    if (!File.Exists(deminTargetFullPath))
-                        throw new FileNotFoundException("De-minify target \"" + deminTargetPath + "\" does not exist in snapshot directory \"" + snapshotDirectoryPath + "\"", deminTargetFullPath);
+                    string targetJsPathFullPath = QualifyPathWebFile(snapshotDirectoryPath, targetJsPath);
+                    if (!File.Exists(targetJsPathFullPath))
+                        throw new FileNotFoundException("Rewrite target \"" + targetJsPath + "\" does not exist in snapshot directory \"" + snapshotDirectoryPath + "\"", targetJsPath);
+                    
+                    string sourceJs = File.ReadAllText(GetPathForHighestIncrementOfFile(targetJsPathFullPath), Encoding.UTF8);
 
-                    string rawJs = File.ReadAllText(deminTargetFullPath, Encoding.UTF8);
-
-                    // Deminify the javascript
-                    string deminifiedJs = null;
+                    // Rewrite the javascript
+                    string rewrittenJs = null;
                     try
                     {
-                        deminifiedJs = cefJsHost.ApiJsDeMinifier.DeMin(rawJs);
+                        rewrittenJs = cefJsHost.ApiValveFriendsJsRewriter.Rewrite(sourceJs);
                     }
                     catch (CefSharpJavascriptEvalExceptionException e)
                     {
                         LogERROR();
                         LogLine("[!!!] JS threw an exception [!!!]");
+                        LogLine(e.ToString());
                     }
                     catch (CefSharpJavascriptEvalFailureException e)
                     {
                         LogERROR();
                         LogLine("[!!!] JS experienced a non-halting eval failure [!!!]");
+                        LogLine(e.ToString());
                     }
                     catch (PretterIoFailureException e)
                     {
                         LogERROR();
                         LogLine("[!!!] prettier.io returned null [!!!]");
-                        continue;
+                        LogLine(e.ToString());
                     }
 
                     // Write deminified js to disk
                     try
                     {
-                        WriteModifiedFileUtf8(deminTargetFullPath, deminifiedJs);
+                        WriteModifiedFileUtf8(targetJsPathFullPath, rewrittenJs);
                     }
                     catch (Exception e)
                     {
@@ -292,25 +408,97 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
         //
 
         // --------------------------------------------------
-        //   File modification
+        //   File access
         // --------------------------------------------------
 
         private void WriteModifiedFileUtf8(string path, string contents)
         {
-            if (PreserveOriginalCopyOfModifiedFiles)
+            if (ModifiedFileWriteMode == FileWriteMode.Overwrite)
             {
-                string preserveFilePath = path + ".original";
-                File.Move(path, preserveFilePath);
+                if (File.Exists(path))
+                    File.Delete(path);
+                File.WriteAllText(path, contents, Encoding.UTF8);
             }
-            else
+            else if (ModifiedFileWriteMode == FileWriteMode.Backup)
             {
-                File.Delete(path);
+                string preserveFilePathFirst = path + ".original";
+                string preserveFilePath = preserveFilePathFirst;
+
+                int inc = 0;
+                do
+                {
+                    inc++;
+                    preserveFilePath = preserveFilePathFirst + inc.ToString("-000");
+                    if (inc > 999)
+                        throw new Exception("All potential backup file names already exist!");
+                }
+                while (File.Exists(preserveFilePath));
+
+                File.Move(path, preserveFilePath);
+
+                File.WriteAllText(path, contents, Encoding.UTF8);
+            }
+            else if (ModifiedFileWriteMode == FileWriteMode.Increment)
+            {
+                DirectoryInfo writeDir = new DirectoryInfo(Path.GetDirectoryName(path));
+                HashSet<string> existingFileNames = new HashSet<string>(writeDir.GetFiles("*", SearchOption.TopDirectoryOnly).Select(a => a.Name));
+
+                string baseFilenameNoExt = Path.GetFileNameWithoutExtension(path);
+                string ext = Path.GetExtension(path);
+
+                string incFilename = "";
+                int inc = 0;
+                do
+                {
+                    inc++;
+                    incFilename = baseFilenameNoExt + "." + inc.ToString("000") + ext;
+                    if (inc > 999)
+                        throw new Exception("All potential increment file names already exist!");
+                }
+                while (existingFileNames.Contains(incFilename));
+
+                string incPath = Path.Combine(writeDir.FullName, incFilename);
+
+                File.WriteAllText(incPath, contents, Encoding.UTF8);
+            }
+        }
+
+        private string GetPathForHighestIncrementOfFile(string path)
+        {
+            DirectoryInfo dir = new DirectoryInfo(Path.GetDirectoryName(path));
+
+            FileInfo inputFile = new FileInfo(path);
+            string inputFileNameNoExt = Path.GetFileNameWithoutExtension(path);
+
+            FileInfo chosenFile = inputFile;
+            int chosenFileInc = -1;
+
+            foreach (FileInfo file in dir.EnumerateFiles("*", SearchOption.TopDirectoryOnly))
+            {
+                if (file.FullName == inputFile.FullName)
+                    continue;
+
+                string filenameNoExt = Path.GetFileNameWithoutExtension(file.Name);
+
+                int lastDotPos = filenameNoExt.LastIndexOf('.');
+                if (lastDotPos != -1)
+                {
+                    string realName = filenameNoExt.Substring(0, lastDotPos);
+                    string incStr = filenameNoExt.Substring(lastDotPos + 1);
+                    if (int.TryParse(incStr, out int inc))
+                    {
+                        if (realName == inputFileNameNoExt && inc > chosenFileInc)
+                        {
+                            chosenFile = file;
+                            chosenFileInc = inc;
+                        }
+                    }
+                }
             }
 
-            File.WriteAllText(path, contents, Encoding.UTF8);
+            return chosenFile.FullName;
         }
 
     }
-
 
 }
