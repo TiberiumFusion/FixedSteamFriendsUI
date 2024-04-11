@@ -19,7 +19,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.PatchSnaps
         /// <summary>
         /// If false, modified versions of files will overwrite the originals. If true, modified Move the original version of modified file to a new file name, then write the modified version at the original file name.
         /// </summary>
-        public FileWriteMode ModifiedFileWriteMode = FileWriteMode.Increment;
+        public FileWriteMode ModifiedFileWriteMode = FileWriteMode.IncrementSxs;
 
         public enum Task
         {

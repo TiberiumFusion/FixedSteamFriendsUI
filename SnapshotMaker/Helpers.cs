@@ -150,6 +150,11 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
             /// Leave the original file untouched. Write the modified file to a new file name, next to the original file.
             /// </summary>
             Increment,
+
+            /// <summary>
+            /// Maintain copies of all iterations of the file, using the increment suffix notation. The original file will be always overwritten with the latest increment.
+            /// </summary>
+            IncrementSxs,
         }
 
         private static Regex IncrementedFilenameIncValidator = new Regex(@"\d{3}(-|$)", RegexOptions.CultureInvariant);
@@ -182,7 +187,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
 
                 File.WriteAllText(path, contents, Encoding.UTF8);
             }
-            else if (writeMode == FileWriteMode.Increment)
+            else if (writeMode == FileWriteMode.Increment || writeMode == FileWriteMode.IncrementSxs)
             {
                 DirectoryInfo writeDir = new DirectoryInfo(Path.GetDirectoryName(path));
                 HashSet<string> existingFileNamesNoSuffixes = new HashSet<string>(
@@ -220,11 +225,27 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
                 }
                 while (existingFileNamesNoSuffixes.Contains(incFilenameNoExtNoSuffix + ext));
 
+                if (writeMode == FileWriteMode.IncrementSxs && inc == 1)
+                {
+                    string storeOrigName = baseFilenameNoExt + ".000-original" + ext;
+                    string storeOrigPath = Path.Combine(writeDir.FullName, storeOrigName);
+                    if (File.Exists(storeOrigPath))
+                        File.Delete(storeOrigPath);
+                    File.Move(path, storeOrigPath);
+                }
+
                 string incPath = Path.Combine(writeDir.FullName, incFilenameNoExt + ext);
 
                 File.WriteAllText(incPath, contents, Encoding.UTF8);
+
+                if (writeMode == FileWriteMode.IncrementSxs)
+                    File.Copy(incPath, path, overwrite:true);
             }
         }
+
+        // --------------------------------------------------
+        //   Finding modified files
+        // --------------------------------------------------
 
         public static string GetPathForHighestIncrementOfFile(string path)
         {
