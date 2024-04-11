@@ -149,10 +149,6 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
                 {
                     Fixer fixer = new Fixer();
                     fixer.ResourceTypesToModify = ResourceTypesToProcess;
-                    fixer.ModifiedFileWriteMode = FileWriteMode.Increment;
-                    fixer.SetEnableAllTasks(false);
-                    fixer.EnabledTasks[Fixer.Task.DeMinifyTargetJs] = true;
-                    fixer.EnabledTasks[Fixer.Task.RewriteValveInnerFriendsJs] = true;
                     fixer.ModifySteamchatDotComSnapshot(outputPath);
                 }
                 catch (Exception e) when (CatchUnhandledExceptions)
@@ -179,6 +175,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
                 try
                 {
                     Patcher patcher = new Patcher();
+                    patcher.PatchSteamchatDotComSnapshot(outputPath);
                 }
                 catch (Exception e) when (CatchUnhandledExceptions)
                 {
@@ -211,6 +208,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
                 Cef.Shutdown();
                 LogOK();
             }
+
 
             return RESULT_SUCCESS;
         }

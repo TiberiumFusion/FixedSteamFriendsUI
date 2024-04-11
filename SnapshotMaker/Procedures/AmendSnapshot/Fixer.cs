@@ -42,7 +42,6 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
             RelativePathsInRootHtml,
             RelativePathsInCssFontFaceUrls,
             DeMinifyTargetJs,
-            RewriteValveInnerFriendsJs,
         }
 
         /// <summary>
@@ -100,10 +99,10 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
 
                 string rootHtmlPath = QualifyPathWebFile(snapshotDirectoryPath, "index.html");
 
-                // todo: use GetPathForHighestIncrementOfFile() here
+                string rootHtmlRaw = File.ReadAllText(GetPathForHighestIncrementOfFile(rootHtmlPath), Encoding.UTF8);
 
                 HtmlDocument rootHtml = new HtmlDocument();
-                rootHtml.LoadHtml(File.ReadAllText(rootHtmlPath, Encoding.UTF8));
+                rootHtml.LoadHtml(rootHtmlRaw);
 
                 // We only need to change the URLs for elements in the <head>
                 HtmlNode rhHead = rootHtml.DocumentNode.SelectSingleNode("/html/head");
@@ -143,7 +142,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
                 }
 
                 Log("Saving changes...");
-                WriteModifiedFileUtf8(rootHtmlPath, rootHtml.DocumentNode.OuterHtml, ModifiedFileWriteMode);
+                WriteModifiedFileUtf8(rootHtmlPath, rootHtml.DocumentNode.OuterHtml, ModifiedFileWriteMode, incrementNameSuffix:"urlfix");
                 LogOK();
             }
 
@@ -161,9 +160,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
                 {
                     LogLine("Fixing URLs in \"" + cssMotivaSansPathRel + "\"...");
                     
-                    // todo: use GetPathForHighestIncrementOfFile() here
-
-                    string cssRaw = File.ReadAllText(cssMotivaSansPathFull, Encoding.UTF8);
+                    string cssRaw = File.ReadAllText(GetPathForHighestIncrementOfFile(cssMotivaSansPathFull), Encoding.UTF8);
 
                     MatchCollection matchedSrcUrls = CssFontFaceUrlFinder.Matches(cssRaw);
                     foreach (Match match in matchedSrcUrls.Cast<Match>().Reverse())
@@ -185,7 +182,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
                     }
 
                     Log("Saving changes...");
-                    WriteModifiedFileUtf8(cssMotivaSansPathFull, cssRaw, ModifiedFileWriteMode);
+                    WriteModifiedFileUtf8(cssMotivaSansPathFull, cssRaw, ModifiedFileWriteMode, incrementNameSuffix:"urlfix");
                     LogOK();
                 }
             }
@@ -295,89 +292,6 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
 
                         LogOK();
                     }
-                }
-
-
-                if (EnabledTasks[Task.RewriteValveInnerFriendsJs])
-                {
-                    // todo: move this out of Fixer and into Patcher
-
-                    // --------------------------------------------------
-                    //   Rewrite parts of the inner Valve friends.js code
-                    // --------------------------------------------------
-
-                    // In other words, automate the code editing at the various patch locations that would otherwise need to be done by a human
-
-                    // There are absolutely zero modern javascript AST manipulation tools for .NET. But there are dozens in javascript itself.
-                    // So tragically, once again, we have to use CEF to do this. I'm using babel for this purpose.
-
-                    // The interop here is very similar to the deminification process
-
-
-                    LogLine("\nPreparing to rewrite inner friends.js javascript");
-
-
-                    //
-                    // Ensure our cef js host is initialized
-                    //
-
-                    CefJsHost cefJsHost = Program.SharedCefJsHost;
-                    cefJsHost.Initialize(); // will silently abort if already initialized
-
-
-                    //
-                    // Deminify the javascript we need to process, using pretter.io
-                    //
-
-                    string targetJsPath = "public/javascript/webui/friends.js";
-                    
-                    Log("Rewriting \"" + targetJsPath + "\"...");
-
-                    // Validate and read in file
-                    string targetJsPathFullPath = QualifyPathWebFile(snapshotDirectoryPath, targetJsPath);
-                    if (!File.Exists(targetJsPathFullPath))
-                        throw new FileNotFoundException("Rewrite target \"" + targetJsPath + "\" does not exist in snapshot directory \"" + snapshotDirectoryPath + "\"", targetJsPath);
-                    
-                    string sourceJs = File.ReadAllText(GetPathForHighestIncrementOfFile(targetJsPathFullPath), Encoding.UTF8);
-
-                    // Rewrite the javascript
-                    string rewrittenJs = null;
-                    try
-                    {
-                        rewrittenJs = cefJsHost.ApiValveFriendsJsRewriter.Rewrite(sourceJs);
-                    }
-                    catch (CefSharpJavascriptEvalExceptionException e)
-                    {
-                        LogERROR();
-                        LogLine("[!!!] JS threw an exception [!!!]");
-                        LogLine(e.ToString());
-                    }
-                    catch (CefSharpJavascriptEvalFailureException e)
-                    {
-                        LogERROR();
-                        LogLine("[!!!] JS experienced a non-halting eval failure [!!!]");
-                        LogLine(e.ToString());
-                    }
-                    catch (PretterIoFailureException e)
-                    {
-                        LogERROR();
-                        LogLine("[!!!] prettier.io returned null [!!!]");
-                        LogLine(e.ToString());
-                    }
-
-                    // Write deminified js to disk
-                    try
-                    {
-                        WriteModifiedFileUtf8(targetJsPathFullPath, rewrittenJs, ModifiedFileWriteMode, incrementNameSuffix:"patch");
-                    }
-                    catch (Exception e)
-                    {
-                        LogERROR();
-                        LogLine("[!!!] An unhandled exception occurred while writing the de-minified javascript back to the disk [!!!]");
-                        LogLine(e.ToString());
-                    }
-
-                    LogOK();
                 }
             }
 

@@ -1,12 +1,58 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.CefJsProvider;
 using static TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Helpers;
 
 namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.PatchSnapshot
 {
     public class Patcher
     {
+
+        // ____________________________________________________________________________________________________
+        // 
+        //     Configuration
+        // ____________________________________________________________________________________________________
+        //
+
+        /// <summary>
+        /// If false, modified versions of files will overwrite the originals. If true, modified Move the original version of modified file to a new file name, then write the modified version at the original file name.
+        /// </summary>
+        public FileWriteMode ModifiedFileWriteMode = FileWriteMode.Increment;
+
+        public enum Task
+        {
+            None,
+            RewriteInnerFriendsJs,
+        }
+
+        /// <summary>
+        /// Toggles for each task we can perform.
+        /// </summary>
+        public Dictionary<Task, bool> EnabledTasks = new Dictionary<Task, bool>();
+
+        public Patcher()
+        {
+            // --------------------------------------------------
+            //   Default config
+            // --------------------------------------------------
+
+            // Filter by types of tasks to perform
+            SetEnableAllTasks(true); // Enable all tasks
+        }
+
+        public void SetEnableAllTasks(bool value)
+        {
+            foreach (Task task in Enum.GetValues(typeof(Task)))
+            {
+                if (task != Task.None)
+                    EnabledTasks[task] = value;
+            }
+        }
+
+
+
         // ____________________________________________________________________________________________________
         // 
         //     Main interface
@@ -15,11 +61,80 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.PatchSnaps
 
         public void PatchSteamchatDotComSnapshot(string snapshotDirectoryPath)
         {
-            LogLine("\nPreparing to patch public/javascript/webui/friends.js");
+            // --------------------------------------------------
+            //   Patch inner friends.js
+            // --------------------------------------------------
+            
+            // In other words, automate the code editing at the various patch locations that would otherwise need to be done by a human
 
-            string friendsJsPath = QualifyPathWebFile(snapshotDirectoryPath, "public/javascript/webui/friends.js");
+            // There are absolutely zero modern javascript AST manipulation tools for .NET. But there are dozens in javascript itself.
+            // So tragically, once again, we have to use CEF to do this. I'm using babel for this purpose.
 
+            // The interop here is very similar to the deminification process
+
+            if (EnabledTasks[Task.RewriteInnerFriendsJs])
+            {
+                LogLine("\nPreparing to rewrite inner friends.js javascript");
+
+
+                //
+                // Ensure our cef js host is initialized
+                //
+
+                CefJsHost cefJsHost = Program.SharedCefJsHost;
+                cefJsHost.Initialize(); // will silently abort if already initialized
+
+
+                //
+                // Send the source javascript to our babel-powered rewriter in the cef js host
+                //
+
+                string targetJsPath = "public/javascript/webui/friends.js";
+
+                Log("Rewriting \"" + targetJsPath + "\"...");
+
+                // Validate and read in file
+                string targetJsPathFullPath = QualifyPathWebFile(snapshotDirectoryPath, targetJsPath);
+                if (!File.Exists(targetJsPathFullPath))
+                    throw new FileNotFoundException("Rewrite target \"" + targetJsPath + "\" does not exist in snapshot directory \"" + snapshotDirectoryPath + "\"", targetJsPath);
+
+                string sourceJs = File.ReadAllText(GetPathForHighestIncrementOfFile(targetJsPathFullPath), Encoding.UTF8);
+
+                // Rewrite the javascript
+                string rewrittenJs = null;
+                try
+                {
+                    rewrittenJs = cefJsHost.ApiValveFriendsJsRewriter.Rewrite(sourceJs);
+                }
+                catch (CefSharpJavascriptEvalExceptionException e)
+                {
+                    LogERROR();
+                    LogLine("[!!!] JS threw an exception [!!!]");
+                    LogLine(e.ToString());
+                }
+                catch (CefSharpJavascriptEvalFailureException e)
+                {
+                    LogERROR();
+                    LogLine("[!!!] JS experienced a non-halting eval failure [!!!]");
+                    LogLine(e.ToString());
+                }
+
+                // Write deminified js to disk
+                try
+                {
+                    WriteModifiedFileUtf8(targetJsPathFullPath, rewrittenJs, ModifiedFileWriteMode, incrementNameSuffix: "patch");
+                }
+                catch (Exception e)
+                {
+                    LogERROR();
+                    LogLine("[!!!] An unhandled exception occurred while writing the rewritten javascript back to the disk [!!!]");
+                    LogLine(e.ToString());
+                }
+
+                LogOK();
+            }
 
         }
     }
+
 }
