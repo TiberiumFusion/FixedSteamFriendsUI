@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CefSharp;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -6,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.CefJsProvider;
 using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.PatchSnapshot;
 using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot;
 using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.AmendSnapshot;
@@ -26,6 +28,9 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
         public const int RESULT_ERROR = 1;
 
 
+        internal static CefJsHost SharedCefJsHost { get; private set; }
+
+
         static int Main(string[] args)
         {
             CmdArgs cmdArgs = new CmdArgs(args);
@@ -39,6 +44,17 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
             LogLine("Args: " + (args.Length > 0 ? string.Join(" ", args) : "(none)"));
 
             LogLine("");
+
+
+            // --------------------------------------------------
+            //   Internals init
+            // --------------------------------------------------
+
+            // Create the interface to our cef js host
+            // This single CefJsHost includes all needed apis and thus can be reused by everything that needs it, to reduce the inordinate amount of memory bloat cef incurs
+            SharedCefJsHost = new CefJsHost();
+            // Cef is *not* initialized yet. Each procedure can call CefJsHost.Initialize() if it needs the cef js host. This will instantiate cef and prepare it for work.
+
 
 
             // --------------------------------------------------
@@ -182,6 +198,18 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
             if (cmdArgs.WriteLogFileToSnapshot)
                 WriteLogToFile(Path.Combine(outputPath, logFileName));
 
+
+            // --------------------------------------------------
+            //   Cleanup
+            // --------------------------------------------------
+
+            // Dispose CEF if our shared CefJsHost was used by anything
+            if (SharedCefJsHost.IsInitialized)
+            {
+                Log("Shutting down CefSharp...");
+                Cef.Shutdown();
+                LogOK();
+            }
 
             return RESULT_SUCCESS;
         }

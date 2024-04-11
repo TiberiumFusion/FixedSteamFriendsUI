@@ -9,7 +9,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{6817AB40-0944-4E8E-B9DD-B5FEA1F3E5B2}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>SnapshotMaker</RootNamespace>
+    <RootNamespace>TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker</RootNamespace>
     <AssemblyName>SnapshotMaker</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -90,6 +90,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CefJsProvider\Api.cs" />
+    <Compile Include="CefJsProvider\Apis\JsDeMinifier.cs" />
+    <Compile Include="CefJsProvider\CefJsHost.cs" />
+    <Compile Include="CefJsProvider\Exceptions.cs" />
     <Compile Include="CmdArgs.cs" />
     <Compile Include="CurlHttp.cs" />
     <Compile Include="Helpers.cs" />
@@ -109,12 +113,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="CefJsHost\lib\prettier%403.2.5\plugins\babel.js" />
-    <Content Include="CefJsHost\lib\prettier%403.2.5\plugins\estree.js" />
-    <Content Include="CefJsHost\lib\prettier%403.2.5\standalone.js" />
-    <Content Include="CefJsHost\Main.html" />
-    <Content Include="CefJsHost\Api\JsDeMinifier.js" />
+    <Content Include="CefJsProviderWebFiles\lib\prettier%403.2.5\plugins\babel.js" />
+    <Content Include="CefJsProviderWebFiles\lib\prettier%403.2.5\plugins\estree.js" />
+    <Content Include="CefJsProviderWebFiles\lib\prettier%403.2.5\standalone.js" />
+    <Content Include="CefJsProviderWebFiles\Main.html" />
+    <Content Include="CefJsProviderWebFiles\Api\JsDeMinifier.js" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
