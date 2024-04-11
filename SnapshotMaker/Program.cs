@@ -149,6 +149,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
                 {
                     Fixer fixer = new Fixer();
                     fixer.ResourceTypesToModify = ResourceTypesToProcess;
+                    fixer.ModifiedFileWriteMode = FileWriteMode.Increment;
                     fixer.SetEnableAllTasks(false);
                     fixer.EnabledTasks[Fixer.Task.DeMinifyTargetJs] = true;
                     fixer.EnabledTasks[Fixer.Task.RewriteValveInnerFriendsJs] = true;

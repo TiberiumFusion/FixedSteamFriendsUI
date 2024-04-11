@@ -31,24 +31,6 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
         /// </summary>
         public Dictionary<ResourceCategory, bool> ResourceTypesToModify;
 
-        public enum FileWriteMode
-        {
-            /// <summary>
-            /// Overwrite the original file with the modified data.
-            /// </summary>
-            Overwrite,
-
-            /// <summary>
-            /// Rename the original file with ".original" suffix, then write the modified data to the original file name.
-            /// </summary>
-            Backup,
-
-            /// <summary>
-            /// Leave the original file untouched. Write the modified file to a new file name, next to the original file.
-            /// </summary>
-            Increment,
-        }
-
         /// <summary>
         /// If false, modified versions of files will overwrite the originals. If true, modified Move the original version of modified file to a new file name, then write the modified version at the original file name.
         /// </summary>
@@ -161,7 +143,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
                 }
 
                 Log("Saving changes...");
-                WriteModifiedFileUtf8(rootHtmlPath, rootHtml.DocumentNode.OuterHtml);
+                WriteModifiedFileUtf8(rootHtmlPath, rootHtml.DocumentNode.OuterHtml, ModifiedFileWriteMode);
                 LogOK();
             }
 
@@ -203,7 +185,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
                     }
 
                     Log("Saving changes...");
-                    WriteModifiedFileUtf8(cssMotivaSansPathFull, cssRaw);
+                    WriteModifiedFileUtf8(cssMotivaSansPathFull, cssRaw, ModifiedFileWriteMode);
                     LogOK();
                 }
             }
@@ -301,7 +283,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
                         // Write deminified js to disk
                         try
                         {
-                            WriteModifiedFileUtf8(deminTargetFullPath, deminifiedJs);
+                            WriteModifiedFileUtf8(deminTargetFullPath, deminifiedJs, ModifiedFileWriteMode, incrementNameSuffix:"demin");
                         }
                         catch (Exception e)
                         {
@@ -318,6 +300,8 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
 
                 if (EnabledTasks[Task.RewriteValveInnerFriendsJs])
                 {
+                    // todo: move this out of Fixer and into Patcher
+
                     // --------------------------------------------------
                     //   Rewrite parts of the inner Valve friends.js code
                     // --------------------------------------------------
@@ -384,7 +368,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
                     // Write deminified js to disk
                     try
                     {
-                        WriteModifiedFileUtf8(targetJsPathFullPath, rewrittenJs);
+                        WriteModifiedFileUtf8(targetJsPathFullPath, rewrittenJs, ModifiedFileWriteMode, incrementNameSuffix:"patch");
                     }
                     catch (Exception e)
                     {
@@ -397,106 +381,6 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
                 }
             }
 
-        }
-
-
-
-        // ____________________________________________________________________________________________________
-        // 
-        //     Helpers
-        // ____________________________________________________________________________________________________
-        //
-
-        // --------------------------------------------------
-        //   File access
-        // --------------------------------------------------
-
-        private void WriteModifiedFileUtf8(string path, string contents)
-        {
-            if (ModifiedFileWriteMode == FileWriteMode.Overwrite)
-            {
-                if (File.Exists(path))
-                    File.Delete(path);
-                File.WriteAllText(path, contents, Encoding.UTF8);
-            }
-            else if (ModifiedFileWriteMode == FileWriteMode.Backup)
-            {
-                string preserveFilePathFirst = path + ".original";
-                string preserveFilePath = preserveFilePathFirst;
-
-                int inc = 0;
-                do
-                {
-                    inc++;
-                    preserveFilePath = preserveFilePathFirst + inc.ToString("-000");
-                    if (inc > 999)
-                        throw new Exception("All potential backup file names already exist!");
-                }
-                while (File.Exists(preserveFilePath));
-
-                File.Move(path, preserveFilePath);
-
-                File.WriteAllText(path, contents, Encoding.UTF8);
-            }
-            else if (ModifiedFileWriteMode == FileWriteMode.Increment)
-            {
-                DirectoryInfo writeDir = new DirectoryInfo(Path.GetDirectoryName(path));
-                HashSet<string> existingFileNames = new HashSet<string>(writeDir.GetFiles("*", SearchOption.TopDirectoryOnly).Select(a => a.Name));
-
-                string baseFilenameNoExt = Path.GetFileNameWithoutExtension(path);
-                string ext = Path.GetExtension(path);
-
-                string incFilename = "";
-                int inc = 0;
-                do
-                {
-                    inc++;
-                    incFilename = baseFilenameNoExt + "." + inc.ToString("000") + ext;
-                    if (inc > 999)
-                        throw new Exception("All potential increment file names already exist!");
-                }
-                while (existingFileNames.Contains(incFilename));
-
-                string incPath = Path.Combine(writeDir.FullName, incFilename);
-
-                File.WriteAllText(incPath, contents, Encoding.UTF8);
-            }
-        }
-
-        private string GetPathForHighestIncrementOfFile(string path)
-        {
-            DirectoryInfo dir = new DirectoryInfo(Path.GetDirectoryName(path));
-
-            FileInfo inputFile = new FileInfo(path);
-            string inputFileNameNoExt = Path.GetFileNameWithoutExtension(path);
-
-            FileInfo chosenFile = inputFile;
-            int chosenFileInc = -1;
-
-            foreach (FileInfo file in dir.EnumerateFiles("*", SearchOption.TopDirectoryOnly))
-            {
-                if (file.FullName == inputFile.FullName)
-                    continue;
-
-                string filenameNoExt = Path.GetFileNameWithoutExtension(file.Name);
-
-                int lastDotPos = filenameNoExt.LastIndexOf('.');
-                if (lastDotPos != -1)
-                {
-                    string realName = filenameNoExt.Substring(0, lastDotPos);
-                    string incStr = filenameNoExt.Substring(lastDotPos + 1);
-                    if (int.TryParse(incStr, out int inc))
-                    {
-                        if (realName == inputFileNameNoExt && inc > chosenFileInc)
-                        {
-                            chosenFile = file;
-                            chosenFileInc = inc;
-                        }
-                    }
-                }
-            }
-
-            return chosenFile.FullName;
         }
 
     }

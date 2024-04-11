@@ -126,6 +126,156 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
 
         // ____________________________________________________________________________________________________
         // 
+        //     File access
+        // ____________________________________________________________________________________________________
+        //
+
+        // --------------------------------------------------
+        //   Writing back modified files
+        // --------------------------------------------------
+
+        public enum FileWriteMode
+        {
+            /// <summary>
+            /// Overwrite the original file with the modified data.
+            /// </summary>
+            Overwrite,
+
+            /// <summary>
+            /// Rename the original file with ".original" suffix, then write the modified data to the original file name.
+            /// </summary>
+            Backup,
+
+            /// <summary>
+            /// Leave the original file untouched. Write the modified file to a new file name, next to the original file.
+            /// </summary>
+            Increment,
+        }
+
+        private static Regex IncrementedFilenameIncValidator = new Regex(@"\d{3}(-|$)", RegexOptions.CultureInvariant);
+
+        public static void WriteModifiedFileUtf8(string path, string contents, FileWriteMode writeMode, string backupNameSuffix = null, string incrementNameSuffix = null)
+        {
+            if (writeMode == FileWriteMode.Overwrite)
+            {
+                if (File.Exists(path))
+                    File.Delete(path);
+                File.WriteAllText(path, contents, Encoding.UTF8);
+            }
+            else if (writeMode == FileWriteMode.Backup)
+            {
+                string baseFilenameNoExt = Path.GetFileNameWithoutExtension(path);
+                string ext = Path.GetExtension(path);
+                
+                string preserveFilePath = "";
+                int inc = 0;
+                do
+                {
+                    inc++;
+                    preserveFilePath = baseFilenameNoExt + ".old" + inc.ToString("-000") + (backupNameSuffix != null ? "-"+backupNameSuffix : "") + ext;
+                    if (inc > 999)
+                        throw new Exception("All potential backup file names already exist!");
+                }
+                while (File.Exists(preserveFilePath));
+
+                File.Move(path, preserveFilePath);
+
+                File.WriteAllText(path, contents, Encoding.UTF8);
+            }
+            else if (writeMode == FileWriteMode.Increment)
+            {
+                DirectoryInfo writeDir = new DirectoryInfo(Path.GetDirectoryName(path));
+                HashSet<string> existingFileNamesNoSuffixes = new HashSet<string>(
+                    writeDir.GetFiles("*", SearchOption.TopDirectoryOnly).Select(file =>
+                    {
+                        string filenameNoSuffix = file.Name;
+
+                        string filenameNoExt = Path.GetFileNameWithoutExtension(file.Name); // e.g. "friends.001-demin.js"
+                        string fileExt = Path.GetExtension(file.Name);
+                        int lastDotPos = filenameNoExt.LastIndexOf('.');
+                        if (lastDotPos != -1)
+                        {
+                            string info = filenameNoExt.Substring(lastDotPos + 1); // "001-demin.js"
+                            if (IncrementedFilenameIncValidator.IsMatch(info))
+                                filenameNoSuffix = filenameNoExt.Substring(0, lastDotPos + 4) + fileExt; // "friends.001.js"
+                        }
+
+                        return filenameNoSuffix;
+                    })
+                );
+
+                string baseFilenameNoExt = Path.GetFileNameWithoutExtension(path);
+                string ext = Path.GetExtension(path);
+
+                string incFilenameNoExtNoSuffix = "";
+                string incFilenameNoExt = "";
+                int inc = 0;
+                do
+                {
+                    inc++;
+                    incFilenameNoExtNoSuffix = baseFilenameNoExt + "." + inc.ToString("000");
+                    incFilenameNoExt = incFilenameNoExtNoSuffix + (incrementNameSuffix != null ? "-" + incrementNameSuffix : "");
+                    if (inc > 999)
+                        throw new Exception("All potential increment file names already exist!");
+                }
+                while (existingFileNamesNoSuffixes.Contains(incFilenameNoExtNoSuffix + ext));
+
+                string incPath = Path.Combine(writeDir.FullName, incFilenameNoExt + ext);
+
+                File.WriteAllText(incPath, contents, Encoding.UTF8);
+            }
+        }
+
+        public static string GetPathForHighestIncrementOfFile(string path)
+        {
+            DirectoryInfo dir = new DirectoryInfo(Path.GetDirectoryName(path));
+
+            FileInfo inputFile = new FileInfo(path);
+            string inputFileNameNoExt = Path.GetFileNameWithoutExtension(path);
+
+            FileInfo chosenFile = inputFile;
+            int chosenFileInc = -1;
+
+            foreach (FileInfo file in dir.EnumerateFiles("*", SearchOption.TopDirectoryOnly))
+            {
+                if (file.FullName == inputFile.FullName)
+                    continue;
+
+                string filenameNoExt = Path.GetFileNameWithoutExtension(file.Name);
+
+                int lastDotPos = filenameNoExt.LastIndexOf('.');
+                if (lastDotPos != -1)
+                {
+                    string realName = filenameNoExt.Substring(0, lastDotPos);
+
+                    if (realName != inputFileNameNoExt)
+                        continue;
+
+                    string info = filenameNoExt.Substring(lastDotPos + 1);
+
+                    string incStr = info;
+                    int infoDelim = info.IndexOf('-');
+                    if (infoDelim != -1)
+                        incStr = info.Substring(0, infoDelim);
+
+                    if (int.TryParse(incStr, out int inc))
+                    {
+                        if (inc > chosenFileInc)
+                        {
+                            chosenFile = file;
+                            chosenFileInc = inc;
+                        }
+                    }
+                }
+            }
+
+            return chosenFile.FullName;
+        }
+
+
+
+        // ____________________________________________________________________________________________________
+        // 
         //     HtmlAgilityPack
         // ____________________________________________________________________________________________________
         //
