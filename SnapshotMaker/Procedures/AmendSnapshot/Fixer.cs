@@ -34,15 +34,41 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
         /// </summary>
         public bool PreserveOriginalCopyOfModifiedFiles = true;
 
+        public enum Task
+        {
+            None,
+            RelativePathsInRootHtml,
+            RelativePathsInCssFontFaceUrls,
+            DeMinifyTargetJs,
+        }
+
+        /// <summary>
+        /// Toggles for each task we can perform.
+        /// </summary>
+        public Dictionary<Task, bool> EnabledTasks = new Dictionary<Task, bool>();
+
         public Fixer()
         {
             // --------------------------------------------------
             //   Default config
             // --------------------------------------------------
 
+            // Filter by types of resources to modify
             ResourceTypesToModify = new Dictionary<ResourceCategory, bool>();
             foreach (ResourceCategory category in Enum.GetValues(typeof(ResourceCategory)))
                 ResourceTypesToModify[category] = true; // Process everything (that needs processing)
+
+            // Filter by types of tasks to perform
+            SetEnableAllTasks(true); // Enable all tasks
+        }
+
+        public void SetEnableAllTasks(bool value)
+        {
+            foreach (Task task in Enum.GetValues(typeof(Task)))
+            {
+                if (task != Task.None)
+                    EnabledTasks[task] = value;
+            }
         }
 
 
@@ -65,7 +91,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
             // index.html
             //
             
-            if (ResourceTypesToModify[ResourceCategory.Html])
+            if (EnabledTasks[Task.RelativePathsInRootHtml] && ResourceTypesToModify[ResourceCategory.Html])
             {
                 LogLine("Fixing URLs in \"index.html\"");
 
@@ -122,7 +148,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
             //
 
             // Make the @font-face url()s in the css relative to the snapshot structure
-            if (ResourceTypesToModify[ResourceCategory.CssFonts])
+            if (EnabledTasks[Task.RelativePathsInCssFontFaceUrls] && ResourceTypesToModify[ResourceCategory.CssFonts])
             {
                 string cssMotivaSansPathRel = "public/shared/css/motiva_sans.css";
                 string cssMotivaSansPathFull = QualifyPathWebFile(snapshotDirectoryPath, cssMotivaSansPathRel);
@@ -156,6 +182,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
                     LogOK();
                 }
             }
+
             
 
             // --------------------------------------------------
@@ -175,7 +202,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
             // Here we are using the "OffScreen" variant of CefSharp, which is unfortunately the smallest one available. There is no variant which strips away all the cancer & bloat and leaves just the smoke belching V8 behind.
 
 
-            if (ResourceTypesToModify[ResourceCategory.Js])
+            if (EnabledTasks[Task.DeMinifyTargetJs] && ResourceTypesToModify[ResourceCategory.Js])
             {
                 LogLine("\nPreparing to de-minify javascript");
 
@@ -197,10 +224,9 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
                 Log("Initializing CefSharp prettier.io host...");
 
                 // Document which provides the js-side interface to prettier.io
-                string targetWebpageUrl = Path.Combine(Directory.GetCurrentDirectory(), @"JsDeMinifier\Main.html");
+                string targetWebpageUrl = Path.Combine(Directory.GetCurrentDirectory(), @"CefJsHost\Main.html");
 
                 // CefSharp configuration
-                string cefBinDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "CefBin");
                 CefSettings cefSettings = new CefSettings();
                 cefSettings.WindowlessRenderingEnabled = true;
                 cefSettings.CefCommandLineArgs.Add("disable-application-cache"); // don't cache retrieved resources
@@ -234,9 +260,13 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
                 cefBrowser.JavascriptObjectRepository.NameConverter = null; // Stop CefSharp from annoyingly changing symbol names on us
 
                 JsInteropBridge jib = new JsInteropBridge();
-                cefBrowser.JavascriptObjectRepository.Register("JsInteropBridge", jib, true, BindingOptions.DefaultBinder);
+                cefBrowser.JavascriptObjectRepository.Register("JsDeMinifier_JsInteropBridge", jib, true, BindingOptions.DefaultBinder);
+                // There appears to be zero way to make CefSharp create a binding scoped to an object. It always binds to window.
+                // This means we are unable to bind each jib to the api object that owns it, because that would just be too normal and convenient and we cant have that
+                // So instead we must use names that will never collide under window, i.e. "window.JsDeMinifier_JsInteropBridge" instead of "window.JsDeMinifier.JsInteropBridge"
+                // And thus adjust the js of each api object accordingly to look for its jib object under window, not under itself
 
-                Task<JavascriptResponse> jBindTask = cefBrowser.EvaluateScriptAsync(@"BindInteropCommunication();"); // Interop requires a handshake from both C# and JS realms in order to create a binding
+                Task<JavascriptResponse> jBindTask = cefBrowser.EvaluateScriptAsync(@"JsDeMinifier.BindInteropCommunication();"); // Interop requires a handshake from both C# and JS realms in order to create a binding
                 jBindTask.Wait(); // wait for script evaluation to complete
                 if (!jBindTask.Result.Success)
                 {
@@ -267,13 +297,16 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
                     jib.Input = rawJs; // JS cannot access this field; it can, however, access jib's GetInput() method, which returns the field (rather, a promise which resolved to the field value once that value is marshalled)
 
                     // Run pretter.io
-                    Task<JavascriptResponse> scriptTask = cefBrowser.EvaluateScriptAsync(@"DeMin();");
+                    Task<JavascriptResponse> scriptTask = cefBrowser.EvaluateScriptAsync(@"JsDeMinifier.DeMin();");
                     scriptTask.Wait();
                     if (!scriptTask.Result.Success)
                     {
                         LogERROR();
                         LogLine("[!!!] JS threw an exception during main operation [!!!]");
-                        throw new CefSharpJavascriptEvalException(jBindTask.Exception);
+                        if (scriptTask.Exception != null) // scriptTask.Exception may or may not be null. How convenient.
+                            throw new CefSharpJavascriptEvalException(scriptTask.Exception);
+                        else
+                            throw new CefSharpJavascriptEvalFailureException(scriptTask.Result.Message);
                     }
 
                     // Get result from pretter.io
@@ -385,6 +418,15 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
         public CefSharpJavascriptEvalException(AggregateException cefSharpInteropException)
         {
             CefSharpInteropException = cefSharpInteropException;
+        }
+    }
+
+    public class CefSharpJavascriptEvalFailureException : Exception
+    {
+        public string JsEvalFailureMessage { get; private set; }
+        public CefSharpJavascriptEvalFailureException(string jsEvalFailureMessage)
+        {
+            JsEvalFailureMessage = jsEvalFailureMessage;
         }
     }
 

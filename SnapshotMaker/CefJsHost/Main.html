@@ -1,0 +1,19 @@
+﻿<!DOCTYPE HTML>
+<html>
+    
+    <head>
+        <script src="lib/prettier@3.2.5/standalone.js"></script>
+        <script src="lib/prettier@3.2.5/plugins/babel.js"></script>
+        <script src="lib/prettier@3.2.5/plugins/estree.js"></script>
+    </head>
+    
+    <body>
+        <script type="text/javascript" src="Api/JsDeMinifier.js"></script>
+        <!--
+            Notes:
+            - CefSharp sends all JS console.* traces to the C# Console
+            - This is helpful for debugging but it can ruin formatting of the C#-side traces, so want to avoid printing anything unnecessary from JS
+        -->
+    </body>
+    
+</html>

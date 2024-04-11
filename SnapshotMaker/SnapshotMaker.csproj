@@ -109,10 +109,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Procedures\AmendSnapshot\JsDeMinifier\lib\prettier%403.2.5\plugins\babel.js" />
-    <Content Include="Procedures\AmendSnapshot\JsDeMinifier\lib\prettier%403.2.5\plugins\estree.js" />
-    <Content Include="Procedures\AmendSnapshot\JsDeMinifier\lib\prettier%403.2.5\standalone.js" />
-    <Content Include="Procedures\AmendSnapshot\JsDeMinifier\Main.html" />
+    <Content Include="CefJsHost\lib\prettier%403.2.5\plugins\babel.js" />
+    <Content Include="CefJsHost\lib\prettier%403.2.5\plugins\estree.js" />
+    <Content Include="CefJsHost\lib\prettier%403.2.5\standalone.js" />
+    <Content Include="CefJsHost\Main.html" />
+    <Content Include="CefJsHost\Api\JsDeMinifier.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

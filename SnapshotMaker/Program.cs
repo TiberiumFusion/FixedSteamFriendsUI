@@ -134,6 +134,8 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
                     Fixer fixer = new Fixer();
                     fixer.ResourceTypesToModify = ResourceTypesToProcess;
                     fixer.PreserveOriginalCopyOfModifiedFiles = true;
+                    fixer.SetEnableAllTasks(false);
+                    fixer.EnabledTasks[Fixer.Task.DeMinifyTargetJs] = true;
                     fixer.ModifySteamchatDotComSnapshot(outputPath);
                 }
                 catch (Exception e) when (CatchUnhandledExceptions)
