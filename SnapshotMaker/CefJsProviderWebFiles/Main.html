@@ -2,19 +2,25 @@
 <html>
     
     <head>
+        <!-- prettier.io -->
         <script src="lib/prettier@3.2.5/standalone.js"></script>
         <script src="lib/prettier@3.2.5/plugins/babel.js"></script>
         <script src="lib/prettier@3.2.5/plugins/estree.js"></script>
+        <script src="lib/prettier@3.2.5/plugins/estree.js"></script>
+
+        <!-- typescript -->
+        <!--<script src="lib/typescript@5.4.5/typescript.min.js"></script>-->
+        <!-- and tsjsrewriter -->
     </head>
     
     <body>
         <script type="text/javascript" src="Api/JsDeMinifier.js"></script>
         <script type="text/javascript" src="Api/ValveFriendsJsRewriter.js"></script>
         <!--
-        Notes:
-        - CefSharp sends all JS console.* traces to the C# Console
-        - This is helpful for debugging but it can ruin formatting of the C#-side traces, so want to avoid printing anything unnecessary from JS
-    -->
+            Notes:
+            - CefSharp sends all JS console.* traces to the C# Console
+            - This is helpful for debugging but it can ruin formatting of the C#-side traces, so want to avoid printing anything unnecessary from JS
+        -->
     </body>
     
 </html>

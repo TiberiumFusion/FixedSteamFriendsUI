@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Patch Files", "Patch Files\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnapshotMaker", "SnapshotMaker\SnapshotMaker.csproj", "{6817AB40-0944-4E8E-B9DD-B5FEA1F3E5B2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnapshotMaker.TsJsRewriter", "SnapshotMaker.TsJsRewriter\SnapshotMaker.TsJsRewriter.csproj", "{2574F603-4B6C-4A30-BFDD-E3BC09EEDFDF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{6817AB40-0944-4E8E-B9DD-B5FEA1F3E5B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6817AB40-0944-4E8E-B9DD-B5FEA1F3E5B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6817AB40-0944-4E8E-B9DD-B5FEA1F3E5B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2574F603-4B6C-4A30-BFDD-E3BC09EEDFDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2574F603-4B6C-4A30-BFDD-E3BC09EEDFDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2574F603-4B6C-4A30-BFDD-E3BC09EEDFDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2574F603-4B6C-4A30-BFDD-E3BC09EEDFDF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

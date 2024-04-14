@@ -64,13 +64,15 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.PatchSnaps
             // --------------------------------------------------
             //   Patch inner friends.js
             // --------------------------------------------------
-            
+
             // In other words, automate the code editing at the various patch locations that would otherwise need to be done by a human
 
             // There are absolutely zero modern javascript AST manipulation tools for .NET. But there are dozens in javascript itself.
-            // So tragically, once again, we have to use CEF to do this. I'm using babel for this purpose.
-
+            // So tragically, once again, we have to use CEF to do this
             // The interop here is very similar to the deminification process
+
+            // For the actual rewriting-js-using-js process, I'm using the typescript.js library. The SnapshotMaker.TsJsRewriter project contains all of our rewrite code, written & compiled in typescript and using typescript.js from within typescript, which is incredibly the least convoluted way to get intellisense on typescript.js (via typescript.d.js) for the development process of the rewrite code.
+            // Initially I tried babel, but babel is fucked beyond belief and 4 of the 5 necessary components are completely unusable outside of its nodejs circlejerk
 
             if (EnabledTasks[Task.RewriteInnerFriendsJs])
             {

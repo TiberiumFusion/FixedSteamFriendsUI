@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CefSharp;
 using CefSharp.OffScreen;
+using static TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Helpers;
 
 namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.CefJsProvider.Apis
 {
@@ -29,13 +30,19 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.CefJsProvider.Apis
 
         private JsInteropBridge Jib;
 
+        private JsTraceBridge Jtb;
+
         public Task<JavascriptResponse> Bind(ChromiumWebBrowser cefBrowser)
         {
             CefBrowser = cefBrowser;
 
-            // Same interop pattern as the JsDeMinifier
+            // Same base interop pattern as the JsDeMinifier
             Jib = new JsInteropBridge();
             CefBrowser.JavascriptObjectRepository.Register("ValveFriendsJsRewriter_JsInteropBridge", Jib, true, BindingOptions.DefaultBinder);
+
+            // But with a basic js -> c# message bridge added
+            Jtb = new JsTraceBridge();
+            CefBrowser.JavascriptObjectRepository.Register("ValveFriendsJsRewriter_JsTraceBridge", Jtb, true, BindingOptions.DefaultBinder);
 
             Task<JavascriptResponse> jBindTask = CefBrowser.EvaluateScriptAsync(@"ValveFriendsJsRewriter.BindInteropCommunication();");
             jBindTask.Wait();
@@ -60,7 +67,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.CefJsProvider.Apis
             // Same interop pattern as the JsDeMinifier
             Jib.Input = sourceJs;
 
-            // Run pretter.io on the source javascript
+            // Rewrite the javascript
             Task<JavascriptResponse> scriptTask = CefBrowser.EvaluateScriptAsync(@"ValveFriendsJsRewriter.Rewrite();");
             scriptTask.Wait();
             if (!scriptTask.Result.Success)
@@ -71,9 +78,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.CefJsProvider.Apis
                     throw new CefSharpJavascriptEvalFailureException(scriptTask.Result.Message);
             }
 
-            // Get result from pretter.io
-            // Jib.Result will still be unassigned at this point. CefSharp does not account for the work required to marshal the return data of the JS function call back to C# land before notifying the conclusion of the JS execution.
-            while (!Jib.GotResult) { } // JS calls Jib.SetResult(), which flips GotResult from false to true. Jib.Result is now guaranteed to be assigned.
+            while (!Jib.GotResult) { } // insurance against slow/sloppy cefsharp async marshalling from js -> c#
 
             object rewriteResult = Jib.Result;
             //if (prettierResult == null)
@@ -123,6 +128,24 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.CefJsProvider.Apis
             {
                 Result = result;
                 GotResult = true;
+            }
+        }
+
+        private class JsTraceBridge
+        {
+            //
+            // JS -> C#
+            //
+
+            // Basic js -> c# message bridge
+            // JS calls this with some strings and we print it
+            // The intent and benefit of doing this is that we avoid CefSharp's awful unreadable default js -> c# printer for console.log() calls
+            public void Trace(params string[] message)
+            {
+                List<string> items = new List<string>();
+                items.Add("[JS]");
+                items.AddRange(message);
+                LogLine(items.ToArray());
             }
         }
     }

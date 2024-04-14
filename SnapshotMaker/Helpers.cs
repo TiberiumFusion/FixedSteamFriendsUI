@@ -18,6 +18,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
 
         public static List<string> LogMessages = new List<string>();
         private static string CurrentLogMessage = "";
+        private static string MessageInlineSeparator = " ";
 
         public static void Log(params string[] messages)
         {
@@ -33,6 +34,10 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
             for (int i = 0; i < messages.Length; i++)
             {
                 string m = messages[i];
+
+                if (i > 0)
+                    m = MessageInlineSeparator + m;
+
                 if (i == messages.Length - 1)
                 {
                     Console.WriteLine(m);

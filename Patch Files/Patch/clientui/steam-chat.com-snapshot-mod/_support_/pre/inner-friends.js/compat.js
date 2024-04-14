@@ -72,7 +72,7 @@
     // Later, on Sept 21 2023, Valve downgraded steam-chat.com with code that assumes it is always running in SharedJsContext and thus has the tournament mode interface available. Valve also fucked up writing the code that uses the tournament mode interface, by calling it on the wrong objects where it does not exist, causing the fatal error that broke steam chat for all vgui-clients on that day.
 
     // The 1.x.x versions of this patch were based on a prior version of steam-chat.com (8200419, ca late July 2023), before steam-chat.com knew about tournament mode, and so they sidestepped the issue
-    // Patch version 2.0.0 is based on steam-chat.com 8601984 (Dec 22 2022), where tournament mode exists and Valve tries to use it (incorrectly). So we have to introduce a shim for those calls to work around the issue.
+    // Patch version 2.0.0 is based on steam-chat.com 8601984 (Dec 22 2023), where tournament mode exists and Valve tries to use it (incorrectly). So we have to introduce a shim for those calls to work around the issue.
 
     Compat.IsSteamInTournamentMode = function()
     {
