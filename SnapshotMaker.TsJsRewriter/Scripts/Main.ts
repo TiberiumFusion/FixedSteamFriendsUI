@@ -23,8 +23,9 @@
     //   Define patches per configuration
     // --------------------------------------------------
 
-    export function DefinePatches()
+    export function DefinePatches(config: any)
     {
+        Patches.InitAllPatchDefinitionFactories();
 
     }
 
@@ -33,10 +34,8 @@
     //   Patch some javascript
     // --------------------------------------------------
 
-    export function Test(code: string)
+    export function PatchJavascript(code: string): string
     {
-
-        Patches.InitAllPatchDefinitionFactories();
 
 
         let config: Patches.Definitions.CdnAssetUrlStringBuildConfig = {
@@ -95,7 +94,10 @@
 
         let transformedInputJsSourceFile = inputJsTransformResult.transformed[0];
 
-        console.log(JsEmitPrinter.printFile(transformedInputJsSourceFile));
+        let outputJs: string = JsEmitPrinter.printFile(transformedInputJsSourceFile);
 
+        console.log(outputJs);
+
+        return outputJs;
     }
 }

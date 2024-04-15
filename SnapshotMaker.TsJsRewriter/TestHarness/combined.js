@@ -57,14 +57,14 @@ var SnapshotMakerTsJsRewriter;
     // --------------------------------------------------
     //   Define patches per configuration
     // --------------------------------------------------
-    function DefinePatches() {
+    function DefinePatches(config) {
+        SnapshotMakerTsJsRewriter.Patches.InitAllPatchDefinitionFactories();
     }
     SnapshotMakerTsJsRewriter.DefinePatches = DefinePatches;
     // --------------------------------------------------
     //   Patch some javascript
     // --------------------------------------------------
-    function Test(code) {
-        SnapshotMakerTsJsRewriter.Patches.InitAllPatchDefinitionFactories();
+    function PatchJavascript(code) {
         let config = {
             MethodIdentifierExpression: "TFP.Resources.SelectCdnResourceUrl",
             Targets: [
@@ -99,9 +99,11 @@ var SnapshotMakerTsJsRewriter;
         console.log(">>>>> TRANSFORM DONE >>>>>", totalNodes);
         console.log("EXPORT");
         let transformedInputJsSourceFile = inputJsTransformResult.transformed[0];
-        console.log(SnapshotMakerTsJsRewriter.JsEmitPrinter.printFile(transformedInputJsSourceFile));
+        let outputJs = SnapshotMakerTsJsRewriter.JsEmitPrinter.printFile(transformedInputJsSourceFile);
+        console.log(outputJs);
+        return outputJs;
     }
-    SnapshotMakerTsJsRewriter.Test = Test;
+    SnapshotMakerTsJsRewriter.PatchJavascript = PatchJavascript;
 })(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -205,6 +207,7 @@ var SnapshotMakerTsJsRewriter;
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// <reference path="../Patches.ts" />
 // Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration"
+// https://stackoverflow.com/a/48189989/2489580
 var SnapshotMakerTsJsRewriter;
 (function (SnapshotMakerTsJsRewriter) {
     var Patches;
