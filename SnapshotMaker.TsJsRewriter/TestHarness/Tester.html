@@ -16,6 +16,7 @@
                 padding: 0px !important;
                 border: 0px !important;
                 outline: 0px !important;
+                overflow: hidden;
             }
 
             .GridView {
@@ -39,7 +40,10 @@
         <script src="combined.js"></script>
 
         <div style="width:100vw; height:100vh; display:flex; flex-direction:column;">
-            <div style="padding:10px;">Status :: <span id="TopMessage"></span></div>
+            <div style="display:flex; flex-direction:row; padding:10px;">
+                <div style="flex:1;">Status :: <span id="TopMessage"></span></div>
+                <div><input id="ToggleSaveFormsOnUnload" type="checkbox" name="asad" /><span>Save all form data on page unload</span></div>
+            </div>
 
             <div class="GridView" style="flex:1;">
                 <div class="TextAreaHost" style="grid-column:1; grid-row:1;">
@@ -82,7 +86,14 @@
         </div>
 
         <script>
+
+            // --------------------------------------------------
+            //   DOM elements
+            // --------------------------------------------------
+
             let topMessage = document.getElementById("TopMessage");
+
+            let toggleSaveFormsOnUnload = document.getElementById("ToggleSaveFormsOnUnload");
 
             let inputJsText = document.getElementById("InputJavascript");
             let clearInputJsText = document.getElementById("ClearInputJavascript");
@@ -97,74 +108,123 @@
             let clearAllButton = document.getElementById("ClearAll");
 
 
-            let cheapUiUpdateTimeoutDelay = 100; // ms
+            
+            // --------------------------------------------------
+            //   Idling
+            // --------------------------------------------------
+
+            let cheapUiUpdateTimeoutDelay = 50; // ms
+
+            function AsyncSleep(milliseconds)
+            {
+                return new Promise(resolve => setTimeout(resolve, milliseconds));
+            }
+
+
+            
+            // --------------------------------------------------
+            //   Status message
+            // --------------------------------------------------
 
             function Status(message)
             {
                 topMessage.innerText = message;
             }
 
+            
+            // --------------------------------------------------
+            //   User data storage
+            // --------------------------------------------------
 
-            function SaveAllToStorage()
+            //
+            // Small config data
+            //
+
+            function SaveNonFormConfigToStorage()
+            {
+                localStorage.Tester_ToggleSaveFormsOnUnload = toggleSaveFormsOnUnload.checked;
+            }
+
+            function LoadNonFormConfigToStorage()
+            {
+                toggleSaveFormsOnUnload.checked = (localStorage.Tester_ToggleSaveFormsOnUnload === 'true');
+            }
+
+            //
+            // Large form text data
+            //
+
+            async function SaveAllFormDataToStorage(updateUi)
             {
                 console.log("Saving all form data to storage...");
                 Status("Saving all form data to storage...");
 
-                setTimeout(() =>
-                {
-                    // LocalStorage quota is awful ancient 5 MB harcoded limit in chromium, so we're using lz-string which was specifically created for this very purpose
-                    localStorage.Tester_InputJavascript = LZString.compressToUTF16(inputJsText.value);
-                    localStorage.Tester_InputConfigJson = LZString.compressToUTF16(patchDefsConfigText.value);
-                    localStorage.Tester_OutputJavascript = LZString.compressToUTF16(outputJsText.value);
+                await AsyncSleep(cheapUiUpdateTimeoutDelay);
 
-                    console.log("Done");
-                    Status("Done");
-                }, cheapUiUpdateTimeoutDelay);
+                // LocalStorage quota is awful ancient 5 MB harcoded limit in chromium, so we're using lz-string which was specifically created for this very purpose
+                localStorage.Tester_InputJavascript = LZString.compressToUTF16(inputJsText.value);
+                localStorage.Tester_InputConfigJson = LZString.compressToUTF16(patchDefsConfigText.value);
+                localStorage.Tester_OutputJavascript = LZString.compressToUTF16(outputJsText.value);
+
+                console.log("Done");
+                Status("Done");
             }
             
-            function RecallAllFromStorage()
+            async function LoadAllFormDataFromStorage()
             {
                 console.log("Loading saved form data from storage...");
                 Status("Loading saved form data from storage...");
 
-                setTimeout(() =>
-                {
-                    inputJsText.value = LZString.decompressFromUTF16(localStorage.Tester_InputJavascript ?? "");
-                    patchDefsConfigText.value = LZString.decompressFromUTF16(localStorage.Tester_InputConfigJson ?? "");
-                    outputJsText.value = LZString.decompressFromUTF16(localStorage.Tester_OutputJavascript ?? "");
-                    console.log("Done");
-                    Status("Ready");
-                }, cheapUiUpdateTimeoutDelay);
+                await AsyncSleep(cheapUiUpdateTimeoutDelay);
+
+                inputJsText.value = LZString.decompressFromUTF16(localStorage.Tester_InputJavascript ?? "");
+                patchDefsConfigText.value = LZString.decompressFromUTF16(localStorage.Tester_InputConfigJson ?? "");
+                outputJsText.value = LZString.decompressFromUTF16(localStorage.Tester_OutputJavascript ?? "");
+
+                console.log("Done");
+                Status("Done");
             }
 
+            
+            // --------------------------------------------------
+            //   Main procedure
+            // --------------------------------------------------
 
-            function Process()
+            async function Process()
             {
                 console.log(">>>>>>>>>> PROCESS START >>>>>>>>>");
                 Status("Processing...");
 
-                setTimeout(() =>
-                {
-                    let configJson = patchDefsConfigText.value;
-                    let config = JSON.parse(configJson);
-                    SnapshotMakerTsJsRewriter.DefinePatches(config);
+                await AsyncSleep(cheapUiUpdateTimeoutDelay);
 
-                    let inputJs = inputJsText.value;
-                    let outputJs = SnapshotMakerTsJsRewriter.PatchJavascript(inputJs);
+                let configJson = patchDefsConfigText.value;
+                let config = JSON.parse(configJson);
+                SnapshotMakerTsJsRewriter.DefinePatches(config);
 
-                    outputJsText.value = outputJs;
+                let inputJs = inputJsText.value;
+                let outputJs = SnapshotMakerTsJsRewriter.PatchJavascript(inputJs);
 
-                    Status("Done");
-                    console.log(">>>>>>>>>> PROCESS END >>>>>>>>>");
-                }, cheapUiUpdateTimeoutDelay);
+                outputJsText.value = outputJs;
+
+                Status("Done");
+                console.log(">>>>>>>>>> PROCESS END >>>>>>>>>");
+
+                //SaveAllFormDataToStorage();
             }
 
+
+            // --------------------------------------------------
+            //   Events
+            // --------------------------------------------------
 
             goButton.onclick = (event) =>
             {
                 Process();
             };
 
+            //
+            // Form clears
+            //
 
             clearInputJsText.onclick = (event) =>
             {
@@ -188,18 +248,29 @@
                 outputJsText.value = "";
             };
 
+            //
+            // User data save/load
+            //
 
-            window.onload = (event) =>
+            window.onload = async (event) =>
             {
-                RecallAllFromStorage();
+                LoadNonFormConfigToStorage();
+                await LoadAllFormDataFromStorage();
+
+                Status("Ready");
             };
 
-            window.onbeforeunload = (event) =>
+            window.onbeforeunload = async (event) =>
             {
-                SaveAllToStorage();
+                SaveNonFormConfigToStorage();
+                if (toggleSaveFormsOnUnload.checked == true) {
+                    await SaveAllFormDataToStorage(); }
             };
+            // async handlers for this event only work if the user does NOT hide the "Changes you made may not be saved" popup and instead clicks Reload every time it appears
+
         </script>
 
     </body>
     
 </html>
+1
