@@ -37,15 +37,21 @@ namespace SnapshotMakerTsJsRewriter.Patches
             // Try all detections until one or none match
             for (let detection of this.Detections)
             {
-                let detectionInfo: DetectionInfo = detection(node);
+                let detectionInfo: DetectionInfo = detection(context, sourceFile, node);
                 if (detectionInfo != null && detectionInfo.Match == true)
                 {
                     Trace("> Detection '" + this.IdName + "' matched node: ", node);
-                    Trace("  - Original JS: ", JsEmitPrinter.printNode(ts.EmitHint.Unspecified, node, sourceFile));
+
+                    let oldJs: string = JsEmitPrinter.printNode(ts.EmitHint.Unspecified, node, sourceFile);
+                    Trace("  - Original JS: ", oldJs);
 
                     let patchedNode: ts.Node = this.Patch(context, sourceFile, node, detectionInfo.Data);
 
-                    Trace("  - Patched JS: ", JsEmitPrinter.printNode(ts.EmitHint.Unspecified, patchedNode, sourceFile));
+                    let newJs: string = JsEmitPrinter.printNode(ts.EmitHint.Unspecified, patchedNode, sourceFile);
+                    Trace("  - Patched JS:  ", newJs);
+
+                    if (IncludeOldJsCommentAtPatchSites)
+                        ts.addSyntheticLeadingComment(patchedNode, ts.SyntaxKind.MultiLineCommentTrivia, oldJs, false);
 
                     return patchedNode;
                     // Only the first matched detection will result in applying patch to the visited note. Any remaining detections are skipped.
@@ -121,7 +127,8 @@ namespace SnapshotMakerTsJsRewriter.Patches
         FactoriesByIdName = {};
 
         let factories: ConfiguredPatchDefinitionFactory[] = [
-            new Definitions.CdnAssetUrlStringBuildCPDF(),
+            new Definitions.RewriteCdnAssetUrlStringBuildCPDF(),
+            new Definitions.ShimSettingsStoreIsSteamInTournamentModeCPDF(),
         ];
 
         for (let factory of factories)

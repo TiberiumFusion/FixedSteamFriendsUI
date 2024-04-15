@@ -194,6 +194,8 @@
                 console.log(">>>>>>>>>> PROCESS START >>>>>>>>>");
                 Status("Processing...");
 
+                outputJsText.value = "";
+
                 await AsyncSleep(cheapUiUpdateTimeoutDelay);
 
                 let configJson = patchDefsConfigText.value;

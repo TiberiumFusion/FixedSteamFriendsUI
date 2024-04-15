@@ -10,15 +10,14 @@
 
 
 /// <reference path="../Patches.ts" />
-// Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration"
-// https://stackoverflow.com/a/48189989/2489580
+// Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration" (see: https://stackoverflow.com/a/48189989/2489580)
 
 
 namespace SnapshotMakerTsJsRewriter.Patches.Definitions
 {
-    export interface CdnAssetUrlStringBuildConfig
+    export interface RewriteCdnAssetUrlStringBuildConfig
     {
-        MethodIdentifierExpression: string, // e.g.  "TFP.Resources.SelectCdnResourceUrl"
+        ShimMethodIdentifierExpression: string, // e.g.  "TFP.Resources.SelectCdnResourceUrl"
         Targets: {
             ResourceUrl: string, // WITHOUT url vars! e.g.  "public/sounds/webui/steam_voice_channel_enter.m4a"
             UrlRootPathType: string, // e.g.  "Root"
@@ -26,11 +25,11 @@ namespace SnapshotMakerTsJsRewriter.Patches.Definitions
         }[] // syntax for defining arrays of implicit nested interface types without having to hoist them all as sibling individual interface { } blocks
     }
 
-    export class CdnAssetUrlStringBuildCPDF extends ConfiguredPatchDefinitionFactory
+    export class RewriteCdnAssetUrlStringBuildCPDF extends ConfiguredPatchDefinitionFactory
     {
-        PatchIdName = "CdnAssetUrlStringBuild";
+        PatchIdName = "RewriteCdnAssetUrlStringBuild";
 
-        CreatePatchDefinition(config: CdnAssetUrlStringBuildConfig): PatchDefinition
+        CreatePatchDefinition(config: RewriteCdnAssetUrlStringBuildConfig): PatchDefinition
         {
             return new PatchDefinition(this.PatchIdName,
 
@@ -43,11 +42,12 @@ namespace SnapshotMakerTsJsRewriter.Patches.Definitions
                 (context: ts.TransformationContext, sourceFile: ts.SourceFile, node: ts.Node, detectionInfoData: any) =>
                 {
                     let tnode: ts.BinaryExpression = detectionInfoData.TypedNode; // e.g.  o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_enter.m4a?v=1"
-                    let matchedTarget: CdnAssetUrlStringBuildConfig["Targets"][0] = detectionInfoData.MatchedTarget; // e.g.  ["public/sounds/webui/steam_voice_channel_enter.m4a", "Root", "JsSounds"]
+                    let matchedTarget: RewriteCdnAssetUrlStringBuildConfig["Targets"][0] = detectionInfoData.MatchedTarget; // e.g.  ["public/sounds/webui/steam_voice_channel_enter.m4a", "Root", "JsSounds"]
                     // syntax for retrieving implicit nested interface type ^--^
 
+                    // Replace the binary expression with a method call that takes the original halves of the binary expr as arguments
                     return context.factory.createCallExpression(
-                        context.factory.createIdentifier(config.MethodIdentifierExpression),
+                        context.factory.createIdentifier(config.ShimMethodIdentifierExpression),
                         null,
                         [ // arguments
                             tnode.left,
@@ -66,14 +66,14 @@ namespace SnapshotMakerTsJsRewriter.Patches.Definitions
                 //
 
                 [
-                    (node: ts.Node) =>
+                    (context: ts.TransformationContext, sourceFile: ts.SourceFile, node: ts.Node) =>
                     {
                         if (node.kind == ts.SyntaxKind.BinaryExpression) // e.g.  o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_enter.m4a?v=1"
                         {
-                            let tnode: ts.BinaryExpression = node as ts.BinaryExpression;
+                            let tnode = node as ts.BinaryExpression;
                             if (tnode.right.kind == ts.SyntaxKind.StringLiteral) // e.g.  "public/sounds/webui/steam_voice_channel_enter.m4a?v=1"
                             {
-                                let rightTNode: ts.StringLiteral = tnode.right as ts.StringLiteral;
+                                let rightTNode = tnode.right as ts.StringLiteral;
 
                                 let matchedTarget = config.Targets.find(item => item.ResourceUrl == RemoveQueryTailFromUrl(rightTNode.text));
                                 if (matchedTarget != null)

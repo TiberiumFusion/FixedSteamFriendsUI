@@ -8,6 +8,8 @@
 
     export var EnableTraces: boolean = true;
 
+    export var IncludeOldJsCommentAtPatchSites: boolean = true;
+
 
 
     // ____________________________________________________________________________________________________
@@ -25,6 +27,7 @@
 
     export interface DefinePatchesConfig
     {
+        Version: number,
         Definitions: {
             IdName: string, // e.g.  "CdnAssetUrlStringBuild"
             Config: any, // e.g.  A valid Patches.Definitions.CdnAssetUrlStringBuildConfig object

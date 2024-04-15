@@ -1,11 +1,12 @@
 {
+	Version: 1,
 	
 	Definitions: [
 		
 		{
-			IdName: "CdnAssetUrlStringBuild",
+			IdName: "RewriteCdnAssetUrlStringBuild",
 			Config: {
-				MethodIdentifierExpression: "TFP.Resources.SelectCdnResourceUrl",
+				ShimMethodIdentifierExpression: "TFP.Resources.SelectCdnResourceUrl",
 				Targets: [
 					{
 						ResourceUrl: "public/sounds/webui/steam_voice_channel_enter.m4a",
@@ -78,6 +79,15 @@
 						ResourceCategory: "JsImages",
 					},
 				]
+			}
+		},
+		
+		{
+			IdName: "ShimSettingsStoreIsSteamInTournamentMode",
+			Config: {
+				ShimMethodIdentifierExpression: "TFP.Compat.IsSteamInTournamentMode",
+				TargetFinalQualifier: "SettingsStore",
+				TargetFinalIdentifier: "IsSteamInTournamentMode",
 			}
 		},
 		

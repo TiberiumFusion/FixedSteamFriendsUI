@@ -48,6 +48,7 @@ var SnapshotMakerTsJsRewriter;
     // ____________________________________________________________________________________________________
     //
     SnapshotMakerTsJsRewriter.EnableTraces = true;
+    SnapshotMakerTsJsRewriter.IncludeOldJsCommentAtPatchSites = true;
     // ____________________________________________________________________________________________________
     //
     //     Main
@@ -129,12 +130,16 @@ var SnapshotMakerTsJsRewriter;
                 // The node will be patched if any of our detections match the currently visited node in the ast
                 // Try all detections until one or none match
                 for (let detection of this.Detections) {
-                    let detectionInfo = detection(node);
+                    let detectionInfo = detection(context, sourceFile, node);
                     if (detectionInfo != null && detectionInfo.Match == true) {
                         SnapshotMakerTsJsRewriter.Trace("> Detection '" + this.IdName + "' matched node: ", node);
-                        SnapshotMakerTsJsRewriter.Trace("  - Original JS: ", SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, node, sourceFile));
+                        let oldJs = SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, node, sourceFile);
+                        SnapshotMakerTsJsRewriter.Trace("  - Original JS: ", oldJs);
                         let patchedNode = this.Patch(context, sourceFile, node, detectionInfo.Data);
-                        SnapshotMakerTsJsRewriter.Trace("  - Patched JS: ", SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, patchedNode, sourceFile));
+                        let newJs = SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, patchedNode, sourceFile);
+                        SnapshotMakerTsJsRewriter.Trace("  - Patched JS:  ", newJs);
+                        if (SnapshotMakerTsJsRewriter.IncludeOldJsCommentAtPatchSites)
+                            ts.addSyntheticLeadingComment(patchedNode, ts.SyntaxKind.MultiLineCommentTrivia, oldJs, false);
                         return patchedNode;
                         // Only the first matched detection will result in applying patch to the visited note. Any remaining detections are skipped.
                         // There should never be multiple matched detections!
@@ -184,12 +189,100 @@ var SnapshotMakerTsJsRewriter;
             Factories = [];
             FactoriesByIdName = {};
             let factories = [
-                new Patches.Definitions.CdnAssetUrlStringBuildCPDF(),
+                new Patches.Definitions.RewriteCdnAssetUrlStringBuildCPDF(),
+                new Patches.Definitions.ShimSettingsStoreIsSteamInTournamentModeCPDF(),
             ];
             for (let factory of factories)
                 RegisterPatchDefinitionFactoryInstance(factory);
         }
         Patches.InitAllPatchDefinitionFactories = InitAllPatchDefinitionFactories;
+    })(Patches = SnapshotMakerTsJsRewriter.Patches || (SnapshotMakerTsJsRewriter.Patches = {}));
+})(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//    Compat shim for SettingsStore.IsSteamInTournamentMode()
+//
+//    Examples:
+//      1.  let e = I.Ul.ParentalStore.BIsFriendsBlocked() || I.Ul.SettingsStore.IsSteamInTournamentMode();
+//       -> let e = I.Ul.ParentalStore.BIsFriendsBlocked() || TFP.Compat.IsSteamInTournamentMode(I.Ul.SettingsStore);
+//
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// <reference path="../Patches.ts" />
+// Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration" (see: https://stackoverflow.com/a/48189989/2489580)
+var SnapshotMakerTsJsRewriter;
+(function (SnapshotMakerTsJsRewriter) {
+    var Patches;
+    (function (Patches) {
+        var Definitions;
+        (function (Definitions) {
+            class ShimSettingsStoreIsSteamInTournamentModeCPDF extends Patches.ConfiguredPatchDefinitionFactory {
+                constructor() {
+                    super(...arguments);
+                    this.PatchIdName = "ShimSettingsStoreIsSteamInTournamentMode";
+                }
+                CreatePatchDefinition(config) {
+                    return new Patches.PatchDefinition(this.PatchIdName, 
+                    // ____________________________________________________________________________________________________
+                    //
+                    //     Patch
+                    // ____________________________________________________________________________________________________
+                    //
+                    (context, sourceFile, node, detectionInfoData) => {
+                        let tnode = detectionInfoData.TypedNode; // e.g.  b.Ul.SettingsStore.IsSteamInTournamentMode()
+                        let nameOfMemberToCall = detectionInfoData.NameOfMemberToCallAccessNode; // e.g.  "IsSteamInTournamentMode"
+                        let ownerOfMemberToCall = detectionInfoData.OwnerOfMemberToCallAccessNode; // e.g.  b.Ul.SettingsStore
+                        // Replace the original call expression with a new call expression to a shim site that takes 1) the name of original member to call and 2) its owner as arguments
+                        return context.factory.createCallExpression(context.factory.createIdentifier(config.ShimMethodIdentifierExpression), null, [
+                            ownerOfMemberToCall,
+                            context.factory.createStringLiteral(nameOfMemberToCall),
+                        ]); // e.g.  TFP.Compat.SettingsStore_IsSteamInTournamentMode(b.Ul.SettingsStore, "IsSteamInTournamentMode")
+                    }, 
+                    // ____________________________________________________________________________________________________
+                    //
+                    //     Detections
+                    // ____________________________________________________________________________________________________
+                    //
+                    [
+                        (context, sourceFile, node) => {
+                            if (node.kind == ts.SyntaxKind.CallExpression) // e.g.  b.Ul.SettingsStore.IsSteamInTournamentMode()
+                             {
+                                let tnode = node;
+                                // This is chain of PropertyAccessExpressions, each nested in the reverse order of how it's typed in the js
+                                // Validate the .IsSteamInTournamentMode() call at the end of the expression
+                                if (tnode.expression.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  b.Ul.SettingsStore.IsSteamInTournamentMode
+                                 {
+                                    let memberToCall = tnode.expression;
+                                    if (memberToCall.name.kind == ts.SyntaxKind.Identifier) // e.g.  IsSteamInTournamentMode
+                                     {
+                                        let memberToCallName = memberToCall.name;
+                                        if (memberToCallName.escapedText == config.TargetFinalIdentifier) {
+                                            // Validate the SettingsStore object upon which .IsSteamInTournamentMode is accessed and called
+                                            if (memberToCall.expression.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  b.Ul.SettingsStore
+                                             {
+                                                let memberOwner = memberToCall.expression;
+                                                if (memberOwner.name.kind == ts.SyntaxKind.Identifier) // e.g.  SettingsStore
+                                                 {
+                                                    let memberOwnerName = memberOwner.name;
+                                                    if (memberOwnerName.escapedText == config.TargetFinalQualifier) {
+                                                        // Match: the end of the root (tnode) expression is: .SettingsStore.IsSteamInTournamentMode() (or whatever config.TargetFinalQualifier/Identifier are configured to)
+                                                        return new Patches.DetectionInfo(true, {
+                                                            "TypedNode": tnode,
+                                                            "NameOfMemberToCallAccessNode": memberToCallName.escapedText,
+                                                            "OwnerOfMemberToCallAccessNode": memberOwner, // b.Ul.SettingsStore
+                                                        });
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]);
+                }
+            }
+            Definitions.ShimSettingsStoreIsSteamInTournamentModeCPDF = ShimSettingsStoreIsSteamInTournamentModeCPDF;
+        })(Definitions = Patches.Definitions || (Patches.Definitions = {}));
     })(Patches = SnapshotMakerTsJsRewriter.Patches || (SnapshotMakerTsJsRewriter.Patches = {}));
 })(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -202,18 +295,17 @@ var SnapshotMakerTsJsRewriter;
 //
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// <reference path="../Patches.ts" />
-// Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration"
-// https://stackoverflow.com/a/48189989/2489580
+// Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration" (see: https://stackoverflow.com/a/48189989/2489580)
 var SnapshotMakerTsJsRewriter;
 (function (SnapshotMakerTsJsRewriter) {
     var Patches;
     (function (Patches) {
         var Definitions;
         (function (Definitions) {
-            class CdnAssetUrlStringBuildCPDF extends Patches.ConfiguredPatchDefinitionFactory {
+            class RewriteCdnAssetUrlStringBuildCPDF extends Patches.ConfiguredPatchDefinitionFactory {
                 constructor() {
                     super(...arguments);
-                    this.PatchIdName = "CdnAssetUrlStringBuild";
+                    this.PatchIdName = "RewriteCdnAssetUrlStringBuild";
                 }
                 CreatePatchDefinition(config) {
                     return new Patches.PatchDefinition(this.PatchIdName, 
@@ -226,7 +318,8 @@ var SnapshotMakerTsJsRewriter;
                         let tnode = detectionInfoData.TypedNode; // e.g.  o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_enter.m4a?v=1"
                         let matchedTarget = detectionInfoData.MatchedTarget; // e.g.  ["public/sounds/webui/steam_voice_channel_enter.m4a", "Root", "JsSounds"]
                         // syntax for retrieving implicit nested interface type ^--^
-                        return context.factory.createCallExpression(context.factory.createIdentifier(config.MethodIdentifierExpression), null, [
+                        // Replace the binary expression with a method call that takes the original halves of the binary expr as arguments
+                        return context.factory.createCallExpression(context.factory.createIdentifier(config.ShimMethodIdentifierExpression), null, [
                             tnode.left,
                             tnode.right,
                             context.factory.createStringLiteral(matchedTarget.UrlRootPathType),
@@ -239,7 +332,7 @@ var SnapshotMakerTsJsRewriter;
                     // ____________________________________________________________________________________________________
                     //
                     [
-                        (node) => {
+                        (context, sourceFile, node) => {
                             if (node.kind == ts.SyntaxKind.BinaryExpression) // e.g.  o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_enter.m4a?v=1"
                              {
                                 let tnode = node;
@@ -259,7 +352,7 @@ var SnapshotMakerTsJsRewriter;
                     ]);
                 }
             }
-            Definitions.CdnAssetUrlStringBuildCPDF = CdnAssetUrlStringBuildCPDF;
+            Definitions.RewriteCdnAssetUrlStringBuildCPDF = RewriteCdnAssetUrlStringBuildCPDF;
         })(Definitions = Patches.Definitions || (Patches.Definitions = {}));
     })(Patches = SnapshotMakerTsJsRewriter.Patches || (SnapshotMakerTsJsRewriter.Patches = {}));
 })(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
