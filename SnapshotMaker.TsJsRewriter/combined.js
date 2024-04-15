@@ -2,124 +2,80 @@ var SnapshotMakerTsJsRewriter;
 (function (SnapshotMakerTsJsRewriter) {
     // ____________________________________________________________________________________________________
     //
-    //     Configuration
+    //     Tracing
     // ____________________________________________________________________________________________________
     //
-    let EnableTraces = true;
-    // ____________________________________________________________________________________________________
-    //
-    //     Helpers
-    // ____________________________________________________________________________________________________
-    //
-    // --------------------------------------------------
-    //   Tracing
-    // --------------------------------------------------
     // Our functions call this
     function Trace(...message) {
-        if (!Trace)
+        if (!SnapshotMakerTsJsRewriter.EnableTraces)
             return;
         UserTraceHandler(...message);
     }
+    SnapshotMakerTsJsRewriter.Trace = Trace;
     // User can replace this with their own trace handler
     function UserTraceHandler(...message) {
         console.log(...message);
     }
-    // --------------------------------------------------
-    //   TypeScript js emission
-    // --------------------------------------------------
+    SnapshotMakerTsJsRewriter.UserTraceHandler = UserTraceHandler;
+    // ____________________________________________________________________________________________________
+    //
+    //     TypeScript js emission
+    // ____________________________________________________________________________________________________
+    //
     // General purpose formatted JS code string provider for nodes and source files
-    let JsEmitPrinter = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
+    SnapshotMakerTsJsRewriter.JsEmitPrinter = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
     // ____________________________________________________________________________________________________
     //
-    //     Patches
+    //     String handling
     // ____________________________________________________________________________________________________
     //
-    // Each patch location is defined by two things: an anchor ast node from which the detection is evaluated, and the patch to be performed from that node if the detection passes
-    // Since the same patch may be performed at many different locations, each patch definition consists of one patch and one or more detections
-    class DetectionInfo {
-        constructor(match, data) {
-            this.Match = match;
-            this.Data = data;
-        }
+    // Given:   "some\full\or partial.url?with=urlvars&thatwe=dontwant"
+    // Returns: "some\full\or partial.url"
+    function RemoveQueryTailFromUrl(url) {
+        let qPos = url.indexOf('?');
+        if (qPos == -1)
+            return url;
+        else
+            return url.substr(0, qPos);
     }
-    class PatchDefinition {
-        constructor(idName, patch, detections) {
-            this.IdName = idName;
-            this.Patch = patch;
-            this.Detections = detections;
-        }
-        DetectAndPatch(context, sourceFile, node) {
-            // Try all detections until one or none match
-            for (let detection of this.Detections) {
-                let detectionInfo = detection(node);
-                if (detectionInfo != null && detectionInfo.Match == true) {
-                    Trace("> Detection '" + this.IdName + "' matched node: ", node);
-                    Trace("  - Original JS: ", JsEmitPrinter.printNode(ts.EmitHint.Unspecified, node, sourceFile));
-                    let patchedNode = this.Patch(context, sourceFile, node, detectionInfo.Data);
-                    Trace("  - Patched JS: ", JsEmitPrinter.printNode(ts.EmitHint.Unspecified, patchedNode, sourceFile));
-                    return patchedNode;
-                    // Only the first matched detection gets to patch the area
-                    // There should never be multiple matched detections!
-                }
-            }
-        }
-    }
-    //
-    // All patches
-    //
-    let AllPatches = [];
-    function BuildPatches() {
-        // --------------------------------------------------
-        //   Helpers
-        // --------------------------------------------------
-        function DetectionMatch(match, data) {
-            return new DetectionInfo(match, data);
-        }
-        // --------------------------------------------------
-        //   CDN asset fetch url rewriting
-        //
-        //   Example:
-        //   ->  u.Ul.AudioPlaybackManager.PlayAudioURL(o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_enter.m4a?v=1")
-        //    -> u.Ul.AudioPlaybackManager.PlayAudioURL( TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_voice_channel_enter.m4a?v=1", "Root", "JsSounds") )
-        // --------------------------------------------------
-        let cdnUrlLiterals = [
-            "public/sounds/webui/steam_voice_channel_enter.m4a?v=1",
-            "public/sounds/webui/steam_voice_channel_exit.m4a?v=1",
-        ];
-        AllPatches.push(new PatchDefinition("CdnAssetUrlStringBuild", (context, sourceFile, node, detectionInfoData) => {
-            let top = detectionInfoData.Top;
-            let right = detectionInfoData.Right;
-            console.log("CHECK 1", JsEmitPrinter.printNode(ts.EmitHint.Unspecified, node, sourceFile));
-            let mTop = context.factory.updateBinaryExpression(top, top.left, top.operatorToken, context.factory.createStringLiteral("CHANGED"));
-            console.log("CHECK 2", JsEmitPrinter.printNode(ts.EmitHint.Unspecified, mTop, sourceFile));
-            return mTop;
-        }, [
-            (node) => {
-                if (node.kind == ts.SyntaxKind.BinaryExpression) // e.g.  o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_enter.m4a?v=1"
-                 {
-                    let tnode = node;
-                    if (tnode.right.kind == ts.SyntaxKind.StringLiteral) // e.g.  "public/sounds/webui/steam_voice_channel_enter.m4a?v=1"
-                     {
-                        let rightTNode = tnode.right;
-                        if (cdnUrlLiterals.indexOf(rightTNode.text) != -1) {
-                            return DetectionMatch(true, {
-                                "Top": tnode,
-                                "Right": rightTNode,
-                            });
-                        }
-                    }
-                }
-            }
-        ]));
-    }
-    BuildPatches();
+    SnapshotMakerTsJsRewriter.RemoveQueryTailFromUrl = RemoveQueryTailFromUrl;
+})(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
+var SnapshotMakerTsJsRewriter;
+(function (SnapshotMakerTsJsRewriter) {
     // ____________________________________________________________________________________________________
     //
-    //     Main interface
+    //     Configuration
     // ____________________________________________________________________________________________________
     //
+    SnapshotMakerTsJsRewriter.EnableTraces = true;
+    // ____________________________________________________________________________________________________
+    //
+    //     Main
+    // ____________________________________________________________________________________________________
+    //
+    var ConfiguredPatchDefinitions = [];
+    // --------------------------------------------------
+    //   Define patches per configuration
+    // --------------------------------------------------
+    function DefinePatches() {
+    }
+    SnapshotMakerTsJsRewriter.DefinePatches = DefinePatches;
+    // --------------------------------------------------
+    //   Patch some javascript
+    // --------------------------------------------------
     function Test(code) {
-        console.log("hello world");
+        SnapshotMakerTsJsRewriter.Patches.InitAllPatchDefinitionFactories();
+        let config = {
+            MethodIdentifierExpression: "TFP.Resources.SelectCdnResourceUrl",
+            Targets: [
+                {
+                    ResourceUrl: "public/sounds/webui/steam_voice_channel_enter.m4a",
+                    UrlRootPathType: "Root",
+                    ResourceCategory: "JsSounds",
+                }
+            ]
+        };
+        ConfiguredPatchDefinitions.push(SnapshotMakerTsJsRewriter.Patches.GetPatchDefinitionFactoryByIdName("CdnAssetUrlStringBuild").CreatePatchDefinition(config));
         let inputJsSourceFile = ts.createSourceFile("blah.js", code, ts.ScriptTarget.ES2015, /*setParentNodes*/ true, ts.ScriptKind.JS);
         console.log(inputJsSourceFile);
         let totalNodes = 0;
@@ -129,8 +85,8 @@ var SnapshotMakerTsJsRewriter;
             return function (sourceFile) {
                 let visitor = function (node) {
                     totalNodes += 1;
-                    for (let patchDef of AllPatches) {
-                        let patchedNode = patchDef.DetectAndPatch(context, sourceFile, node);
+                    for (let patchDefinition of ConfiguredPatchDefinitions) {
+                        let patchedNode = patchDefinition.DetectAndPatch(context, sourceFile, node);
                         if (patchedNode != null) // return is non-null if this node was detected & patched
                             return patchedNode;
                     }
@@ -143,8 +99,169 @@ var SnapshotMakerTsJsRewriter;
         console.log(">>>>> TRANSFORM DONE >>>>>", totalNodes);
         console.log("EXPORT");
         let transformedInputJsSourceFile = inputJsTransformResult.transformed[0];
-        console.log(JsEmitPrinter.printFile(transformedInputJsSourceFile));
+        console.log(SnapshotMakerTsJsRewriter.JsEmitPrinter.printFile(transformedInputJsSourceFile));
     }
     SnapshotMakerTsJsRewriter.Test = Test;
+})(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//    Patch definitions and the factory objects which create them
+//
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+var SnapshotMakerTsJsRewriter;
+(function (SnapshotMakerTsJsRewriter) {
+    var Patches;
+    (function (Patches) {
+        // ____________________________________________________________________________________________________
+        //
+        //     Structures
+        // ____________________________________________________________________________________________________
+        //
+        // Each patch target is defined by two things: an anchor ast node from which the detection is evaluated, and the patch to be performed relative to that node if the detection passes
+        // Since the same patch may be performed at many different locations, each patch definition consists of one patch and one or more detections
+        // Named combination of detector(s) + patch
+        class PatchDefinition {
+            constructor(idName, patch, detections) {
+                this.IdName = idName;
+                this.Patch = patch;
+                this.Detections = detections;
+            }
+            DetectAndPatch(context, sourceFile, node) {
+                // This is called for each node during the single AST traverse
+                // The node will be patched if any of our detections match the currently visited node in the ast
+                // Try all detections until one or none match
+                for (let detection of this.Detections) {
+                    let detectionInfo = detection(node);
+                    if (detectionInfo != null && detectionInfo.Match == true) {
+                        SnapshotMakerTsJsRewriter.Trace("> Detection '" + this.IdName + "' matched node: ", node);
+                        SnapshotMakerTsJsRewriter.Trace("  - Original JS: ", SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, node, sourceFile));
+                        let patchedNode = this.Patch(context, sourceFile, node, detectionInfo.Data);
+                        SnapshotMakerTsJsRewriter.Trace("  - Patched JS: ", SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, patchedNode, sourceFile));
+                        return patchedNode;
+                        // Only the first matched detection will result in applying patch to the visited note. Any remaining detections are skipped.
+                        // There should never be multiple matched detections!
+                    }
+                }
+                // No match, no patch, return null
+            }
+        }
+        Patches.PatchDefinition = PatchDefinition;
+        // Bundle of data created on a matched detection; provided to the patch method associated with the detection method
+        class DetectionInfo {
+            constructor(match, data) {
+                this.Match = match;
+                this.Data = data;
+            }
+        }
+        Patches.DetectionInfo = DetectionInfo;
+        //export interface PatchDefinitionFactoryCreateConfig { }
+        // Object which creates configured patch definitions
+        // A configured patch definition has its detection and patch methods both altered by a provided config, which usually specifies the signatures of the patch targets and what to do with them when patching them
+        class ConfiguredPatchDefinitionFactory {
+            //PatchDefConfig: PatchDefinitionFactoryCreateConfig;
+            //PatchMethod: Function;
+            //DetectionMethods: Function[];
+            CreatePatchDefinition(config) {
+                throw new Error("Not implemented");
+            }
+        }
+        Patches.ConfiguredPatchDefinitionFactory = ConfiguredPatchDefinitionFactory;
+        // ____________________________________________________________________________________________________
+        //
+        //     Instantiation of all known configured patch definition factories
+        // ____________________________________________________________________________________________________
+        //
+        var FactoriesInitialized = false;
+        var Factories = [];
+        var FactoriesByIdName = {};
+        function GetPatchDefinitionFactoryByIdName(idName) {
+            return FactoriesByIdName[idName];
+        }
+        Patches.GetPatchDefinitionFactoryByIdName = GetPatchDefinitionFactoryByIdName;
+        function RegisterPatchDefinitionFactoryInstance(factory) {
+            Factories.push(factory);
+            FactoriesByIdName[factory.PatchIdName] = factory;
+        }
+        function InitAllPatchDefinitionFactories() {
+            Factories = [];
+            FactoriesByIdName = {};
+            let factories = [
+                new Patches.Definitions.CdnAssetUrlStringBuildCPDF(),
+            ];
+            for (let factory of factories)
+                RegisterPatchDefinitionFactoryInstance(factory);
+        }
+        Patches.InitAllPatchDefinitionFactories = InitAllPatchDefinitionFactories;
+    })(Patches = SnapshotMakerTsJsRewriter.Patches || (SnapshotMakerTsJsRewriter.Patches = {}));
+})(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//    CDN asset fetch url rewriting
+//
+//    Examples:
+//      1.  u.Ul.AudioPlaybackManager.PlayAudioURL( o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_enter.m4a?v=1" )
+//       -> u.Ul.AudioPlaybackManager.PlayAudioURL( TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_voice_channel_enter.m4a?v=1", "Root", "JsSounds") )
+//
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// <reference path="../Patches.ts" />
+// Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration"
+var SnapshotMakerTsJsRewriter;
+(function (SnapshotMakerTsJsRewriter) {
+    var Patches;
+    (function (Patches) {
+        var Definitions;
+        (function (Definitions) {
+            class CdnAssetUrlStringBuildCPDF extends Patches.ConfiguredPatchDefinitionFactory {
+                constructor() {
+                    super(...arguments);
+                    this.PatchIdName = "CdnAssetUrlStringBuild";
+                }
+                CreatePatchDefinition(config) {
+                    return new Patches.PatchDefinition(this.PatchIdName, 
+                    // ____________________________________________________________________________________________________
+                    //
+                    //     Patch
+                    // ____________________________________________________________________________________________________
+                    //
+                    (context, sourceFile, node, detectionInfoData) => {
+                        let tnode = detectionInfoData.TypedNode; // e.g.  o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_enter.m4a?v=1"
+                        let matchedTarget = detectionInfoData.MatchedTarget; // e.g.  ["public/sounds/webui/steam_voice_channel_enter.m4a", "Root", "JsSounds"]
+                        // syntax for retrieving implicit nested interface type ^--^
+                        return context.factory.createCallExpression(context.factory.createIdentifier(config.MethodIdentifierExpression), null, [
+                            tnode.left,
+                            tnode.right,
+                            context.factory.createStringLiteral(matchedTarget.UrlRootPathType),
+                            context.factory.createStringLiteral(matchedTarget.ResourceCategory),
+                        ]); // e.g.  TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_voice_channel_enter.m4a?v=1", "Root", "JsSounds")
+                    }, 
+                    // ____________________________________________________________________________________________________
+                    //
+                    //     Detections
+                    // ____________________________________________________________________________________________________
+                    //
+                    [
+                        (node) => {
+                            if (node.kind == ts.SyntaxKind.BinaryExpression) // e.g.  o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_enter.m4a?v=1"
+                             {
+                                let tnode = node;
+                                if (tnode.right.kind == ts.SyntaxKind.StringLiteral) // e.g.  "public/sounds/webui/steam_voice_channel_enter.m4a?v=1"
+                                 {
+                                    let rightTNode = tnode.right;
+                                    let matchedTarget = config.Targets.find(item => item.ResourceUrl == SnapshotMakerTsJsRewriter.RemoveQueryTailFromUrl(rightTNode.text));
+                                    if (matchedTarget != null) {
+                                        return new Patches.DetectionInfo(true, {
+                                            "TypedNode": tnode,
+                                            "MatchedTarget": matchedTarget,
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    ]);
+                }
+            }
+            Definitions.CdnAssetUrlStringBuildCPDF = CdnAssetUrlStringBuildCPDF;
+        })(Definitions = Patches.Definitions || (Patches.Definitions = {}));
+    })(Patches = SnapshotMakerTsJsRewriter.Patches || (SnapshotMakerTsJsRewriter.Patches = {}));
 })(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
 //# sourceMappingURL=combined.js.map

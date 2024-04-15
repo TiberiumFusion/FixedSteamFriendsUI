@@ -1,0 +1,170 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{89370614-CC59-49E8-A4C2-706F92F5F89F}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>TiberiumFusion.FixedSteamFriendsUI.QuickPatcher</RootNamespace>
+    <AssemblyName>FixedSteamFriendsUI QuickPatcher</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ClientUiFriendsJsState.cs" />
+    <Compile Include="ForcedSteamClientUpdateTip.xaml.cs">
+      <DependentUpon>ForcedSteamClientUpdateTip.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers.cs" />
+    <Compile Include="Infra\EpochSecondsToFriendlyStringConverters.cs" />
+    <Compile Include="Infra\BoolSelectorConverters.cs" />
+    <Compile Include="Infra\PropertyChangedNotifier.cs" />
+    <Compile Include="Infra\NullableToVisibilityConverter.cs" />
+    <Compile Include="Infra\ScrollViewerHelper.cs" />
+    <Compile Include="Infra\XamlMathConverters.cs" />
+    <Compile Include="Infra\XamlNegateBoolConverter.cs" />
+    <Compile Include="Infra\XamlTrimStringEndConverter.cs" />
+    <Compile Include="Infra\ZipFileExtensionsEx.cs" />
+    <Compile Include="Log.xaml.cs">
+      <DependentUpon>Log.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PatcherState.cs" />
+    <Compile Include="PatchInstaller.cs" />
+    <Compile Include="PatchInstallLog.cs" />
+    <Compile Include="PatchInstallState.cs" />
+    <Compile Include="PatchMetadata.cs" />
+    <Compile Include="PatchMetadataSheet.xaml.cs">
+      <DependentUpon>PatchMetadataSheet.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PatchPayloadFileInfo.cs" />
+    <Compile Include="PatchTypeGuidToDisplayName.cs" />
+    <Compile Include="PatchPayloadDiskRepository.cs" />
+    <Compile Include="StaticData\PatchTypes.cs" />
+    <Compile Include="StaticData\SteamClientNotableVersions.cs" />
+    <Compile Include="SteamExeVersionStatus.cs" />
+    <Compile Include="SteamState.cs" />
+    <Compile Include="Infra\XamlDllIconGetter.cs" />
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Patcher.xaml.cs">
+      <DependentUpon>Patcher.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="app.config" />
+    <None Include="app.manifest" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Resources\PatchPayloads\PatchPayload_v1.2.0-{68c67e12-e61e-4148-a5af-91b0e2c223b7}.zip" />
+    <None Include="Resources\PatchPayloads\PatchPayload_v2.0.2-{5973889e-ce35-4632-b864-260b436efbd3}.zip" />
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>rmdir "$(TargetDir)PatchPayloads\" /s /q
+xcopy "$(ProjectDir)Resources\PatchPayloads" "$(TargetDir)PatchPayloads\" /s /y</PostBuildEvent>
+  </PropertyGroup>
+  <ItemGroup>
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\mscorlib.dll" />
+    <ReferencePath Include="T:\User Files\Desktop\Other\Steam\Steam Friends Turmoil\Solutions\steam-chat.com Snapshot\Repo\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll" />
+    <ReferencePath Include="T:\User Files\Desktop\Other\Steam\Steam Friends Turmoil\Solutions\steam-chat.com Snapshot\Repo\QuickPatcher\References\Ookii.Dialogs.Wpf.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\PresentationCore.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\PresentationFramework.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\System.Core.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\System.Data.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\System.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\System.Drawing.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\System.IO.Compression.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\System.IO.Compression.FileSystem.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\System.Xaml.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\System.Xml.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\WindowsBase.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="T:\User Files\Desktop\Other\Steam\Steam Friends Turmoil\Solutions\steam-chat.com Snapshot\Repo\QuickPatcher\obj\Debug\ForcedSteamClientUpdateTip.g.cs" />
+    <Compile Include="T:\User Files\Desktop\Other\Steam\Steam Friends Turmoil\Solutions\steam-chat.com Snapshot\Repo\QuickPatcher\obj\Debug\Log.g.cs" />
+    <Compile Include="T:\User Files\Desktop\Other\Steam\Steam Friends Turmoil\Solutions\steam-chat.com Snapshot\Repo\QuickPatcher\obj\Debug\Patcher.g.cs" />
+    <Compile Include="T:\User Files\Desktop\Other\Steam\Steam Friends Turmoil\Solutions\steam-chat.com Snapshot\Repo\QuickPatcher\obj\Debug\MainWindow.g.cs" />
+    <Compile Include="T:\User Files\Desktop\Other\Steam\Steam Friends Turmoil\Solutions\steam-chat.com Snapshot\Repo\QuickPatcher\obj\Debug\PatchMetadataSheet.g.cs" />
+    <Compile Include="T:\User Files\Desktop\Other\Steam\Steam Friends Turmoil\Solutions\steam-chat.com Snapshot\Repo\QuickPatcher\obj\Debug\App.g.cs" />
+    <Compile Include="T:\User Files\Desktop\Other\Steam\Steam Friends Turmoil\Solutions\steam-chat.com Snapshot\Repo\QuickPatcher\obj\Debug\GeneratedInternalTypeHelper.g.cs" />
+  </ItemGroup>
+</Project>

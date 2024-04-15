@@ -85,7 +85,10 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Declarations\typescript%404.9.5\typescript.d.ts" />
+    <TypeScriptCompile Include="Scripts\Helpers.ts" />
     <TypeScriptCompile Include="Scripts\Main.ts" />
+    <TypeScriptCompile Include="Scripts\Patches\Definitions\CdnAssetUrlStringBuild.ts" />
+    <TypeScriptCompile Include="Scripts\Patches\Patches.ts" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
