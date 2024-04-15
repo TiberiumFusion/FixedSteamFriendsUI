@@ -78,6 +78,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="TestHarness\lib\json5%402.3.0\index.min.js" />
+    <Content Include="TestHarness\lib\lz-string%401.5.0\lz-string.min.js" />
     <Content Include="TestHarness\lib\typescript%404.9.5\typescript.js" />
     <Content Include="TestHarness\lib\typescript%404.9.5\typescript.min.js" />
     <Content Include="TestHarness\Tester.html" />

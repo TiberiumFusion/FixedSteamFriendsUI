@@ -54,28 +54,24 @@ var SnapshotMakerTsJsRewriter;
     // ____________________________________________________________________________________________________
     //
     var ConfiguredPatchDefinitions = [];
-    // --------------------------------------------------
-    //   Define patches per configuration
-    // --------------------------------------------------
-    function DefinePatches(config) {
+    function DefinePatches(patchDefinitionsConfig) {
         SnapshotMakerTsJsRewriter.Patches.InitAllPatchDefinitionFactories();
+        ConfiguredPatchDefinitions = [];
+        //for (let definition in config.Definitions) // typescript fails to infer correct type for local `definition`
+        patchDefinitionsConfig.Definitions.forEach((item) => {
+            let factory = SnapshotMakerTsJsRewriter.Patches.GetPatchDefinitionFactoryByIdName(item.IdName);
+            if (factory == null) {
+                console.warn("Unknown patch IdName '" + item.IdName + "'. Patch cannot be built and will be skipped.");
+                return;
+            }
+            ConfiguredPatchDefinitions.push(factory.CreatePatchDefinition(item.Config));
+        });
     }
     SnapshotMakerTsJsRewriter.DefinePatches = DefinePatches;
     // --------------------------------------------------
     //   Patch some javascript
     // --------------------------------------------------
     function PatchJavascript(code) {
-        let config = {
-            MethodIdentifierExpression: "TFP.Resources.SelectCdnResourceUrl",
-            Targets: [
-                {
-                    ResourceUrl: "public/sounds/webui/steam_voice_channel_enter.m4a",
-                    UrlRootPathType: "Root",
-                    ResourceCategory: "JsSounds",
-                }
-            ]
-        };
-        ConfiguredPatchDefinitions.push(SnapshotMakerTsJsRewriter.Patches.GetPatchDefinitionFactoryByIdName("CdnAssetUrlStringBuild").CreatePatchDefinition(config));
         let inputJsSourceFile = ts.createSourceFile("blah.js", code, ts.ScriptTarget.ES2015, /*setParentNodes*/ true, ts.ScriptKind.JS);
         console.log(inputJsSourceFile);
         let totalNodes = 0;

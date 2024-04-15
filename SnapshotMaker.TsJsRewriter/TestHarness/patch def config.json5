@@ -1,0 +1,86 @@
+{
+	
+	Definitions: [
+		
+		{
+			IdName: "CdnAssetUrlStringBuild",
+			Config: {
+				MethodIdentifierExpression: "TFP.Resources.SelectCdnResourceUrl",
+				Targets: [
+					{
+						ResourceUrl: "public/sounds/webui/steam_voice_channel_enter.m4a",
+						UrlRootPathType: "Root",
+						ResourceCategory: "JsSounds",
+					},
+					{
+						ResourceUrl: "public/sounds/webui/steam_voice_channel_exit.m4a",
+						UrlRootPathType: "Root",
+						ResourceCategory: "JsSounds",
+					},
+					{
+						ResourceUrl: "public/sounds/webui/steam_chatroom_notification.m4a",
+						UrlRootPathType: "Root",
+						ResourceCategory: "JsSounds",
+					},
+					{
+						ResourceUrl: "public/sounds/webui/steam_at_mention.m4a",
+						UrlRootPathType: "Root",
+						ResourceCategory: "JsSounds",
+					},
+					{
+						ResourceUrl: "public/sounds/webui/ui_steam_smoother_friend_join.m4a",
+						UrlRootPathType: "Root",
+						ResourceCategory: "JsSounds",
+					},
+					{
+						ResourceUrl: "public/sounds/webui/ui_steam_smoother_friend_online.m4a",
+						UrlRootPathType: "Root",
+						ResourceCategory: "JsSounds",
+					},
+					{
+						ResourceUrl: "public/sounds/webui/ui_steam_message_old_smooth.m4a",
+						UrlRootPathType: "Root",
+						ResourceCategory: "JsSounds",
+					},
+					{
+						ResourceUrl: "javascript/webui/noisegate-audio-worklet.js",
+						UrlRootPathType: "Root_Public",
+						ResourceCategory: "LibraryJs",
+					},
+					{
+						ResourceUrl: "public/sounds/webui/steam_rpt_leave.m4a",
+						UrlRootPathType: "Root",
+						ResourceCategory: "JsSounds",
+					},
+					{
+						ResourceUrl: "public/sounds/webui/steam_rpt_join.m4a",
+						UrlRootPathType: "Root",
+						ResourceCategory: "JsSounds",
+					},
+					{
+						ResourceUrl: "public/sounds/webui/steam_phonecall.m4a",
+						UrlRootPathType: "Root",
+						ResourceCategory: "JsSounds",
+					},
+					{
+						ResourceUrl: "public/sounds/webui/steam_ui_ptt_short_02_quiet.m4a",
+						UrlRootPathType: "Root",
+						ResourceCategory: "JsSounds",
+					},
+					{
+						ResourceUrl: "public/sounds/webui/steam_ui_ptt_short_01_quiet.m4a",
+						UrlRootPathType: "Root",
+						ResourceCategory: "JsSounds",
+					},
+					{
+						ResourceUrl: "images/webui/8669e97b288da32670e77181618c3dfb.png",
+						UrlRootPathType: "Root_Public",
+						ResourceCategory: "JsImages",
+					},
+				]
+			}
+		},
+		
+	]
+	
+}
