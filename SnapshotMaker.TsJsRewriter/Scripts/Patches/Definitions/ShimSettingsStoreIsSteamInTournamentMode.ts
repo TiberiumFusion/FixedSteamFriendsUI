@@ -4,7 +4,7 @@
 //
 //    Examples:
 //      1.  let e = I.Ul.ParentalStore.BIsFriendsBlocked() || I.Ul.SettingsStore.IsSteamInTournamentMode();
-//       -> let e = I.Ul.ParentalStore.BIsFriendsBlocked() || TFP.Compat.IsSteamInTournamentMode(I.Ul.SettingsStore);
+//       -> let e = I.Ul.ParentalStore.BIsFriendsBlocked() || TFP.Compat.SettingsStore_IsSteamInTournamentMode(I.Ul.SettingsStore);
 //
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

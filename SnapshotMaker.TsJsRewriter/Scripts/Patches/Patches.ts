@@ -129,6 +129,7 @@ namespace SnapshotMakerTsJsRewriter.Patches
         let factories: ConfiguredPatchDefinitionFactory[] = [
             new Definitions.RewriteCdnAssetUrlStringBuildCPDF(),
             new Definitions.ShimSettingsStoreIsSteamInTournamentModeCPDF(),
+            new Definitions.ShimSteamClientIsSteamInTournamentModeCPDF(),
         ];
 
         for (let factory of factories)

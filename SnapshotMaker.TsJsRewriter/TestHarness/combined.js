@@ -191,6 +191,7 @@ var SnapshotMakerTsJsRewriter;
             let factories = [
                 new Patches.Definitions.RewriteCdnAssetUrlStringBuildCPDF(),
                 new Patches.Definitions.ShimSettingsStoreIsSteamInTournamentModeCPDF(),
+                new Patches.Definitions.ShimSteamClientIsSteamInTournamentModeCPDF(),
             ];
             for (let factory of factories)
                 RegisterPatchDefinitionFactoryInstance(factory);
@@ -200,11 +201,107 @@ var SnapshotMakerTsJsRewriter;
 })(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
+//    Compat shim for SteamClient.System.IsSteamInTournamentMode()
+//    - Despite the identical name and usage pattern, this SteamClient.System.IsSteamInTournamentMode() is DIFFERENT from SettingsStore.IsSteamInTournamentMode()
+//      - The SteamClient.System version returns a promise, while the SettingsStore version is a normal function
+//    - Also, since the members of SteamClient (like .System) are not always real JS objects, it's safer to pass the SteamClient to the shim function instead of passing SteamClient.System
+//    - Hence the need for two different IsSteamInTournamentMode patches
+//
+//    Examples:
+//      1.  SteamClient.System.IsSteamInTournamentMode().then((e) => (this.m_bSteamIsInTournamentMode = e))
+//       -> TFP.Compat.SteamClient_System_IsSteamInTournamentMode(SteamClient, "System", "IsSteamInTournamentMode").then((e) => (this.m_bSteamIsInTournamentMode = e))
+//
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// <reference path="../Patches.ts" />
+// Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration" (see: https://stackoverflow.com/a/48189989/2489580)
+var SnapshotMakerTsJsRewriter;
+(function (SnapshotMakerTsJsRewriter) {
+    var Patches;
+    (function (Patches) {
+        var Definitions;
+        (function (Definitions) {
+            class ShimSteamClientIsSteamInTournamentModeCPDF extends Patches.ConfiguredPatchDefinitionFactory {
+                constructor() {
+                    super(...arguments);
+                    this.PatchIdName = "ShimSteamClientIsSteamInTournamentMode";
+                }
+                CreatePatchDefinition(config) {
+                    return new Patches.PatchDefinition(this.PatchIdName, 
+                    // ____________________________________________________________________________________________________
+                    //
+                    //     Patch
+                    // ____________________________________________________________________________________________________
+                    //
+                    (context, sourceFile, node, detectionInfoData) => {
+                        let tnode = detectionInfoData.TypedNode; // e.g.  SteamClient.System.IsSteamInTournamentMode()
+                        let steamClientAccessExpression = detectionInfoData.SteamClientAccessExpression; // e.g.  SteamClient
+                        let subInterfaceName = detectionInfoData.SteamClientSubInterfaceName; // e.g.  "System"
+                        let nameOfMemberToCall = detectionInfoData.SubInterfaceMemberToCall; // e.g.  "IsSteamInTournamentMode"
+                        // Replace the original call expression with a new call expression to a shim site that takes the original member to call access expression exploded in parts
+                        // The shim function must return a promise like the original
+                        return context.factory.createCallExpression(context.factory.createIdentifier(config.ShimMethodIdentifierExpression), null, [
+                            steamClientAccessExpression,
+                            context.factory.createStringLiteral(subInterfaceName),
+                            context.factory.createStringLiteral(nameOfMemberToCall),
+                        ]); // e.g.  TFP.Compat.SteamClient_System_IsSteamInTournamentMode(SteamClient, "System", "IsSteamInTournamentMode")
+                    }, 
+                    // ____________________________________________________________________________________________________
+                    //
+                    //     Detections
+                    // ____________________________________________________________________________________________________
+                    //
+                    [
+                        (context, sourceFile, node) => {
+                            if (node.kind == ts.SyntaxKind.CallExpression) // e.g.  SteamClient.System.IsSteamInTournamentMode()
+                             {
+                                let tnode = node;
+                                // This is chain of PropertyAccessExpressions, each nested in the reverse order of how it's typed in the js
+                                // Validate the .IsSteamInTournamentMode() call at the end of the expression
+                                if (tnode.expression.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  SteamClient.System.IsSteamInTournamentMode
+                                 {
+                                    let memberToCall = tnode.expression;
+                                    if (memberToCall.name.kind == ts.SyntaxKind.Identifier) // e.g.  IsSteamInTournamentMode
+                                     {
+                                        let memberToCallName = memberToCall.name;
+                                        if (memberToCallName.escapedText == config.SubInterfaceMemberToCall) {
+                                            // Validate "SteamClient.System" qualification to the .IsSteamInTournamentMode member is accessed and called
+                                            if (memberToCall.expression.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  SteamClient.System
+                                             {
+                                                let memberOwner = memberToCall.expression;
+                                                if (memberOwner.expression.kind == ts.SyntaxKind.Identifier // e.g.  SteamClient
+                                                    && memberOwner.name.kind == ts.SyntaxKind.Identifier) // e.g.  System
+                                                 {
+                                                    let memberOwnerOwnerName = memberOwner.expression;
+                                                    let memberOwnerName = memberOwner.name;
+                                                    if (memberOwnerOwnerName.escapedText == "SteamClient" && memberOwnerName.escapedText == config.SteamClientSubInterface) {
+                                                        return new Patches.DetectionInfo(true, {
+                                                            "TypedNode": tnode,
+                                                            "SteamClientAccessExpression": memberOwnerOwnerName,
+                                                            "SteamClientSubInterfaceName": memberOwnerName.escapedText,
+                                                            "SubInterfaceMemberToCall": memberToCallName.escapedText, // "IsSteamInTournamentMode"
+                                                        });
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]);
+                }
+            }
+            Definitions.ShimSteamClientIsSteamInTournamentModeCPDF = ShimSteamClientIsSteamInTournamentModeCPDF;
+        })(Definitions = Patches.Definitions || (Patches.Definitions = {}));
+    })(Patches = SnapshotMakerTsJsRewriter.Patches || (SnapshotMakerTsJsRewriter.Patches = {}));
+})(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
 //    Compat shim for SettingsStore.IsSteamInTournamentMode()
 //
 //    Examples:
 //      1.  let e = I.Ul.ParentalStore.BIsFriendsBlocked() || I.Ul.SettingsStore.IsSteamInTournamentMode();
-//       -> let e = I.Ul.ParentalStore.BIsFriendsBlocked() || TFP.Compat.IsSteamInTournamentMode(I.Ul.SettingsStore);
+//       -> let e = I.Ul.ParentalStore.BIsFriendsBlocked() || TFP.Compat.SettingsStore_IsSteamInTournamentMode(I.Ul.SettingsStore);
 //
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// <reference path="../Patches.ts" />

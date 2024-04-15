@@ -85,9 +85,18 @@
 		{
 			IdName: "ShimSettingsStoreIsSteamInTournamentMode",
 			Config: {
-				ShimMethodIdentifierExpression: "TFP.Compat.IsSteamInTournamentMode",
+				ShimMethodIdentifierExpression: "TFP.Compat.SettingsStore_IsSteamInTournamentMode",
 				TargetFinalQualifier: "SettingsStore",
 				TargetFinalIdentifier: "IsSteamInTournamentMode",
+			}
+		},
+		
+		{
+			IdName: "ShimSteamClientIsSteamInTournamentMode",
+			Config: {
+				ShimMethodIdentifierExpression: "TFP.Compat.SteamClient_System_IsSteamInTournamentMode",
+				SteamClientSubInterface: "System",
+				SubInterfaceMemberToCall: "IsSteamInTournamentMode",
 			}
 		},
 		
