@@ -50,9 +50,6 @@ namespace SnapshotMakerTsJsRewriter.Patches
                     let newJs: string = JsEmitPrinter.printNode(ts.EmitHint.Unspecified, patchedNode, sourceFile);
                     Trace("  - Patched JS:  ", newJs);
 
-                    if (IncludeOldJsCommentAtPatchSites)
-                        ts.addSyntheticLeadingComment(patchedNode, ts.SyntaxKind.MultiLineCommentTrivia, oldJs, false);
-
                     return patchedNode;
                     // Only the first matched detection will result in applying patch to the visited note. Any remaining detections are skipped.
                     // There should never be multiple matched detections!
@@ -130,6 +127,7 @@ namespace SnapshotMakerTsJsRewriter.Patches
             new Definitions.RewriteCdnAssetUrlStringBuildCPDF(),
             new Definitions.ShimSettingsStoreIsSteamInTournamentModeCPDF(),
             new Definitions.ShimSteamClientIsSteamInTournamentModeCPDF(),
+            new Definitions.DisableMiniprofileBrokenBlurHandlerCPDF(),
         ];
 
         for (let factory of factories)

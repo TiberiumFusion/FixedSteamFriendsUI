@@ -86,6 +86,9 @@ var SnapshotMakerTsJsRewriter;
                         let patchedNode = patchDefinition.DetectAndPatch(context, sourceFile, node);
                         if (patchedNode != null) // return is non-null if this node was detected & patched
                             return patchedNode;
+                        // todo: track and report the following
+                        // - count of applied patches
+                        // - patches who had none of their detections match and thus were never used
                     }
                     return ts.visitEachChild(node, visitor, context);
                 };
@@ -138,8 +141,6 @@ var SnapshotMakerTsJsRewriter;
                         let patchedNode = this.Patch(context, sourceFile, node, detectionInfo.Data);
                         let newJs = SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, patchedNode, sourceFile);
                         SnapshotMakerTsJsRewriter.Trace("  - Patched JS:  ", newJs);
-                        if (SnapshotMakerTsJsRewriter.IncludeOldJsCommentAtPatchSites)
-                            ts.addSyntheticLeadingComment(patchedNode, ts.SyntaxKind.MultiLineCommentTrivia, oldJs, false);
                         return patchedNode;
                         // Only the first matched detection will result in applying patch to the visited note. Any remaining detections are skipped.
                         // There should never be multiple matched detections!
@@ -192,11 +193,119 @@ var SnapshotMakerTsJsRewriter;
                 new Patches.Definitions.RewriteCdnAssetUrlStringBuildCPDF(),
                 new Patches.Definitions.ShimSettingsStoreIsSteamInTournamentModeCPDF(),
                 new Patches.Definitions.ShimSteamClientIsSteamInTournamentModeCPDF(),
+                new Patches.Definitions.DisableMiniprofileBrokenBlurHandlerCPDF(),
             ];
             for (let factory of factories)
                 RegisterPatchDefinitionFactoryInstance(factory);
         }
         Patches.InitAllPatchDefinitionFactories = InitAllPatchDefinitionFactories;
+    })(Patches = SnapshotMakerTsJsRewriter.Patches || (SnapshotMakerTsJsRewriter.Patches = {}));
+})(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//    Disable broken (t.m_BlurHandler = () => { this.HideByElement(t.m_OwningElement); }) code in the ShowPopup() handler for miniprofiles
+//
+//    Examples:
+//      1.  (t.m_BlurHandler = () => {
+//			    this.HideByElement(t.m_OwningElement);
+//			}),
+//       -> (t.m_BlurHandler = () => {
+//			    /*this.HideByElement(t.m_OwningElement);*/
+//			}),
+//
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// <reference path="../Patches.ts" />
+// Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration" (see: https://stackoverflow.com/a/48189989/2489580)
+var SnapshotMakerTsJsRewriter;
+(function (SnapshotMakerTsJsRewriter) {
+    var Patches;
+    (function (Patches) {
+        var Definitions;
+        (function (Definitions) {
+            class DisableMiniprofileBrokenBlurHandlerCPDF extends Patches.ConfiguredPatchDefinitionFactory {
+                constructor() {
+                    super(...arguments);
+                    this.PatchIdName = "DisableMiniprofileBrokenBlurHandler";
+                }
+                CreatePatchDefinition() {
+                    return new Patches.PatchDefinition(this.PatchIdName, 
+                    // ____________________________________________________________________________________________________
+                    //
+                    //     Patch
+                    // ____________________________________________________________________________________________________
+                    //
+                    (context, sourceFile, node, detectionInfoData) => {
+                        let tnode = detectionInfoData.TypedNode; // e.g.  { this.HideByElement(t.m_OwningElement); }
+                        let targetStatement = detectionInfoData.TargetStatement; // e.g.  this.HideByElement(t.m_OwningElement);
+                        let targetStatementJs = SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, targetStatement, sourceFile);
+                        // Remove target statement from function body and insert comment of old JS
+                        let newStatements = [];
+                        tnode.statements.forEach((statement, index) => {
+                            if (statement == targetStatement) {
+                                if (SnapshotMakerTsJsRewriter.IncludeOldJsCommentAtPatchSites) {
+                                    let commentAnchorStatement = context.factory.createEmptyStatement(); // afaik this is the only way to insert a line-exclusive comment in all scenarios, including when there are no other statements to anchor it to (i.e. the removed target statement was the only statement in the function body)
+                                    newStatements.push(commentAnchorStatement);
+                                    ts.addSyntheticLeadingComment(commentAnchorStatement, ts.SyntaxKind.MultiLineCommentTrivia, targetStatementJs, false);
+                                }
+                            }
+                            else {
+                                newStatements.push(statement);
+                            }
+                        });
+                        return context.factory.updateBlock(tnode, newStatements);
+                    }, 
+                    // ____________________________________________________________________________________________________
+                    //
+                    //     Detections
+                    // ____________________________________________________________________________________________________
+                    //
+                    [
+                        (context, sourceFile, node) => {
+                            if (node.kind == ts.SyntaxKind.Block) // e.g.  { this.HideByElement(t.m_OwningElement); }
+                             {
+                                let tnode = node;
+                                let matchedStatement = null;
+                                for (let statement of tnode.statements) // e.g.  this.HideByElement(t.m_OwningElement);
+                                 {
+                                    let statementJs = SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, statement, sourceFile);
+                                    if (statementJs.includes("HideByElement")) // not a precise detection, but it's highly unlikely to collide
+                                     {
+                                        matchedStatement = statement;
+                                        break;
+                                    }
+                                }
+                                if (matchedStatement != null) {
+                                    if (tnode.parent.kind == ts.SyntaxKind.ArrowFunction) // e.g.  () => { this.HideByElement(t.m_OwningElement); }
+                                     {
+                                        // Currently this is an ArrowFunction in valve's bastardized js, but it might change)
+                                        let func = tnode.parent;
+                                        if (func.parent.kind == ts.SyntaxKind.BinaryExpression) // e.g.  t.m_BlurHandler = () => { this.HideByElement(t.m_OwningElement); }
+                                         {
+                                            let memberFuncAssign = func.parent;
+                                            if (memberFuncAssign.left.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  t.m_BlurHandler
+                                             {
+                                                let memberProperty = memberFuncAssign.left;
+                                                if (memberProperty.name.kind == ts.SyntaxKind.Identifier) // e.g.  m_BlurHandler
+                                                 {
+                                                    let memberPropertyName = memberProperty.name;
+                                                    if (memberPropertyName.escapedText == "m_BlurHandler") {
+                                                        return new Patches.DetectionInfo(true, {
+                                                            "TypedNode": tnode,
+                                                            "TargetStatement": matchedStatement,
+                                                        });
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]);
+                }
+            }
+            Definitions.DisableMiniprofileBrokenBlurHandlerCPDF = DisableMiniprofileBrokenBlurHandlerCPDF;
+        })(Definitions = Patches.Definitions || (Patches.Definitions = {}));
     })(Patches = SnapshotMakerTsJsRewriter.Patches || (SnapshotMakerTsJsRewriter.Patches = {}));
 })(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -239,11 +348,14 @@ var SnapshotMakerTsJsRewriter;
                         let nameOfMemberToCall = detectionInfoData.SubInterfaceMemberToCall; // e.g.  "IsSteamInTournamentMode"
                         // Replace the original call expression with a new call expression to a shim site that takes the original member to call access expression exploded in parts
                         // The shim function must return a promise like the original
-                        return context.factory.createCallExpression(context.factory.createIdentifier(config.ShimMethodIdentifierExpression), null, [
+                        let patched = context.factory.createCallExpression(context.factory.createIdentifier(config.ShimMethodIdentifierExpression), null, [
                             steamClientAccessExpression,
                             context.factory.createStringLiteral(subInterfaceName),
                             context.factory.createStringLiteral(nameOfMemberToCall),
                         ]); // e.g.  TFP.Compat.SteamClient_System_IsSteamInTournamentMode(SteamClient, "System", "IsSteamInTournamentMode")
+                        if (SnapshotMakerTsJsRewriter.IncludeOldJsCommentAtPatchSites)
+                            ts.addSyntheticLeadingComment(patched, ts.SyntaxKind.MultiLineCommentTrivia, SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, node, sourceFile), false);
+                        return patched;
                     }, 
                     // ____________________________________________________________________________________________________
                     //
@@ -329,10 +441,13 @@ var SnapshotMakerTsJsRewriter;
                         let nameOfMemberToCall = detectionInfoData.NameOfMemberToCallAccessNode; // e.g.  "IsSteamInTournamentMode"
                         let ownerOfMemberToCall = detectionInfoData.OwnerOfMemberToCallAccessNode; // e.g.  b.Ul.SettingsStore
                         // Replace the original call expression with a new call expression to a shim site that takes 1) the name of original member to call and 2) its owner as arguments
-                        return context.factory.createCallExpression(context.factory.createIdentifier(config.ShimMethodIdentifierExpression), null, [
+                        let patched = context.factory.createCallExpression(context.factory.createIdentifier(config.ShimMethodIdentifierExpression), null, [
                             ownerOfMemberToCall,
                             context.factory.createStringLiteral(nameOfMemberToCall),
                         ]); // e.g.  TFP.Compat.SettingsStore_IsSteamInTournamentMode(b.Ul.SettingsStore, "IsSteamInTournamentMode")
+                        if (SnapshotMakerTsJsRewriter.IncludeOldJsCommentAtPatchSites)
+                            ts.addSyntheticLeadingComment(patched, ts.SyntaxKind.MultiLineCommentTrivia, SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, node, sourceFile), false);
+                        return patched;
                     }, 
                     // ____________________________________________________________________________________________________
                     //
@@ -416,12 +531,15 @@ var SnapshotMakerTsJsRewriter;
                         let matchedTarget = detectionInfoData.MatchedTarget; // e.g.  ["public/sounds/webui/steam_voice_channel_enter.m4a", "Root", "JsSounds"]
                         // syntax for retrieving implicit nested interface type ^--^
                         // Replace the binary expression with a method call that takes the original halves of the binary expr as arguments
-                        return context.factory.createCallExpression(context.factory.createIdentifier(config.ShimMethodIdentifierExpression), null, [
+                        let patched = context.factory.createCallExpression(context.factory.createIdentifier(config.ShimMethodIdentifierExpression), null, [
                             tnode.left,
                             tnode.right,
                             context.factory.createStringLiteral(matchedTarget.UrlRootPathType),
                             context.factory.createStringLiteral(matchedTarget.ResourceCategory),
                         ]); // e.g.  TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_voice_channel_enter.m4a?v=1", "Root", "JsSounds")
+                        if (SnapshotMakerTsJsRewriter.IncludeOldJsCommentAtPatchSites)
+                            ts.addSyntheticLeadingComment(patched, ts.SyntaxKind.MultiLineCommentTrivia, SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, node, sourceFile), false);
+                        return patched;
                     }, 
                     // ____________________________________________________________________________________________________
                     //

@@ -46,7 +46,7 @@ namespace SnapshotMakerTsJsRewriter.Patches.Definitions
                     // syntax for retrieving implicit nested interface type ^--^
 
                     // Replace the binary expression with a method call that takes the original halves of the binary expr as arguments
-                    return context.factory.createCallExpression(
+                    let patched = context.factory.createCallExpression(
                         context.factory.createIdentifier(config.ShimMethodIdentifierExpression),
                         null,
                         [ // arguments
@@ -56,6 +56,11 @@ namespace SnapshotMakerTsJsRewriter.Patches.Definitions
                             context.factory.createStringLiteral(matchedTarget.ResourceCategory),
                         ]
                     ); // e.g.  TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_voice_channel_enter.m4a?v=1", "Root", "JsSounds")
+
+                    if (IncludeOldJsCommentAtPatchSites)
+                        ts.addSyntheticLeadingComment(patched, ts.SyntaxKind.MultiLineCommentTrivia, JsEmitPrinter.printNode(ts.EmitHint.Unspecified, node, sourceFile), false);
+
+                    return patched;
                 },
 
 

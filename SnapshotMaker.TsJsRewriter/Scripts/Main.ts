@@ -52,7 +52,7 @@
             }
 
             ConfiguredPatchDefinitions.push(
-                factory.CreatePatchDefinition(item.Config),
+                factory.CreatePatchDefinition(item.Config), // Config can be omitted from the config object and thus null, if the patch definition does not accept any config
             );
         });
     }
@@ -86,6 +86,10 @@
                         let patchedNode: ts.Node = patchDefinition.DetectAndPatch(context, sourceFile, node);
                         if (patchedNode != null) // return is non-null if this node was detected & patched
                             return patchedNode;
+
+                        // todo: track and report the following
+                        // - count of applied patches
+                        // - patches who had none of their detections match and thus were never used
                     }
 
                     return ts.visitEachChild(node, visitor, context)

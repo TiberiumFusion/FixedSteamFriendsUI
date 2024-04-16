@@ -43,7 +43,7 @@ namespace SnapshotMakerTsJsRewriter.Patches.Definitions
                     let ownerOfMemberToCall: ts.CallExpression = detectionInfoData.OwnerOfMemberToCallAccessNode; // e.g.  b.Ul.SettingsStore
 
                     // Replace the original call expression with a new call expression to a shim site that takes 1) the name of original member to call and 2) its owner as arguments
-                    return context.factory.createCallExpression(
+                    let patched = context.factory.createCallExpression(
                         context.factory.createIdentifier(config.ShimMethodIdentifierExpression),
                         null,
                         [ // arguments
@@ -51,6 +51,11 @@ namespace SnapshotMakerTsJsRewriter.Patches.Definitions
                             context.factory.createStringLiteral(nameOfMemberToCall),
                         ]
                     ); // e.g.  TFP.Compat.SettingsStore_IsSteamInTournamentMode(b.Ul.SettingsStore, "IsSteamInTournamentMode")
+
+                    if (IncludeOldJsCommentAtPatchSites)
+                        ts.addSyntheticLeadingComment(patched, ts.SyntaxKind.MultiLineCommentTrivia, JsEmitPrinter.printNode(ts.EmitHint.Unspecified, node, sourceFile), false);
+
+                    return patched;
                 },
 
 

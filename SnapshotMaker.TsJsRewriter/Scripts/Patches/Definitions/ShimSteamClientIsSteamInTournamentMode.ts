@@ -50,7 +50,7 @@ namespace SnapshotMakerTsJsRewriter.Patches.Definitions
 
                     // Replace the original call expression with a new call expression to a shim site that takes the original member to call access expression exploded in parts
                     // The shim function must return a promise like the original
-                    return context.factory.createCallExpression(
+                    let patched = context.factory.createCallExpression(
                         context.factory.createIdentifier(config.ShimMethodIdentifierExpression),
                         null,
                         [ // arguments
@@ -59,6 +59,11 @@ namespace SnapshotMakerTsJsRewriter.Patches.Definitions
                             context.factory.createStringLiteral(nameOfMemberToCall),
                         ]
                     ); // e.g.  TFP.Compat.SteamClient_System_IsSteamInTournamentMode(SteamClient, "System", "IsSteamInTournamentMode")
+                    
+                    if (IncludeOldJsCommentAtPatchSites)
+                        ts.addSyntheticLeadingComment(patched, ts.SyntaxKind.MultiLineCommentTrivia, JsEmitPrinter.printNode(ts.EmitHint.Unspecified, node, sourceFile), false);
+
+                    return patched;
                 },
 
 
