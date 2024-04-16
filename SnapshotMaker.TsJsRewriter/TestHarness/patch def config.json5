@@ -123,6 +123,10 @@
 			IdName: "DisableBrokenXssAttackValveReliance",
 		},
 		
+		{
+			IdName: "DisableLate2023ChatCensorshipFeatureAddition",
+		},
+		
 	]
 	
 }

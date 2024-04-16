@@ -132,6 +132,7 @@ namespace SnapshotMakerTsJsRewriter.Patches
             new Definitions.FixBlackFrameBugCPDF(),
             new Definitions.FixBrokenIsMaximizedCopypastaCPDF(),
             new Definitions.DisableBrokenXssAttackValveRelianceCPDF(),
+            new Definitions.DisableLate2023ChatCensorshipFeatureAdditionCPDF(),
         ];
 
         for (let factory of factories)
