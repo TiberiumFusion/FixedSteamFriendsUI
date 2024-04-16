@@ -131,6 +131,7 @@ namespace SnapshotMakerTsJsRewriter.Patches
             new Definitions.ShimSteamClientBrowserGetBrowserIdCPDF(),
             new Definitions.FixBlackFrameBugCPDF(),
             new Definitions.FixBrokenIsMaximizedCopypastaCPDF(),
+            new Definitions.DisableBrokenXssAttackValveRelianceCPDF(),
         ];
 
         for (let factory of factories)
