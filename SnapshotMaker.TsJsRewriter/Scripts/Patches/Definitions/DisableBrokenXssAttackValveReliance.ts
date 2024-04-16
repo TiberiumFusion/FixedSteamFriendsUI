@@ -1,20 +1,23 @@
 ﻿// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 //    Disable broken cross-site scripting attack code in page initialization logic
-//
-//    Target examples:
-//      1.  try {
-//				if (window.parent != window) {
-//					const t = window.parent;
-//					if (t.__SHARED_FRIENDSUI_GLOBALS && t.__SHARED_FRIENDSUI_GLOBALS[e]) return t.__SHARED_FRIENDSUI_GLOBALS[e];
-//					(0, o.X)(!1, `SharedFriendsUIGlobal "${e}" not initialized by parent, proceeding with local copy`);
-//				}
-//			} catch (e) {}
-//       -> /* code disabled by comment or removed */
-//
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
 
-/*  -- Notes --
+    ----- Targets -----
+
+    1.  (8601984: line 37944)
+        try {
+            if (window.parent != window) {
+                const t = window.parent;
+                if (t.__SHARED_FRIENDSUI_GLOBALS && t.__SHARED_FRIENDSUI_GLOBALS[e]) return t.__SHARED_FRIENDSUI_GLOBALS[e];
+                (0, o.X)(!1, `SharedFriendsUIGlobal "${e}" not initialized by parent, proceeding with local copy`);
+            }
+        } catch (e) {}
+     =>
+        // all code removed
+
+    
+    ----- Notes -----
 
     The offending code only works correctly when friends is running in the sharedjscontext created by a pure cef desktopui Steam client (June 2023 and later)
     On half-vgui half-cef Steam clients (Oct 30 2019 - May 31 2023), the commented out block is cross-domain scripting violation
@@ -31,7 +34,8 @@
     We, however, get screwed by it. Because the steam-chat.com snapshot is served from steamloopback.host, this code is *not* an xss attack, and thus it runs, and thus is clobbers the valid data with garbage.
     So we have to disable it.
 
- */
+*/
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 /// <reference path="../Patches.ts" />

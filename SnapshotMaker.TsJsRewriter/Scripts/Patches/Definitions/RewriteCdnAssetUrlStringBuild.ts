@@ -1,19 +1,22 @@
 ﻿// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 //    CDN asset fetch url rewriting
-//
-//    Examples:
-//      1.  u.Ul.AudioPlaybackManager.PlayAudioURL( o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_enter.m4a?v=1" )
-//       -> u.Ul.AudioPlaybackManager.PlayAudioURL( TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_voice_channel_enter.m4a?v=1", "Root", "JsSounds") )
-//
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
 
-/*  -- Notes --
+    ----- Target Examples -----
+
+    1.  u.Ul.AudioPlaybackManager.PlayAudioURL( o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_enter.m4a?v=1" )
+      =>
+        u.Ul.AudioPlaybackManager.PlayAudioURL( TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_voice_channel_enter.m4a?v=1", "Root", "JsSounds") )
+
+    
+    ----- Notes -----
     
     In order for the snapshot to be 100% local, all resource fetches must go to steamloopback.host instead of the remote Valve servers.
     We achieve that by inserting a shim method in all locations where Valve's js builds url path strings. The shim method will return a different url that originates from the steamloopback.host.
 
 */
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 /// <reference path="../Patches.ts" />

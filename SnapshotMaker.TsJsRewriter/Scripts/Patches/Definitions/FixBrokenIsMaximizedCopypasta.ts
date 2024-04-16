@@ -1,15 +1,17 @@
 ﻿// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 //    Fix some IsMaximized() method calling this.m_popup.SteamClient.Window.IsWindowMinimized instead of this.m_popup.SteamClient.Window.IsWindowMaximized
-//
-//    Target examples:
-//      1.  In the IsMaximized() method near Ctrl+F for "get focused() {"
-//          this.m_popup && !this.m_popup.closed && this.m_popup.SteamClient && this.m_popup.SteamClient.Window && this.m_popup.SteamClient.Window.IsWindowMinimized
-//       -> this.m_popup && !this.m_popup.closed && this.m_popup.SteamClient && this.m_popup.SteamClient.Window && this.m_popup.SteamClient.Window.IsWindowMaximized
-//
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
 
-/*  -- Notes --
+    ----- Targets -----
+    
+    1.  (8601984: line 34511 :: in the IsMaximized() method near Ctrl+F for "get focused() {")
+        this.m_popup && !this.m_popup.closed && this.m_popup.SteamClient && this.m_popup.SteamClient.Window && this.m_popup.SteamClient.Window.IsWindowMinimized
+      =>
+        this.m_popup && !this.m_popup.closed && this.m_popup.SteamClient && this.m_popup.SteamClient.Window && this.m_popup.SteamClient.Window.IsWindowMaximized
+
+    
+    ----- Notes -----
     
     So this is yet another one of Valve's pathetic "we make billions of dollars hand of over fist but we cannot be fucked to spend 5 seconds testing or proofreading our copy & paste code" errors
     And it causes errors when running under the Dec 2022 client, where IsWindowMaximized does not exist for some reason
@@ -17,12 +19,15 @@
     Fixing Valve's idiot code doesn't make IsWindowMaximized always magically exist, but it falsey automatic null for this nonexistent property isn't causing problems, and since Valve likes abusing this (anti-)feature of javascript, it's very possible that some code downstream of this actually depends on that.
 
     
-    -- Range --
+    ----- Range -----
 
-    8200419 through 8601984 have this bug. It is highly likely that version prior to 8200419 also have this bug.
-    Sometime between 8601984 and 8811541, Valve finally "fixed" this bug, by way of completely rewriting the IsMinimized() and IsMaximized() methods for this type. The rewrite involves a new guarded access paradigm to members of SteamClient, which is good and save me the work of writing a shim patch to do the same thing. Unfortunately, Valve's access guard only exists on this one type in question and is only used for its own access to SteamClient members.
+    Since: 8200419 or earlier.
 
- */
+    Until: Sometime between 8601984 and 8811541.
+           - Circa 8811541, Valve finally "fixed" this bug, by way of completely rewriting the IsMinimized() and IsMaximized() methods for this type. The rewrite involves a new guarded access paradigm to members of SteamClient, which is good and save me the work of writing a shim patch to do the same thing. Unfortunately, Valve's access guard only exists on this one type in question and is only used for its own access to SteamClient members.
+
+*/
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 /// <reference path="../Patches.ts" />

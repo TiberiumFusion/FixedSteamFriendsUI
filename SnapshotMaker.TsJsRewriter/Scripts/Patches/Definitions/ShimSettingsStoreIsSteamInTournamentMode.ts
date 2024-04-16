@@ -1,22 +1,25 @@
 ﻿// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 //    Compat shim for SettingsStore.IsSteamInTournamentMode()
-//
-//    Examples:
-//      1.  let e = I.Ul.ParentalStore.BIsFriendsBlocked() || I.Ul.SettingsStore.IsSteamInTournamentMode();
-//       -> let e = I.Ul.ParentalStore.BIsFriendsBlocked() || TFP.Compat.SettingsStore_IsSteamInTournamentMode(I.Ul.SettingsStore);
-//
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
 
+    ----- Target Examples -----
 
-/*  -- Notes --
+    1.  let e = I.Ul.ParentalStore.BIsFriendsBlocked() || I.Ul.SettingsStore.IsSteamInTournamentMode();
+      =>
+        let e = I.Ul.ParentalStore.BIsFriendsBlocked() || TFP.Compat.SettingsStore_IsSteamInTournamentMode(I.Ul.SettingsStore);
+
     
-    Valve inability to call SettingsStore.IsSteamInTournamentMode() properly is the specific fuckup that required the creation of the entire FixedSteamFriendsUI project.
-    Valve tries to call IsSteamInTournamentMode() on two objects (sometimes incorrectly), neither of which exist outside of the sharedjscontext abomination in the pure-shit steam clients.
+    ----- Notes -----
+    
+    Valve's inability to call SettingsStore.IsSteamInTournamentMode() properly is the specific fuckup that required the creation of the entire FixedSteamFriendsUI project.
+
+    Valve tries to call IsSteamInTournamentMode() (sometimes incorrectly) on two objects observed thus far, neither of which exist outside of the sharedjscontext abomination in the pure-shit steam clients. Javascript's null == false behavior hides half of these faults, while nested access on the null throws a halting error that breaks the entire inner frame.
     
     This is resolved by shimming each call site with a wrapper that ensures a valid return without exceptions.
 
 */
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 /// <reference path="../Patches.ts" />

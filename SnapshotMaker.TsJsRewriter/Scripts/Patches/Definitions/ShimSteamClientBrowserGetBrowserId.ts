@@ -1,16 +1,20 @@
 ﻿// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 //    Compat shim for SteamClient.Browser.GetBrowserID()
-//
-//    Target examples:
-//      1.  n.SteamClient.Browser.GetBrowserID()
-//       -> TFP.Compat.SteamClient_Browser_GetBrowserID(n.SteamClient)
-//      2.  n.SteamClient.Window.GetBrowserID()
-//       -> TFP.Compat.SteamClient_Browser_GetBrowserID(n.SteamClient)
-//
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
 
-/*  -- Notes --
+    ----- Target Examples -----
+
+    1.  SteamClient.Browser.GetBrowserID()
+      =>
+        TFP.Compat.SteamClient_Browser_GetBrowserID(SteamClient)
+
+    2.  n.SteamClient.Browser.GetBrowserID()
+      =>
+        TFP.Compat.SteamClient_Browser_GetBrowserID(n.SteamClient)
+
+    
+    ----- Notes -----
     
     SteamClient.Window.GetBrowserID() and SteamClient.Browser.GetBrowserID() both do (presumably) the same thing.
     The Window version was used by steam-chat.com until May 2023 or earlier, when it was replaced by the Browser version.
@@ -22,6 +26,7 @@
     To support the Dec 2022 client and others like it, we insert a shim in place of the original call, which will defer to calling GetBrowserID() on the appropriate SteamClient.* interface.
 
 */
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 /// <reference path="../Patches.ts" />

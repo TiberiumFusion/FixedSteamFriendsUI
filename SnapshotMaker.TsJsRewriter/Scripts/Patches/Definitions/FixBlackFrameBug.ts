@@ -1,15 +1,17 @@
 ﻿// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 //    Fix black frame bug when steam-chat.com is running under Steam clients that don't create "popup-created" signals
-//
-//    Target examples:
-//      1.  Within the Show(e = d.IF.k_EWindowBringToFrontAndForceOS) method:
-//          r && (this.OnCreateInternal(), t != d.IF.k_EWindowBringToFrontInvalid && this.Focus(t))
-//       -> r ? (this.OnCreateInternal(), t != d.IF.k_EWindowBringToFrontInvalid && this.Focus(t)) : this.OnCreateInternal()
-//
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
 
-/*  -- Notes --
+    ----- Targets -----
+
+    1.  (8601984: line 34417 :: within the Show(e = d.IF.k_EWindowBringToFrontAndForceOS) method)
+        r && (this.OnCreateInternal(), t != d.IF.k_EWindowBringToFrontInvalid && this.Focus(t))
+      =>
+        r ? (this.OnCreateInternal(), t != d.IF.k_EWindowBringToFrontInvalid && this.Focus(t)) : this.OnCreateInternal()
+
+    
+    ----- Notes -----
     
     The notable manifestation of this bug is the solid black Friends List under the Dec 2022 Steam client. Everything is loaded and running properly in the background, but the frame never renders itself and thus is solid black.
 
@@ -21,7 +23,15 @@
 	
     For more info see #9 and #10 on gh.
 
- */
+    
+    ----- Range -----
+
+    Since: Whichever version between 8200419 and 8601984 made the change noted above.
+
+    Until: At least 8811541.
+
+*/
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 /// <reference path="../Patches.ts" />

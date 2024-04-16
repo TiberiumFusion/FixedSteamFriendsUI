@@ -1,22 +1,28 @@
 ﻿// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 //    Compat shim for SteamClient.System.IsSteamInTournamentMode()
-//    - Despite the identical name and usage pattern, this SteamClient.System.IsSteamInTournamentMode() is DIFFERENT from SettingsStore.IsSteamInTournamentMode()
-//      - The SteamClient.System version returns a promise, while the SettingsStore version is a normal function
-//    - Also, since the members of SteamClient (like .System) are not always real JS objects, it's safer to pass the SteamClient to the shim function instead of passing SteamClient.System
-//    - Hence the need for two different IsSteamInTournamentMode patches
-//
-//    Examples:
-//      1.  SteamClient.System.IsSteamInTournamentMode().then((e) => (this.m_bSteamIsInTournamentMode = e))
-//       -> TFP.Compat.SteamClient_System_IsSteamInTournamentMode(SteamClient, "System", "IsSteamInTournamentMode").then((e) => (this.m_bSteamIsInTournamentMode = e))
-//
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*    
 
-/*  -- Notes --
+    ----- Target Examples -----
+
+    1.  SteamClient.System.IsSteamInTournamentMode().then((e) => (this.m_bSteamIsInTournamentMode = e))
+      =>
+        TFP.Compat.SteamClient_System_IsSteamInTournamentMode(SteamClient, "System", "IsSteamInTournamentMode").then((e) => (this.m_bSteamIsInTournamentMode = e))
+
     
+    ----- Notes -----
+    
+    Despite the identical name and usage pattern, this SteamClient.System.IsSteamInTournamentMode() is DIFFERENT from SettingsStore.IsSteamInTournamentMode().
+    - The SettingsStore version is a normal function
+    - The SteamClient.System version returns a promise
+
+    Also, since the members of SteamClient (like .System) are not always real JS objects, it's safer to pass the SteamClient to the shim function (for it to make the .System deference itself) instead of passing SteamClient.System.
+    Hence the need for two different IsSteamInTournamentMode patches.
+
     Refer to the other IsSteamInTournamentMode for more info.
 
 */
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 /// <reference path="../Patches.ts" />
