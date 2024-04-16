@@ -104,6 +104,13 @@
 			IdName: "DisableMiniprofileBrokenBlurHandler",
 		},
 		
+		{
+			IdName: "ShimSteamClientBrowserGetBrowserId",
+			Config: {
+				ShimMethodIdentifierExpression: "TFP.Compat.SteamClient_Browser_GetBrowserID",
+			}
+		},
+		
 	]
 	
 }

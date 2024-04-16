@@ -194,6 +194,7 @@ var SnapshotMakerTsJsRewriter;
                 new Patches.Definitions.ShimSettingsStoreIsSteamInTournamentModeCPDF(),
                 new Patches.Definitions.ShimSteamClientIsSteamInTournamentModeCPDF(),
                 new Patches.Definitions.DisableMiniprofileBrokenBlurHandlerCPDF(),
+                new Patches.Definitions.ShimSteamClientBrowserGetBrowserIdCPDF(),
             ];
             for (let factory of factories)
                 RegisterPatchDefinitionFactoryInstance(factory);
@@ -214,6 +215,16 @@ var SnapshotMakerTsJsRewriter;
 //			}),
 //
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*  -- Notes --
+
+    This appears to be Valve's attempt to add a visual effect when a miniprofile is displayed.
+    I don't know what the intended effect is, but it possibly is meant to blur the parent window which created the miniprofile, which would be pretty retarded.
+    Regardless, it doesn't work properly in the December 2022 client. It ends up making the miniprofile immediately close itself, since the miniprofile's m_OwningElement is itself. But only when the window which created the miniprofile popup has focus. If a different window has focus, the miniprofile works properly. Clearly a symptom of some more rootward problem.
+    This problem does not occur in the May 2023 client.
+    This effect appears to be written expressly for pure shit steam clients and thus has no reason to attempt itself on vgui capable Steam clients. In fact, despite not causing any problems in the May 2023, it does absolutely nothing to affect the look & behavior of the miniprofiles. They are the same whether or not this code is disabled/enabled.
+    Accordingly, disabling this code fixes the aforementioned issue under the Dec 2022 client and renders no changes to the unaffected clients.
+
+ */
 /// <reference path="../Patches.ts" />
 // Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration" (see: https://stackoverflow.com/a/48189989/2489580)
 var SnapshotMakerTsJsRewriter;
@@ -310,6 +321,121 @@ var SnapshotMakerTsJsRewriter;
 })(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
+//    Compat shim for SteamClient.Browser.GetBrowserID()
+//
+//    Examples:
+//      1.  n.SteamClient.Browser.GetBrowserID()
+//       -> TFP.Compat.SteamClient_Browser_GetBrowserID(n.SteamClient)
+//      2.  n.SteamClient.Window.GetBrowserID()
+//       -> TFP.Compat.SteamClient_Browser_GetBrowserID(n.SteamClient)
+//
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*  -- Notes --
+    
+    SteamClient.Window.GetBrowserID() and SteamClient.Browser.GetBrowserID() both do (presumably) the same thing.
+    The Window version was used by steam-chat.com until May 2023 or earlier, when it was replaced by the Browser version.
+
+    This reflects a change in the Steam client.
+    - The Dec 2022 steam client includes the Window version on its injected SteamClient object.
+    - The May 2023 steam client includes the Browser version on its injected SteamClient object.
+
+    To support the Dec 2022 client and others like it, we insert a shim in place of the original call, which will defer to calling GetBrowserID() on the appropriate SteamClient.* interface.
+
+*/
+/// <reference path="../Patches.ts" />
+// Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration" (see: https://stackoverflow.com/a/48189989/2489580)
+var SnapshotMakerTsJsRewriter;
+(function (SnapshotMakerTsJsRewriter) {
+    var Patches;
+    (function (Patches) {
+        var Definitions;
+        (function (Definitions) {
+            class ShimSteamClientBrowserGetBrowserIdCPDF extends Patches.ConfiguredPatchDefinitionFactory {
+                constructor() {
+                    super(...arguments);
+                    this.PatchIdName = "ShimSteamClientBrowserGetBrowserId";
+                }
+                CreatePatchDefinition(config) {
+                    return new Patches.PatchDefinition(this.PatchIdName, 
+                    // ____________________________________________________________________________________________________
+                    //
+                    //     Patch
+                    // ____________________________________________________________________________________________________
+                    //
+                    (context, sourceFile, node, detectionInfoData) => {
+                        let tnode = detectionInfoData.TypedNode; // e.g.  SteamClient.Browser.GetBrowserID()
+                        let steamClientAccessExpression = detectionInfoData.SteamClientAccessExpression; // e.g.  SteamClient  or  n.SteamClient
+                        // Replace the original call expression with a new call expression to a shim site that takes the SteamClient access node
+                        let patched = context.factory.createCallExpression(context.factory.createIdentifier(config.ShimMethodIdentifierExpression), null, [
+                            steamClientAccessExpression,
+                        ]); // e.g.  TFP.Compat.SteamClient_Browser_GetBrowserID(SteamClient)  or  TFP.Compat.SteamClient_Browser_GetBrowserID(n.SteamClient)
+                        if (SnapshotMakerTsJsRewriter.IncludeOldJsCommentAtPatchSites)
+                            ts.addSyntheticLeadingComment(patched, ts.SyntaxKind.MultiLineCommentTrivia, SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, node, sourceFile), false);
+                        return patched;
+                    }, 
+                    // ____________________________________________________________________________________________________
+                    //
+                    //     Detections
+                    // ____________________________________________________________________________________________________
+                    //
+                    [
+                        (context, sourceFile, node) => {
+                            if (node.kind == ts.SyntaxKind.CallExpression) // e.g.  n.SteamClient.Browser.GetBrowserID()
+                             {
+                                let tnode = node;
+                                // This is a chain of PropertyAccessExpressions, each nested in the reverse order of how it's typed in the js
+                                if (tnode.expression.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  n.SteamClient.Browser.GetBrowserID
+                                 {
+                                    let methodToCall = tnode.expression;
+                                    if (methodToCall.name.kind == ts.SyntaxKind.Identifier) // e.g.  GetBrowserID
+                                     {
+                                        let memberToCallName = methodToCall.name;
+                                        if (memberToCallName.escapedText == "GetBrowserID") {
+                                            if (methodToCall.expression.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  n.SteamClient.Browser
+                                             {
+                                                let methodOwner = methodToCall.expression;
+                                                if (methodOwner.name.kind == ts.SyntaxKind.Identifier) // e.g.  Browser
+                                                 {
+                                                    // Valve likes accessing SteamClients on other objects, so there is a mix of code accessing the window-bound SteamClient and code accessing another window's SteamClient
+                                                    // This produces differing AST, since the front-most object in the js (leaf-most node in the AST) will be either an Identifier (SteamClient) or a PropertyAccessExpression (n.SteamClient)
+                                                    let steamClientAccess;
+                                                    if (methodOwner.expression.kind == ts.SyntaxKind.Identifier) // e.g.  SteamClient
+                                                     {
+                                                        let identifier = methodOwner.expression;
+                                                        if (identifier.escapedText == "SteamClient")
+                                                            steamClientAccess = identifier;
+                                                    }
+                                                    else if (methodOwner.expression.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  n.SteamClient
+                                                     {
+                                                        let methodOwnerOwner = methodOwner.expression;
+                                                        if (methodOwnerOwner.name.kind == ts.SyntaxKind.Identifier) {
+                                                            let identifier = methodOwnerOwner.name;
+                                                            if (identifier.escapedText == "SteamClient")
+                                                                steamClientAccess = methodOwnerOwner;
+                                                        }
+                                                    }
+                                                    if (steamClientAccess != null) {
+                                                        return new Patches.DetectionInfo(true, {
+                                                            "TypedNode": tnode,
+                                                            "SteamClientAccessExpression": steamClientAccess, // SteamClient or n.SteamClient
+                                                        });
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]);
+                }
+            }
+            Definitions.ShimSteamClientBrowserGetBrowserIdCPDF = ShimSteamClientBrowserGetBrowserIdCPDF;
+        })(Definitions = Patches.Definitions || (Patches.Definitions = {}));
+    })(Patches = SnapshotMakerTsJsRewriter.Patches || (SnapshotMakerTsJsRewriter.Patches = {}));
+})(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
 //    Compat shim for SteamClient.System.IsSteamInTournamentMode()
 //    - Despite the identical name and usage pattern, this SteamClient.System.IsSteamInTournamentMode() is DIFFERENT from SettingsStore.IsSteamInTournamentMode()
 //      - The SteamClient.System version returns a promise, while the SettingsStore version is a normal function
@@ -321,6 +447,11 @@ var SnapshotMakerTsJsRewriter;
 //       -> TFP.Compat.SteamClient_System_IsSteamInTournamentMode(SteamClient, "System", "IsSteamInTournamentMode").then((e) => (this.m_bSteamIsInTournamentMode = e))
 //
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*  -- Notes --
+    
+    Refer to the other IsSteamInTournamentMode for more info.
+
+*/
 /// <reference path="../Patches.ts" />
 // Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration" (see: https://stackoverflow.com/a/48189989/2489580)
 var SnapshotMakerTsJsRewriter;
@@ -367,7 +498,7 @@ var SnapshotMakerTsJsRewriter;
                             if (node.kind == ts.SyntaxKind.CallExpression) // e.g.  SteamClient.System.IsSteamInTournamentMode()
                              {
                                 let tnode = node;
-                                // This is chain of PropertyAccessExpressions, each nested in the reverse order of how it's typed in the js
+                                // This is a chain of PropertyAccessExpressions, each nested in the reverse order of how it's typed in the js
                                 // Validate the .IsSteamInTournamentMode() call at the end of the expression
                                 if (tnode.expression.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  SteamClient.System.IsSteamInTournamentMode
                                  {
@@ -416,6 +547,14 @@ var SnapshotMakerTsJsRewriter;
 //       -> let e = I.Ul.ParentalStore.BIsFriendsBlocked() || TFP.Compat.SettingsStore_IsSteamInTournamentMode(I.Ul.SettingsStore);
 //
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*  -- Notes --
+    
+    Valve inability to call SettingsStore.IsSteamInTournamentMode() properly is the specific fuckup that required the creation of the entire FixedSteamFriendsUI project.
+    Valve tries to call IsSteamInTournamentMode() on two objects (sometimes incorrectly), neither of which exist outside of the sharedjscontext abomination in the pure-shit steam clients.
+    
+    This is resolved by shimming each call site with a wrapper that ensures a valid return without exceptions.
+
+*/
 /// <reference path="../Patches.ts" />
 // Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration" (see: https://stackoverflow.com/a/48189989/2489580)
 var SnapshotMakerTsJsRewriter;
@@ -459,7 +598,7 @@ var SnapshotMakerTsJsRewriter;
                             if (node.kind == ts.SyntaxKind.CallExpression) // e.g.  b.Ul.SettingsStore.IsSteamInTournamentMode()
                              {
                                 let tnode = node;
-                                // This is chain of PropertyAccessExpressions, each nested in the reverse order of how it's typed in the js
+                                // This is a chain of PropertyAccessExpressions, each nested in the reverse order of how it's typed in the js
                                 // Validate the .IsSteamInTournamentMode() call at the end of the expression
                                 if (tnode.expression.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  b.Ul.SettingsStore.IsSteamInTournamentMode
                                  {
@@ -506,6 +645,12 @@ var SnapshotMakerTsJsRewriter;
 //       -> u.Ul.AudioPlaybackManager.PlayAudioURL( TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_voice_channel_enter.m4a?v=1", "Root", "JsSounds") )
 //
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*  -- Notes --
+    
+    In order for the snapshot to be 100% local, all resource fetches must go to steamloopback.host instead of the remote Valve servers.
+    We achieve that by inserting a shim method in all locations where Valve's js builds url path strings. The shim method will return a different url that originates from the steamloopback.host.
+
+*/
 /// <reference path="../Patches.ts" />
 // Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration" (see: https://stackoverflow.com/a/48189989/2489580)
 var SnapshotMakerTsJsRewriter;

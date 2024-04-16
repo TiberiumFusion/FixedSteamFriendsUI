@@ -128,6 +128,7 @@ namespace SnapshotMakerTsJsRewriter.Patches
             new Definitions.ShimSettingsStoreIsSteamInTournamentModeCPDF(),
             new Definitions.ShimSteamClientIsSteamInTournamentModeCPDF(),
             new Definitions.DisableMiniprofileBrokenBlurHandlerCPDF(),
+            new Definitions.ShimSteamClientBrowserGetBrowserIdCPDF(),
         ];
 
         for (let factory of factories)

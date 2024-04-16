@@ -81,7 +81,7 @@ namespace SnapshotMakerTsJsRewriter.Patches.Definitions
                         if (node.kind == ts.SyntaxKind.CallExpression) // e.g.  b.Ul.SettingsStore.IsSteamInTournamentMode()
                         {
                             let tnode = node as ts.CallExpression;
-                            // This is chain of PropertyAccessExpressions, each nested in the reverse order of how it's typed in the js
+                            // This is a chain of PropertyAccessExpressions, each nested in the reverse order of how it's typed in the js
 
                             // Validate the .IsSteamInTournamentMode() call at the end of the expression
                             if (tnode.expression.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  b.Ul.SettingsStore.IsSteamInTournamentMode
