@@ -115,6 +115,10 @@
 			IdName: "FixBlackFrameBug",
 		},
 		
+		{
+			IdName: "FixBrokenIsMaximizedCopypasta",
+		},
+		
 	]
 	
 }

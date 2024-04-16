@@ -89,6 +89,7 @@
     <TypeScriptCompile Include="Declarations\typescript%404.9.5\typescript.d.ts" />
     <TypeScriptCompile Include="Scripts\Helpers.ts" />
     <TypeScriptCompile Include="Scripts\Main.ts" />
+    <TypeScriptCompile Include="Scripts\Patches\Definitions\FixBrokenIsMaximizedCopypasta.ts" />
     <TypeScriptCompile Include="Scripts\Patches\Definitions\FixBlackFrameBug.ts" />
     <TypeScriptCompile Include="Scripts\Patches\Definitions\DisableMiniprofileBrokenBlurHandler.ts" />
     <TypeScriptCompile Include="Scripts\Patches\Definitions\ShimSteamClientBrowserGetBrowserId.ts" />
