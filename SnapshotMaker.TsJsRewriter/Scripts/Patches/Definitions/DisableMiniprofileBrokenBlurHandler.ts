@@ -2,7 +2,7 @@
 //
 //    Disable broken (t.m_BlurHandler = () => { this.HideByElement(t.m_OwningElement); }) code in the ShowPopup() handler for miniprofiles
 //
-//    Examples:
+//    Target examples:
 //      1.  (t.m_BlurHandler = () => {
 //			    this.HideByElement(t.m_OwningElement);
 //			}),
