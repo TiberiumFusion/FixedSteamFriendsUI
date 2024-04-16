@@ -2,7 +2,7 @@
 //
 //    Compat shim for SteamClient.Browser.GetBrowserID()
 //
-//    Examples:
+//    Target examples:
 //      1.  n.SteamClient.Browser.GetBrowserID()
 //       -> TFP.Compat.SteamClient_Browser_GetBrowserID(n.SteamClient)
 //      2.  n.SteamClient.Window.GetBrowserID()

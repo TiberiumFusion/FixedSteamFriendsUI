@@ -225,12 +225,7 @@ var SnapshotMakerTsJsRewriter;
     -- Range --
 
     8200419 through 8601984 have this bug. It is highly likely that version prior to 8200419 also have this bug.
-    Sometime between 8601984 and 8811541, Valve finally "fixed" this bug, by way of completely rewriting the IsMinimized() and IsMaximized() methods for this type.
-
-
-    -- Related --
-
-    See ShimSteamClientWindowMethods.
+    Sometime between 8601984 and 8811541, Valve finally "fixed" this bug, by way of completely rewriting the IsMinimized() and IsMaximized() methods for this type. The rewrite involves a new guarded access paradigm to members of SteamClient, which is good and save me the work of writing a shim patch to do the same thing. Unfortunately, Valve's access guard only exists on this one type in question and is only used for its own access to SteamClient members.
 
  */
 /// <reference path="../Patches.ts" />
@@ -533,7 +528,7 @@ var SnapshotMakerTsJsRewriter;
 //
 //    Compat shim for SteamClient.Browser.GetBrowserID()
 //
-//    Examples:
+//    Target examples:
 //      1.  n.SteamClient.Browser.GetBrowserID()
 //       -> TFP.Compat.SteamClient_Browser_GetBrowserID(n.SteamClient)
 //      2.  n.SteamClient.Window.GetBrowserID()
