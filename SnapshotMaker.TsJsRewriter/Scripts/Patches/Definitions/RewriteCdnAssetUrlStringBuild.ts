@@ -8,6 +8,13 @@
 //
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/*  -- Notes --
+    
+    In order for the snapshot to be 100% local, all resource fetches must go to steamloopback.host instead of the remote Valve servers.
+    We achieve that by inserting a shim method in all locations where Valve's js builds url path strings. The shim method will return a different url that originates from the steamloopback.host.
+
+*/
+
 
 /// <reference path="../Patches.ts" />
 // Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration" (see: https://stackoverflow.com/a/48189989/2489580)

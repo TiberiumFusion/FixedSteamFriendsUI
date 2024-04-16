@@ -9,6 +9,16 @@
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+/*  -- Notes --
+    
+    Valve inability to call SettingsStore.IsSteamInTournamentMode() properly is the specific fuckup that required the creation of the entire FixedSteamFriendsUI project.
+    Valve tries to call IsSteamInTournamentMode() on two objects (sometimes incorrectly), neither of which exist outside of the sharedjscontext abomination in the pure-shit steam clients.
+    
+    This is resolved by shimming each call site with a wrapper that ensures a valid return without exceptions.
+
+*/
+
+
 /// <reference path="../Patches.ts" />
 // Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration" (see: https://stackoverflow.com/a/48189989/2489580)
 

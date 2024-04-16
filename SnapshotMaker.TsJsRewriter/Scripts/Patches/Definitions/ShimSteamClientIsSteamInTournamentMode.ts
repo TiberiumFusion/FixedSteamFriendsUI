@@ -12,6 +12,12 @@
 //
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/*  -- Notes --
+    
+    Refer to the other IsSteamInTournamentMode for more info.
+
+*/
+
 
 /// <reference path="../Patches.ts" />
 // Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration" (see: https://stackoverflow.com/a/48189989/2489580)
