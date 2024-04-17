@@ -227,17 +227,31 @@
         // Report some result data
         //
 
+        Trace("Applied patches:");
+
         for (let i = 0; i < ConfiguredPatchDefinitions.length; i++)
         {
             let patchDefinition = ConfiguredPatchDefinitions[i];
+            let configuredPatchDefinition = ((<Patches.ConfiguredPatchDefinition>patchDefinition).Config != null) ? <Patches.ConfiguredPatchDefinition>patchDefinition : null;
+
             let patchApplicationsInfo: IPatchJavascriptResult["AppliedPatches"][0] = result.AppliedPatches[i];
 
             let appliedCount: number = patchApplicationsInfo.Applications.length;
 
-            let message: string = "Patch '" + patchDefinition.IdName + "' applied " + appliedCount + " time(s)";
-            if (appliedCount == 0)
-                message = "[!] " + message + " [!]";
-            Trace(message);
+            let message: string[] = ["  - "];
+
+            if (appliedCount == 0) message.push("[!]");
+
+            message.push("'" + patchDefinition.IdName + "'");
+
+            if (configuredPatchDefinition != null)
+                message.push("(config:", configuredPatchDefinition.Config, ")");
+
+            message.push("applied " + appliedCount + " time(s)")
+
+            if (appliedCount == 0) message.push("[!]");
+
+            Trace(...message);
         }
 
 

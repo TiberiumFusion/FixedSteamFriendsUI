@@ -12,6 +12,10 @@ namespace SnapshotMakerTsJsRewriter.Patches
     // ____________________________________________________________________________________________________
     //
 
+    // --------------------------------------------------
+    //   Patch definitions
+    // --------------------------------------------------
+    
     // Each patch target is defined by two things: an anchor ast node from which the detection is evaluated, and the patch to be performed relative to that node if the detection passes
     // Since the same patch may be performed at many different locations, each patch definition consists of one patch and one or more detections
 
@@ -61,6 +65,23 @@ namespace SnapshotMakerTsJsRewriter.Patches
         }
     }
 
+    // Derivative that retains its instantiation configuration object
+    export class ConfiguredPatchDefinition extends PatchDefinition
+    {
+        Config: any; // Each patch definition has its own bespoke configuration object, so we use any type here
+
+        constructor(idName: string, config: any, patch: Function, detections: Function[])
+        {
+            super(idName, patch, detections);
+            this.Config = config;
+        }
+    }
+
+
+    // --------------------------------------------------
+    //   Helpers
+    // --------------------------------------------------
+    
     // Bundle of data created on a matched detection; provided to the patch method associated with the detection method
     export class DetectionInfo
     {
@@ -74,18 +95,18 @@ namespace SnapshotMakerTsJsRewriter.Patches
         }
     }
 
+    
+    // --------------------------------------------------
+    //   Patch definition factories
+    // --------------------------------------------------
 
-    //export interface PatchDefinitionFactoryCreateConfig { }
-
-    // Object which creates configured patch definitions
+    // Object which creates patch definitions
+    // Not strictly necessary and a little confusing as a result, but this provides a layer of abstraction between the patch definitions config object passed to Main.DefinePatches() and each PatchDefinition
     // A configured patch definition has its detection and patch methods both altered by a provided config, which usually specifies the signatures of the patch targets and what to do with them when patching them
+    // The configuration can be null, however, for patches which do not accept any configuration
     export class ConfiguredPatchDefinitionFactory
     {
         PatchIdName: string;
-        //PatchDefConfig: PatchDefinitionFactoryCreateConfig;
-
-        //PatchMethod: Function;
-        //DetectionMethods: Function[];
 
         CreatePatchDefinition(config: any): PatchDefinition
         {

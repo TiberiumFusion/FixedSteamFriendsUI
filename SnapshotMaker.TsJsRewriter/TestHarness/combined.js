@@ -161,14 +161,22 @@ var SnapshotMakerTsJsRewriter;
         //
         // Report some result data
         //
+        SnapshotMakerTsJsRewriter.Trace("Applied patches:");
         for (let i = 0; i < ConfiguredPatchDefinitions.length; i++) {
             let patchDefinition = ConfiguredPatchDefinitions[i];
+            let configuredPatchDefinition = (patchDefinition.Config != null) ? patchDefinition : null;
             let patchApplicationsInfo = result.AppliedPatches[i];
             let appliedCount = patchApplicationsInfo.Applications.length;
-            let message = "Patch '" + patchDefinition.IdName + "' applied " + appliedCount + " time(s)";
+            let message = ["  - "];
             if (appliedCount == 0)
-                message = "[!] " + message + " [!]";
-            SnapshotMakerTsJsRewriter.Trace(message);
+                message.push("[!]");
+            message.push("'" + patchDefinition.IdName + "'");
+            if (configuredPatchDefinition != null)
+                message.push("(config:", configuredPatchDefinition.Config, ")");
+            message.push("applied " + appliedCount + " time(s)");
+            if (appliedCount == 0)
+                message.push("[!]");
+            SnapshotMakerTsJsRewriter.Trace(...message);
         }
         return result;
     }
@@ -188,6 +196,9 @@ var SnapshotMakerTsJsRewriter;
         //     Structures
         // ____________________________________________________________________________________________________
         //
+        // --------------------------------------------------
+        //   Patch definitions
+        // --------------------------------------------------
         // Each patch target is defined by two things: an anchor ast node from which the detection is evaluated, and the patch to be performed relative to that node if the detection passes
         // Since the same patch may be performed at many different locations, each patch definition consists of one patch and one or more detections
         // Named combination of detector(s) + patch
@@ -220,6 +231,17 @@ var SnapshotMakerTsJsRewriter;
             }
         }
         Patches.PatchDefinition = PatchDefinition;
+        // Derivative that retains its instantiation configuration object
+        class ConfiguredPatchDefinition extends PatchDefinition {
+            constructor(idName, config, patch, detections) {
+                super(idName, patch, detections);
+                this.Config = config;
+            }
+        }
+        Patches.ConfiguredPatchDefinition = ConfiguredPatchDefinition;
+        // --------------------------------------------------
+        //   Helpers
+        // --------------------------------------------------
         // Bundle of data created on a matched detection; provided to the patch method associated with the detection method
         class DetectionInfo {
             constructor(match, data) {
@@ -228,13 +250,14 @@ var SnapshotMakerTsJsRewriter;
             }
         }
         Patches.DetectionInfo = DetectionInfo;
-        //export interface PatchDefinitionFactoryCreateConfig { }
-        // Object which creates configured patch definitions
+        // --------------------------------------------------
+        //   Patch definition factories
+        // --------------------------------------------------
+        // Object which creates patch definitions
+        // Not strictly necessary and a little confusing as a result, but this provides a layer of abstraction between the patch definitions config object passed to Main.DefinePatches() and each PatchDefinition
         // A configured patch definition has its detection and patch methods both altered by a provided config, which usually specifies the signatures of the patch targets and what to do with them when patching them
+        // The configuration can be null, however, for patches which do not accept any configuration
         class ConfiguredPatchDefinitionFactory {
-            //PatchDefConfig: PatchDefinitionFactoryCreateConfig;
-            //PatchMethod: Function;
-            //DetectionMethods: Function[];
             CreatePatchDefinition(config) {
                 throw new Error("Not implemented");
             }
@@ -1087,7 +1110,7 @@ var SnapshotMakerTsJsRewriter;
                     this.PatchIdName = "RewriteCdnAssetUrlStringBuild";
                 }
                 CreatePatchDefinition(config) {
-                    return new Patches.PatchDefinition(this.PatchIdName, 
+                    return new Patches.ConfiguredPatchDefinition(this.PatchIdName, config, 
                     // ____________________________________________________________________________________________________
                     //
                     //     Patch
@@ -1284,7 +1307,7 @@ var SnapshotMakerTsJsRewriter;
                     this.PatchIdName = "ShimSteamClientBrowserGetBrowserId";
                 }
                 CreatePatchDefinition(config) {
-                    return new Patches.PatchDefinition(this.PatchIdName, 
+                    return new Patches.ConfiguredPatchDefinition(this.PatchIdName, config, 
                     // ____________________________________________________________________________________________________
                     //
                     //     Patch
@@ -1399,7 +1422,7 @@ var SnapshotMakerTsJsRewriter;
                     this.PatchIdName = "ShimSteamClientBrowserGetBrowserIdCheck";
                 }
                 CreatePatchDefinition(config) {
-                    return new Patches.PatchDefinition(this.PatchIdName, 
+                    return new Patches.ConfiguredPatchDefinition(this.PatchIdName, config, 
                     // ____________________________________________________________________________________________________
                     //
                     //     Patch
@@ -1567,7 +1590,7 @@ var SnapshotMakerTsJsRewriter;
                     this.PatchIdName = "AddHtmlWebuiConfigOnLoadHook";
                 }
                 CreatePatchDefinition(config) {
-                    return new Patches.PatchDefinition(this.PatchIdName, 
+                    return new Patches.ConfiguredPatchDefinition(this.PatchIdName, config, 
                     // ____________________________________________________________________________________________________
                     //
                     //     Patch
@@ -1719,7 +1742,7 @@ var SnapshotMakerTsJsRewriter;
                     this.PatchIdName = "ShimSteamClientOpenVrSoia";
                 }
                 CreatePatchDefinition(config) {
-                    return new Patches.PatchDefinition(this.PatchIdName, 
+                    return new Patches.ConfiguredPatchDefinition(this.PatchIdName, config, 
                     // ____________________________________________________________________________________________________
                     //
                     //     Patch
@@ -1803,7 +1826,7 @@ var SnapshotMakerTsJsRewriter;
                     this.PatchIdName = "ShimSteamClientIsSteamInTournamentMode";
                 }
                 CreatePatchDefinition(config) {
-                    return new Patches.PatchDefinition(this.PatchIdName, 
+                    return new Patches.ConfiguredPatchDefinition(this.PatchIdName, config, 
                     // ____________________________________________________________________________________________________
                     //
                     //     Patch
@@ -1911,7 +1934,7 @@ var SnapshotMakerTsJsRewriter;
                     this.PatchIdName = "ShimSettingsStoreIsSteamInTournamentMode";
                 }
                 CreatePatchDefinition(config) {
-                    return new Patches.PatchDefinition(this.PatchIdName, 
+                    return new Patches.ConfiguredPatchDefinition(this.PatchIdName, config, 
                     // ____________________________________________________________________________________________________
                     //
                     //     Patch

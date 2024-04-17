@@ -46,7 +46,7 @@ namespace SnapshotMakerTsJsRewriter.Patches.Definitions
 
         CreatePatchDefinition(config: ShimSteamClientBrowserGetBrowserIdConfig): PatchDefinition
         {
-            return new PatchDefinition(this.PatchIdName,
+            return new ConfiguredPatchDefinition(this.PatchIdName, config,
 
                 // ____________________________________________________________________________________________________
                 //

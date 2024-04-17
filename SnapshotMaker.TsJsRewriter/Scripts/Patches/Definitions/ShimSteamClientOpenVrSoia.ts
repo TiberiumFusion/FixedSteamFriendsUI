@@ -47,7 +47,7 @@ namespace SnapshotMakerTsJsRewriter.Patches.Definitions
 
         CreatePatchDefinition(config: ShimSteamClientOpenVrSoiaConfig): PatchDefinition
         {
-            return new PatchDefinition(this.PatchIdName,
+            return new ConfiguredPatchDefinition(this.PatchIdName, config,
 
                 // ____________________________________________________________________________________________________
                 //

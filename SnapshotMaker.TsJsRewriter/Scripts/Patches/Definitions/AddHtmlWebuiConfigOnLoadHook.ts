@@ -43,9 +43,9 @@ namespace SnapshotMakerTsJsRewriter.Patches.Definitions
     {
         PatchIdName = "AddHtmlWebuiConfigOnLoadHook";
 
-        CreatePatchDefinition(config: AddHtmlWebuiConfigOnLoadHookConfig): PatchDefinition
+        CreatePatchDefinition(config: AddHtmlWebuiConfigOnLoadHookConfig): ConfiguredPatchDefinition
         {
-            return new PatchDefinition(this.PatchIdName,
+            return new ConfiguredPatchDefinition(this.PatchIdName, config,
 
                 // ____________________________________________________________________________________________________
                 //
