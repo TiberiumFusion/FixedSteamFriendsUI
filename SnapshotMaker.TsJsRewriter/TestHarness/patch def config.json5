@@ -134,6 +134,13 @@
 			}
 		},
 		
+		{
+			IdName: "ShimSteamClientBrowserGetBrowserIdCheck",
+			Config: {
+				ShimMethodIdentifierExpression: "TFP.Compat.SteamClient_HasGetBrowserID",
+			}
+		},
+		
 	]
 	
 }

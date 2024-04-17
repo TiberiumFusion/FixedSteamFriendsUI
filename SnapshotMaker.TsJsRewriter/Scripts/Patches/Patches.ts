@@ -134,6 +134,7 @@ namespace SnapshotMakerTsJsRewriter.Patches
             new Definitions.DisableBrokenXssAttackValveRelianceCPDF(),
             new Definitions.DisableLate2023ChatCensorshipFeatureAdditionCPDF(),
             new Definitions.ShimSteamClientOpenVrSoiaCPDF(),
+            new Definitions.ShimSteamClientBrowserGetBrowserIdCheckCPDF(),
         ];
 
         for (let factory of factories)
