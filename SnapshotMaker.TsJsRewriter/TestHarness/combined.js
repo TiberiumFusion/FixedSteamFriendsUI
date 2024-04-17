@@ -76,19 +76,22 @@ var SnapshotMakerTsJsRewriter;
         let inputJsSourceFile = ts.createSourceFile("blah.js", code, ts.ScriptTarget.ES2015, /*setParentNodes*/ true, ts.ScriptKind.JS);
         console.log(inputJsSourceFile);
         let totalNodes = 0;
+        let appliedPatches = new Array(ConfiguredPatchDefinitions.length);
+        appliedPatches.fill(0);
         // Method passed to ts.transform(); sole argument is supplied by ts.transform()
         let megatron = function (context) {
             // Ugly js nested method, which somehow obtains its sole argument from the ts.transform() caller
             return function (sourceFile) {
                 let visitor = function (node) {
                     totalNodes += 1;
-                    for (let patchDefinition of ConfiguredPatchDefinitions) {
+                    for (let i = 0; i < ConfiguredPatchDefinitions.length; i++) {
+                        let patchDefinition = ConfiguredPatchDefinitions[i];
                         let patchedNode = patchDefinition.DetectAndPatch(context, sourceFile, node);
                         if (patchedNode != null) // return is non-null if this node was detected & patched
+                         {
+                            appliedPatches[i]++;
                             return patchedNode;
-                        // todo: track and report the following
-                        // - count of applied patches
-                        // - patches who had none of their detections match and thus were never used
+                        }
                     }
                     return ts.visitEachChild(node, visitor, context);
                 };
@@ -97,6 +100,15 @@ var SnapshotMakerTsJsRewriter;
         };
         let inputJsTransformResult = ts.transform(inputJsSourceFile, [megatron]);
         console.log(">>>>> TRANSFORM DONE >>>>>", totalNodes);
+        for (let i = 0; i < ConfiguredPatchDefinitions.length; i++) {
+            let patchDefinition = ConfiguredPatchDefinitions[i];
+            let applied = appliedPatches[i];
+            let message = "Patch '" + patchDefinition.IdName + "' applied " + applied + " time(s)";
+            if (applied == 0)
+                console.warn(message);
+            else
+                console.info(message);
+        }
         console.log("EXPORT");
         let transformedInputJsSourceFile = inputJsTransformResult.transformed[0];
         let outputJs = SnapshotMakerTsJsRewriter.JsEmitPrinter.printFile(transformedInputJsSourceFile);

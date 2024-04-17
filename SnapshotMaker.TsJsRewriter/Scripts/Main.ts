@@ -71,6 +71,9 @@
         let totalNodes: number = 0;
 
 
+        let appliedPatches: number[] = new Array(ConfiguredPatchDefinitions.length);
+        appliedPatches.fill(0);
+
         // Method passed to ts.transform(); sole argument is supplied by ts.transform()
         let megatron: ts.TransformerFactory<ts.SourceFile> = function(context)
         {
@@ -81,15 +84,16 @@
                 {
                     totalNodes += 1;
 
-                    for (let patchDefinition of ConfiguredPatchDefinitions)
+                    for (let i = 0; i < ConfiguredPatchDefinitions.length; i++)
                     {
+                        let patchDefinition = ConfiguredPatchDefinitions[i];
+
                         let patchedNode: ts.Node = patchDefinition.DetectAndPatch(context, sourceFile, node);
                         if (patchedNode != null) // return is non-null if this node was detected & patched
+                        {
+                            appliedPatches[i]++;
                             return patchedNode;
-
-                        // todo: track and report the following
-                        // - count of applied patches
-                        // - patches who had none of their detections match and thus were never used
+                        }
                     }
 
                     return ts.visitEachChild(node, visitor, context)
@@ -102,6 +106,18 @@
         let inputJsTransformResult = ts.transform(inputJsSourceFile, [megatron]);
 
         console.log(">>>>> TRANSFORM DONE >>>>>", totalNodes);
+
+        for (let i = 0; i < ConfiguredPatchDefinitions.length; i++)
+        {
+            let patchDefinition = ConfiguredPatchDefinitions[i];
+            let applied: number = appliedPatches[i];
+
+            let message: string = "Patch '" + patchDefinition.IdName + "' applied " + applied + " time(s)";
+            if (applied == 0)
+                console.warn(message);
+            else
+                console.info(message);
+        }
 
         console.log("EXPORT");
 
