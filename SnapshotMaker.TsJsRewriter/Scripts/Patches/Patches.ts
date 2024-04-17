@@ -133,6 +133,7 @@ namespace SnapshotMakerTsJsRewriter.Patches
             new Definitions.FixBrokenIsMaximizedCopypastaCPDF(),
             new Definitions.DisableBrokenXssAttackValveRelianceCPDF(),
             new Definitions.DisableLate2023ChatCensorshipFeatureAdditionCPDF(),
+            new Definitions.ShimSteamClientOpenVrSoiaCPDF(),
         ];
 
         for (let factory of factories)

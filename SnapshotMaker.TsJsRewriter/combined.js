@@ -199,6 +199,7 @@ var SnapshotMakerTsJsRewriter;
                 new Patches.Definitions.FixBrokenIsMaximizedCopypastaCPDF(),
                 new Patches.Definitions.DisableBrokenXssAttackValveRelianceCPDF(),
                 new Patches.Definitions.DisableLate2023ChatCensorshipFeatureAdditionCPDF(),
+                new Patches.Definitions.ShimSteamClientOpenVrSoiaCPDF(),
             ];
             for (let factory of factories)
                 RegisterPatchDefinitionFactoryInstance(factory);
@@ -335,10 +336,10 @@ var SnapshotMakerTsJsRewriter;
                         =>		    if (null != this.m_WebUIServiceTransport) {
     
                         -- In 8811541 --
-                        LoadLanguage(e) {
-                            return (0, i.mG)(this, void 0, void 0, function* () {
-                                let t = "", n = !1;
-                        =>      if (this.m_WebUIServiceTransport.BIsValid())
+                            LoadLanguage(e) {
+                                return (0, i.mG)(this, void 0, void 0, function* () {
+                                    let t = "", n = !1;
+                        =>          if (this.m_WebUIServiceTransport.BIsValid())
     
                         */
                         (context, sourceFile, node) => {
@@ -372,19 +373,23 @@ var SnapshotMakerTsJsRewriter;
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 //    Disable broken cross-site scripting attack code in page initialization logic
-//
-//    Target examples:
-//      1.  try {
-//				if (window.parent != window) {
-//					const t = window.parent;
-//					if (t.__SHARED_FRIENDSUI_GLOBALS && t.__SHARED_FRIENDSUI_GLOBALS[e]) return t.__SHARED_FRIENDSUI_GLOBALS[e];
-//					(0, o.X)(!1, `SharedFriendsUIGlobal "${e}" not initialized by parent, proceeding with local copy`);
-//				}
-//			} catch (e) {}
-//       -> /* code disabled by comment or removed */
-//
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*  -- Notes --
+/*
+
+    ----- Targets -----
+
+    1.  (8601984: line 37944)
+        try {
+            if (window.parent != window) {
+                const t = window.parent;
+                if (t.__SHARED_FRIENDSUI_GLOBALS && t.__SHARED_FRIENDSUI_GLOBALS[e]) return t.__SHARED_FRIENDSUI_GLOBALS[e];
+                (0, o.X)(!1, `SharedFriendsUIGlobal "${e}" not initialized by parent, proceeding with local copy`);
+            }
+        } catch (e) {}
+     =>
+        // all code removed
+
+    
+    ----- Notes -----
 
     The offending code only works correctly when friends is running in the sharedjscontext created by a pure cef desktopui Steam client (June 2023 and later)
     On half-vgui half-cef Steam clients (Oct 30 2019 - May 31 2023), the commented out block is cross-domain scripting violation
@@ -401,7 +406,8 @@ var SnapshotMakerTsJsRewriter;
     We, however, get screwed by it. Because the steam-chat.com snapshot is served from steamloopback.host, this code is *not* an xss attack, and thus it runs, and thus is clobbers the valid data with garbage.
     So we have to disable it.
 
- */
+*/
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// <reference path="../Patches.ts" />
 // Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration" (see: https://stackoverflow.com/a/48189989/2489580)
 var SnapshotMakerTsJsRewriter;
@@ -496,14 +502,17 @@ var SnapshotMakerTsJsRewriter;
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 //    Fix some IsMaximized() method calling this.m_popup.SteamClient.Window.IsWindowMinimized instead of this.m_popup.SteamClient.Window.IsWindowMaximized
-//
-//    Target examples:
-//      1.  In the IsMaximized() method near Ctrl+F for "get focused() {"
-//          this.m_popup && !this.m_popup.closed && this.m_popup.SteamClient && this.m_popup.SteamClient.Window && this.m_popup.SteamClient.Window.IsWindowMinimized
-//       -> this.m_popup && !this.m_popup.closed && this.m_popup.SteamClient && this.m_popup.SteamClient.Window && this.m_popup.SteamClient.Window.IsWindowMaximized
-//
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*  -- Notes --
+/*
+
+    ----- Targets -----
+    
+    1.  (8601984: line 34511 :: in the IsMaximized() method near Ctrl+F for "get focused() {")
+        this.m_popup && !this.m_popup.closed && this.m_popup.SteamClient && this.m_popup.SteamClient.Window && this.m_popup.SteamClient.Window.IsWindowMinimized
+      =>
+        this.m_popup && !this.m_popup.closed && this.m_popup.SteamClient && this.m_popup.SteamClient.Window && this.m_popup.SteamClient.Window.IsWindowMaximized
+
+    
+    ----- Notes -----
     
     So this is yet another one of Valve's pathetic "we make billions of dollars hand of over fist but we cannot be fucked to spend 5 seconds testing or proofreading our copy & paste code" errors
     And it causes errors when running under the Dec 2022 client, where IsWindowMaximized does not exist for some reason
@@ -511,12 +520,15 @@ var SnapshotMakerTsJsRewriter;
     Fixing Valve's idiot code doesn't make IsWindowMaximized always magically exist, but it falsey automatic null for this nonexistent property isn't causing problems, and since Valve likes abusing this (anti-)feature of javascript, it's very possible that some code downstream of this actually depends on that.
 
     
-    -- Range --
+    ----- Range -----
 
-    8200419 through 8601984 have this bug. It is highly likely that version prior to 8200419 also have this bug.
-    Sometime between 8601984 and 8811541, Valve finally "fixed" this bug, by way of completely rewriting the IsMinimized() and IsMaximized() methods for this type. The rewrite involves a new guarded access paradigm to members of SteamClient, which is good and save me the work of writing a shim patch to do the same thing. Unfortunately, Valve's access guard only exists on this one type in question and is only used for its own access to SteamClient members.
+    Since: 8200419 or earlier.
 
- */
+    Until: Sometime between 8601984 and 8811541.
+           - Circa 8811541, Valve finally "fixed" this bug, by way of completely rewriting the IsMinimized() and IsMaximized() methods for this type. The rewrite involves a new guarded access paradigm to members of SteamClient, which is good and save me the work of writing a shim patch to do the same thing. Unfortunately, Valve's access guard only exists on this one type in question and is only used for its own access to SteamClient members.
+
+*/
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// <reference path="../Patches.ts" />
 // Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration" (see: https://stackoverflow.com/a/48189989/2489580)
 var SnapshotMakerTsJsRewriter;
@@ -596,14 +608,17 @@ var SnapshotMakerTsJsRewriter;
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 //    Fix black frame bug when steam-chat.com is running under Steam clients that don't create "popup-created" signals
-//
-//    Target examples:
-//      1.  Within the Show(e = d.IF.k_EWindowBringToFrontAndForceOS) method:
-//          r && (this.OnCreateInternal(), t != d.IF.k_EWindowBringToFrontInvalid && this.Focus(t))
-//       -> r ? (this.OnCreateInternal(), t != d.IF.k_EWindowBringToFrontInvalid && this.Focus(t)) : this.OnCreateInternal()
-//
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*  -- Notes --
+/*
+
+    ----- Targets -----
+
+    1.  (8601984: line 34417 :: within the Show(e = d.IF.k_EWindowBringToFrontAndForceOS) method)
+        r && (this.OnCreateInternal(), t != d.IF.k_EWindowBringToFrontInvalid && this.Focus(t))
+      =>
+        r ? (this.OnCreateInternal(), t != d.IF.k_EWindowBringToFrontInvalid && this.Focus(t)) : this.OnCreateInternal()
+
+    
+    ----- Notes -----
     
     The notable manifestation of this bug is the solid black Friends List under the Dec 2022 Steam client. Everything is loaded and running properly in the background, but the frame never renders itself and thus is solid black.
 
@@ -615,7 +630,15 @@ var SnapshotMakerTsJsRewriter;
     
     For more info see #9 and #10 on gh.
 
- */
+    
+    ----- Range -----
+
+    Since: Whichever version between 8200419 and 8601984 made the change noted above.
+
+    Until: At least 8811541.
+
+*/
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// <reference path="../Patches.ts" />
 // Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration" (see: https://stackoverflow.com/a/48189989/2489580)
 var SnapshotMakerTsJsRewriter;
@@ -699,26 +722,34 @@ var SnapshotMakerTsJsRewriter;
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 //    Disable broken (t.m_BlurHandler = () => { this.HideByElement(t.m_OwningElement); }) code in the ShowPopup() handler for miniprofiles
-//
-//    Target examples:
-//      1.  (t.m_BlurHandler = () => {
-//			    this.HideByElement(t.m_OwningElement);
-//			}),
-//       -> (t.m_BlurHandler = () => {
-//			    /*this.HideByElement(t.m_OwningElement);*/
-//			}),
-//
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*  -- Notes --
+/*
+
+    ----- Targets -----
+
+    1.  (8601984: line 13927)
+        (t.m_BlurHandler = () => {
+            this.HideByElement(t.m_OwningElement);
+        }),
+      =>
+        (t.m_BlurHandler = () => {
+            // removed
+        }),
+
+    
+    ----- Notes -----
 
     This appears to be Valve's attempt to add a visual effect when a miniprofile is displayed.
     I don't know what the intended effect is, but it possibly is meant to blur the parent window which created the miniprofile, which would be pretty retarded.
+
     Regardless, it doesn't work properly in the December 2022 client. It ends up making the miniprofile immediately close itself, since the miniprofile's m_OwningElement is itself. But only when the window which created the miniprofile popup has focus. If a different window has focus, the miniprofile works properly. Clearly a symptom of some more rootward problem.
+
     This problem does not occur in the May 2023 client.
+
     This effect appears to be written expressly for pure shit steam clients and thus has no reason to attempt itself on vgui capable Steam clients. In fact, despite not causing any problems in the May 2023, it does absolutely nothing to affect the look & behavior of the miniprofiles. They are the same whether or not this code is disabled/enabled.
     Accordingly, disabling this code fixes the aforementioned issue under the Dec 2022 client and renders no changes to the unaffected clients.
 
- */
+*/
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// <reference path="../Patches.ts" />
 // Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration" (see: https://stackoverflow.com/a/48189989/2489580)
 var SnapshotMakerTsJsRewriter;
@@ -816,15 +847,20 @@ var SnapshotMakerTsJsRewriter;
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 //    Compat shim for SteamClient.Browser.GetBrowserID()
-//
-//    Target examples:
-//      1.  n.SteamClient.Browser.GetBrowserID()
-//       -> TFP.Compat.SteamClient_Browser_GetBrowserID(n.SteamClient)
-//      2.  n.SteamClient.Window.GetBrowserID()
-//       -> TFP.Compat.SteamClient_Browser_GetBrowserID(n.SteamClient)
-//
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*  -- Notes --
+/*
+
+    ----- Target Examples -----
+
+    1.  SteamClient.Browser.GetBrowserID()
+      =>
+        TFP.Compat.SteamClient_Browser_GetBrowserID(SteamClient)
+
+    2.  n.SteamClient.Browser.GetBrowserID()
+      =>
+        TFP.Compat.SteamClient_Browser_GetBrowserID(n.SteamClient)
+
+    
+    ----- Notes -----
     
     SteamClient.Window.GetBrowserID() and SteamClient.Browser.GetBrowserID() both do (presumably) the same thing.
     The Window version was used by steam-chat.com until May 2023 or earlier, when it was replaced by the Browser version.
@@ -836,6 +872,7 @@ var SnapshotMakerTsJsRewriter;
     To support the Dec 2022 client and others like it, we insert a shim in place of the original call, which will defer to calling GetBrowserID() on the appropriate SteamClient.* interface.
 
 */
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// <reference path="../Patches.ts" />
 // Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration" (see: https://stackoverflow.com/a/48189989/2489580)
 var SnapshotMakerTsJsRewriter;
@@ -930,22 +967,118 @@ var SnapshotMakerTsJsRewriter;
 })(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-//    Compat shim for SteamClient.System.IsSteamInTournamentMode()
-//    - Despite the identical name and usage pattern, this SteamClient.System.IsSteamInTournamentMode() is DIFFERENT from SettingsStore.IsSteamInTournamentMode()
-//      - The SteamClient.System version returns a promise, while the SettingsStore version is a normal function
-//    - Also, since the members of SteamClient (like .System) are not always real JS objects, it's safer to pass the SteamClient to the shim function instead of passing SteamClient.System
-//    - Hence the need for two different IsSteamInTournamentMode patches
-//
-//    Examples:
-//      1.  SteamClient.System.IsSteamInTournamentMode().then((e) => (this.m_bSteamIsInTournamentMode = e))
-//       -> TFP.Compat.SteamClient_System_IsSteamInTournamentMode(SteamClient, "System", "IsSteamInTournamentMode").then((e) => (this.m_bSteamIsInTournamentMode = e))
-//
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*  -- Notes --
+//    Compat shim for SteamClient.OpenVR.SetOverlayInteractionAffordance()
+/*
+
+    ----- Target Examples -----
+
+    1.  o.OpenVR.SetOverlayInteractionAffordance(t, s)
+      =>
+        TFP.Compat.SteamClient_OpenVR_SetOverlayInteractionAffordance(o, t, s)
+
     
+    ----- Notes -----
+    
+    First appeared in Valve javascript sometime between 8390683 and 8601984
+
+    SetOverlayInteractionAffordance() and in fact the entire OpenVR subinterface are not present in the injected interface created by the May 2023 client's friendsui.dll. It's unknown which client introduces this method, though it is likely to be the first pure-shit steam client or one of the updates between then and Dec 2023.
+
+    Appears to be related to vr junk and has nothing to do with actual steam chat functionality.
+
+    
+    ----- Range -----
+
+    Since: Sometime between 8390683 and 8601984.
+
+    Until: Sometime between 8601984 and 8811541.
+           - Circa 8811541, Valve added a guard to accessing the OpenVR subinterface, and only for OpenVR. Zero guard for SetOverlayInteractionAffordance. It seems likely that SetOverlayInteractionAffordance is part of RTM OpenVR.
+
+*/
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// <reference path="../Patches.ts" />
+// Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration" (see: https://stackoverflow.com/a/48189989/2489580)
+var SnapshotMakerTsJsRewriter;
+(function (SnapshotMakerTsJsRewriter) {
+    var Patches;
+    (function (Patches) {
+        var Definitions;
+        (function (Definitions) {
+            class ShimSteamClientOpenVrSoiaCPDF extends Patches.ConfiguredPatchDefinitionFactory {
+                constructor() {
+                    super(...arguments);
+                    this.PatchIdName = "ShimSteamClientOpenVrSoia";
+                }
+                CreatePatchDefinition(config) {
+                    return new Patches.PatchDefinition(this.PatchIdName, 
+                    // ____________________________________________________________________________________________________
+                    //
+                    //     Patch
+                    // ____________________________________________________________________________________________________
+                    //
+                    (context, sourceFile, node, detectionInfoData) => {
+                        let tnode = detectionInfoData.TypedNode; // e.g.  o.OpenVR.SetOverlayInteractionAffordance(t, s)
+                        // Replace the call to the original method with a call to the shim function that receives the original arguments as well
+                        let patched = context.factory.updateCallExpression(tnode, context.factory.createIdentifier(config.ShimMethodIdentifierExpression), tnode.typeArguments, tnode.arguments);
+                        if (SnapshotMakerTsJsRewriter.IncludeOldJsCommentAtPatchSites)
+                            ts.addSyntheticLeadingComment(patched, ts.SyntaxKind.MultiLineCommentTrivia, SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, node, sourceFile), false);
+                        return patched;
+                    }, 
+                    // ____________________________________________________________________________________________________
+                    //
+                    //     Detections
+                    // ____________________________________________________________________________________________________
+                    //
+                    [
+                        (context, sourceFile, node) => {
+                            if (node.kind == ts.SyntaxKind.CallExpression) // e.g.  o.OpenVR.SetOverlayInteractionAffordance(t, s)
+                             {
+                                let tnode = node;
+                                // This is a chain of PropertyAccessExpressions, each nested in the reverse order of how it's typed in the js
+                                if (tnode.expression.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  o.OpenVR.SetOverlayInteractionAffordance
+                                 {
+                                    let memberToCall = tnode.expression;
+                                    let memberToCallJs = SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, memberToCall, sourceFile);
+                                    if (memberToCallJs.endsWith(".OpenVR.SetOverlayInteractionAffordance")) {
+                                        // Highly likely match
+                                        return new Patches.DetectionInfo(true, {
+                                            "TypedNode": tnode,
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    ]);
+                }
+            }
+            Definitions.ShimSteamClientOpenVrSoiaCPDF = ShimSteamClientOpenVrSoiaCPDF;
+        })(Definitions = Patches.Definitions || (Patches.Definitions = {}));
+    })(Patches = SnapshotMakerTsJsRewriter.Patches || (SnapshotMakerTsJsRewriter.Patches = {}));
+})(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//    Compat shim for SteamClient.System.IsSteamInTournamentMode()
+/*
+
+    ----- Target Examples -----
+
+    1.  SteamClient.System.IsSteamInTournamentMode().then((e) => (this.m_bSteamIsInTournamentMode = e))
+      =>
+        TFP.Compat.SteamClient_System_IsSteamInTournamentMode(SteamClient, "System", "IsSteamInTournamentMode").then((e) => (this.m_bSteamIsInTournamentMode = e))
+
+    
+    ----- Notes -----
+    
+    Despite the identical name and usage pattern, this SteamClient.System.IsSteamInTournamentMode() is DIFFERENT from SettingsStore.IsSteamInTournamentMode().
+    - The SettingsStore version is a normal function
+    - The SteamClient.System version returns a promise
+
+    Also, since the members of SteamClient (like .System) are not always real JS objects, it's safer to pass the SteamClient to the shim function (for it to make the .System deference itself) instead of passing SteamClient.System.
+    Hence the need for two different IsSteamInTournamentMode patches.
+
     Refer to the other IsSteamInTournamentMode for more info.
 
 */
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// <reference path="../Patches.ts" />
 // Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration" (see: https://stackoverflow.com/a/48189989/2489580)
 var SnapshotMakerTsJsRewriter;
@@ -1035,20 +1168,25 @@ var SnapshotMakerTsJsRewriter;
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 //    Compat shim for SettingsStore.IsSteamInTournamentMode()
-//
-//    Examples:
-//      1.  let e = I.Ul.ParentalStore.BIsFriendsBlocked() || I.Ul.SettingsStore.IsSteamInTournamentMode();
-//       -> let e = I.Ul.ParentalStore.BIsFriendsBlocked() || TFP.Compat.SettingsStore_IsSteamInTournamentMode(I.Ul.SettingsStore);
-//
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*  -- Notes --
+/*
+
+    ----- Target Examples -----
+
+    1.  let e = I.Ul.ParentalStore.BIsFriendsBlocked() || I.Ul.SettingsStore.IsSteamInTournamentMode();
+      =>
+        let e = I.Ul.ParentalStore.BIsFriendsBlocked() || TFP.Compat.SettingsStore_IsSteamInTournamentMode(I.Ul.SettingsStore);
+
     
-    Valve inability to call SettingsStore.IsSteamInTournamentMode() properly is the specific fuckup that required the creation of the entire FixedSteamFriendsUI project.
-    Valve tries to call IsSteamInTournamentMode() on two objects (sometimes incorrectly), neither of which exist outside of the sharedjscontext abomination in the pure-shit steam clients.
+    ----- Notes -----
+    
+    Valve's inability to call SettingsStore.IsSteamInTournamentMode() properly is the specific fuckup that required the creation of the entire FixedSteamFriendsUI project.
+
+    Valve tries to call IsSteamInTournamentMode() (sometimes incorrectly) on two objects observed thus far, neither of which exist outside of the sharedjscontext abomination in the pure-shit steam clients. Javascript's null == false behavior hides half of these faults, while nested access on the null throws a halting error that breaks the entire inner frame.
     
     This is resolved by shimming each call site with a wrapper that ensures a valid return without exceptions.
 
 */
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// <reference path="../Patches.ts" />
 // Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration" (see: https://stackoverflow.com/a/48189989/2489580)
 var SnapshotMakerTsJsRewriter;
@@ -1133,18 +1271,22 @@ var SnapshotMakerTsJsRewriter;
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 //    CDN asset fetch url rewriting
-//
-//    Examples:
-//      1.  u.Ul.AudioPlaybackManager.PlayAudioURL( o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_enter.m4a?v=1" )
-//       -> u.Ul.AudioPlaybackManager.PlayAudioURL( TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_voice_channel_enter.m4a?v=1", "Root", "JsSounds") )
-//
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*  -- Notes --
+/*
+
+    ----- Target Examples -----
+
+    1.  u.Ul.AudioPlaybackManager.PlayAudioURL( o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_enter.m4a?v=1" )
+      =>
+        u.Ul.AudioPlaybackManager.PlayAudioURL( TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_voice_channel_enter.m4a?v=1", "Root", "JsSounds") )
+
+    
+    ----- Notes -----
     
     In order for the snapshot to be 100% local, all resource fetches must go to steamloopback.host instead of the remote Valve servers.
     We achieve that by inserting a shim method in all locations where Valve's js builds url path strings. The shim method will return a different url that originates from the steamloopback.host.
 
 */
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// <reference path="../Patches.ts" />
 // Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration" (see: https://stackoverflow.com/a/48189989/2489580)
 var SnapshotMakerTsJsRewriter;

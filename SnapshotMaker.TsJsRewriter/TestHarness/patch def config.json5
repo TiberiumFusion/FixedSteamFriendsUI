@@ -127,6 +127,13 @@
 			IdName: "DisableLate2023ChatCensorshipFeatureAddition",
 		},
 		
+		{
+			IdName: "ShimSteamClientOpenVrSoia",
+			Config: {
+				ShimMethodIdentifierExpression: "TFP.Compat.SteamClient_OpenVR_SetOverlayInteractionAffordance",
+			}
+		},
+		
 	]
 	
 }
