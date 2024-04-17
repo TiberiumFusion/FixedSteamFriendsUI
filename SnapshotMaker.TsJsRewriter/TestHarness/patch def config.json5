@@ -163,6 +163,10 @@
 			IdName: "DisableContenthashGetParamOnFetches",
 		},
 		
+		{
+			IdName: "RewriteSteamClientWindowNewGetterPromises",
+		},
+		
 	]
 	
 }

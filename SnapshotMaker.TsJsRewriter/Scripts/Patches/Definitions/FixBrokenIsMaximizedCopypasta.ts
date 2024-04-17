@@ -24,7 +24,7 @@
     Since: 8200419 or earlier.
 
     Until: Sometime between 8601984 and 8811541.
-           - Circa 8811541, Valve finally "fixed" this bug, by way of completely rewriting the IsMinimized() and IsMaximized() methods for this type. The rewrite involves a new guarded access paradigm to members of SteamClient, which is good and save me the work of writing a shim patch to do the same thing. Unfortunately, Valve's access guard only exists on this one type in question and is only used for its own access to SteamClient members.
+           - Circa 8811541, Valve finally "fixed" this bug, by way of completely rewriting the IsMinimized() and IsMaximized() methods for this type. The rewrite involves a new guarded access paradigm to members of SteamClient, which at first might seem good since it would save me the work of writing a shim patch to do the same thing. Unfortunately, the exact oppposite is true. See patch RewriteSteamClientWindowNewGetterPromises.
 
 */
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

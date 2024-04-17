@@ -159,6 +159,7 @@ namespace SnapshotMakerTsJsRewriter.Patches
             new Definitions.ShimSteamClientBrowserGetBrowserIdCheckCPDF(),
             new Definitions.AddHtmlWebuiConfigOnLoadHookCPDF(),
             new Definitions.DisableContenthashGetParamOnFetchesCPDF(),
+            new Definitions.RewriteSteamClientWindowNewGetterPromisesCPDF(),
         ];
 
         for (let factory of factories)

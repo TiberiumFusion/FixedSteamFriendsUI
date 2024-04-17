@@ -297,6 +297,7 @@ var SnapshotMakerTsJsRewriter;
                 new Patches.Definitions.ShimSteamClientBrowserGetBrowserIdCheckCPDF(),
                 new Patches.Definitions.AddHtmlWebuiConfigOnLoadHookCPDF(),
                 new Patches.Definitions.DisableContenthashGetParamOnFetchesCPDF(),
+                new Patches.Definitions.RewriteSteamClientWindowNewGetterPromisesCPDF(),
             ];
             for (let factory of factories)
                 RegisterPatchDefinitionFactoryInstance(factory);
@@ -737,7 +738,7 @@ var SnapshotMakerTsJsRewriter;
     Since: 8200419 or earlier.
 
     Until: Sometime between 8601984 and 8811541.
-           - Circa 8811541, Valve finally "fixed" this bug, by way of completely rewriting the IsMinimized() and IsMaximized() methods for this type. The rewrite involves a new guarded access paradigm to members of SteamClient, which is good and save me the work of writing a shim patch to do the same thing. Unfortunately, Valve's access guard only exists on this one type in question and is only used for its own access to SteamClient members.
+           - Circa 8811541, Valve finally "fixed" this bug, by way of completely rewriting the IsMinimized() and IsMaximized() methods for this type. The rewrite involves a new guarded access paradigm to members of SteamClient, which at first might seem good since it would save me the work of writing a shim patch to do the same thing. Unfortunately, the exact oppposite is true. See patch RewriteSteamClientWindowNewGetterPromises.
 
 */
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1262,6 +1263,143 @@ var SnapshotMakerTsJsRewriter;
                 }
             }
             Definitions.RewriteCdnAssetUrlStringBuildCPDF = RewriteCdnAssetUrlStringBuildCPDF;
+        })(Definitions = Patches.Definitions || (Patches.Definitions = {}));
+    })(Patches = SnapshotMakerTsJsRewriter.Patches || (SnapshotMakerTsJsRewriter.Patches = {}));
+})(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//    Compat shim for SteamClient.Browser.GetBrowserID()
+/*
+
+    ----- Target Examples -----
+
+    1.  (8811541: line 56314)
+        e.SteamClient.Window.IsWindowMaximized().then((e) => {
+            n(e);
+        })
+      =>
+        e.SteamClient.Window.IsWindowMaximized((e) => {
+            n(e);
+        });
+
+    2.
+
+    
+    ----- Notes -----
+    
+    Some time between 8601984 and 8811541, Valve released a Steam client update which changed how the SteamClient.Window.*() getter methods work.
+    - In 8601984, these methods require a callback argument and return nothing
+    - Circa 8811541, these methods now have zero arguments and return a promise
+    
+    Reconciling this change means rewriting all the  method().then(() => {})  call sites in 8811541+ to the old  method(then(() => {})  syntax which works on our target Steam clients.
+
+    Related: see patch <todo>.
+
+*/
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// <reference path="../Patches.ts" />
+// Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration" (see: https://stackoverflow.com/a/48189989/2489580)
+var SnapshotMakerTsJsRewriter;
+(function (SnapshotMakerTsJsRewriter) {
+    var Patches;
+    (function (Patches) {
+        var Definitions;
+        (function (Definitions) {
+            class RewriteSteamClientWindowNewGetterPromisesCPDF extends Patches.ConfiguredPatchDefinitionFactory {
+                constructor() {
+                    super(...arguments);
+                    this.PatchIdName = "RewriteSteamClientWindowNewGetterPromises";
+                }
+                CreatePatchDefinition() {
+                    return new Patches.PatchDefinition(this.PatchIdName, 
+                    // ____________________________________________________________________________________________________
+                    //
+                    //     Patch
+                    // ____________________________________________________________________________________________________
+                    //
+                    (context, sourceFile, node, detectionInfoData) => {
+                        let tnode = detectionInfoData.TypedNode;
+                        /* e.g.
+                            e.SteamClient.Window.IsWindowMaximized().then((e) => {
+                                n(e);
+                            })
+                        */
+                        let memberToCallRequiringThenFuncAsArgument = detectionInfoData.MemberToCallRequiringThenFuncAsArgument; // e.g. e.SteamClient.Window.IsWindowMaximized
+                        let thenCallFunction = detectionInfoData.ThenCallFunction; // e.g.  (e) => { ne(e); }
+                        // Move the thenCallFunction out of then()'s args and into the arguments of the SteamClient.*.Function()
+                        let patched = context.factory.createCallExpression(memberToCallRequiringThenFuncAsArgument, // e.g.  e.SteamClient.Window.IsWindowMaximized
+                        null, [
+                            thenCallFunction,
+                        ]);
+                        /* e.g.
+                            e.SteamClient.Window.IsWindowMaximized((e) => {
+                                n(e);
+                            })
+                        */
+                        if (SnapshotMakerTsJsRewriter.IncludeOldJsCommentAtPatchSites)
+                            ts.addSyntheticLeadingComment(patched, ts.SyntaxKind.MultiLineCommentTrivia, SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, node, sourceFile), false);
+                        return patched;
+                    }, 
+                    // ____________________________________________________________________________________________________
+                    //
+                    //     Detections
+                    // ____________________________________________________________________________________________________
+                    //
+                    [
+                        (context, sourceFile, node) => {
+                            if (node.kind == ts.SyntaxKind.CallExpression) {
+                                /* e.g.
+                                    e.SteamClient.Window.IsWindowMaximized().then((e) => {
+                                        n(e);
+                                    })
+                                */
+                                let tnode = node;
+                                // Validate call().then structure
+                                if (tnode.expression.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  e.SteamClient.Window.IsWindowMaximized().then
+                                 {
+                                    let thenChainAccess = tnode.expression;
+                                    if (thenChainAccess.name.kind == ts.SyntaxKind.Identifier && thenChainAccess.name.escapedText == "then") {
+                                        if (thenChainAccess.expression.kind == ts.SyntaxKind.CallExpression) // e.g.  e.SteamClient.Window.IsWindowMaximized()
+                                         {
+                                            let callBeforeChain = thenChainAccess.expression;
+                                            if (callBeforeChain.expression.kind == ts.SyntaxKind.PropertyAccessExpression) {
+                                                let propertyAccessToCall = callBeforeChain.expression;
+                                                // e.g.
+                                                // - e.SteamClient.Window.GetWindowRestoreDetails
+                                                // - e.SteamClient.Window.IsWindowMinimized
+                                                // - e.SteamClient.Window.IsWindowMaximized
+                                                if (propertyAccessToCall.name.kind == ts.SyntaxKind.Identifier) {
+                                                    // Validate property access of member to call before the then chain
+                                                    let memberNameToCall = propertyAccessToCall.name;
+                                                    let targets = ["GetWindowRestoreDetails", "IsWindowMinimized", "IsWindowMaximized"];
+                                                    if (targets.indexOf(memberNameToCall.escapedText.toString()) != -1) {
+                                                        let propertyAccessJs = SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, propertyAccessToCall, sourceFile);
+                                                        if (propertyAccessJs.includes("SteamClient.Window.")) {
+                                                            // Validate callback to then()
+                                                            if (tnode.arguments.length > 0) {
+                                                                let thenCallFunction = tnode.arguments[0]; // e.g. (e) => { n(e); }
+                                                                if (thenCallFunction.kind == ts.SyntaxKind.ArrowFunction) {
+                                                                    // All but guaranteed match
+                                                                    return new Patches.DetectionInfo(true, {
+                                                                        "TypedNode": tnode,
+                                                                        "MemberToCallRequiringThenFuncAsArgument": propertyAccessToCall,
+                                                                        "ThenCallFunction": thenCallFunction,
+                                                                    });
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]);
+                }
+            }
+            Definitions.RewriteSteamClientWindowNewGetterPromisesCPDF = RewriteSteamClientWindowNewGetterPromisesCPDF;
         })(Definitions = Patches.Definitions || (Patches.Definitions = {}));
     })(Patches = SnapshotMakerTsJsRewriter.Patches || (SnapshotMakerTsJsRewriter.Patches = {}));
 })(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
