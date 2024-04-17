@@ -202,6 +202,7 @@ var SnapshotMakerTsJsRewriter;
                 new Patches.Definitions.ShimSteamClientOpenVrSoiaCPDF(),
                 new Patches.Definitions.ShimSteamClientBrowserGetBrowserIdCheckCPDF(),
                 new Patches.Definitions.AddHtmlWebuiConfigOnLoadHookCPDF(),
+                new Patches.Definitions.DisableContenthashGetParamOnJsonJsFetchesCPDF(),
             ];
             for (let factory of factories)
                 RegisterPatchDefinitionFactoryInstance(factory);
@@ -498,6 +499,94 @@ var SnapshotMakerTsJsRewriter;
                 }
             }
             Definitions.DisableBrokenXssAttackValveRelianceCPDF = DisableBrokenXssAttackValveRelianceCPDF;
+        })(Definitions = Patches.Definitions || (Patches.Definitions = {}));
+    })(Patches = SnapshotMakerTsJsRewriter.Patches || (SnapshotMakerTsJsRewriter.Patches = {}));
+})(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//    Disable broken (t.m_BlurHandler = () => { this.HideByElement(t.m_OwningElement); }) code in the ShowPopup() handler for miniprofiles
+/*
+
+    ----- Targets -----
+
+    1.  (8601984: line 13927)
+        (t.m_BlurHandler = () => {
+            this.HideByElement(t.m_OwningElement);
+        }),
+      =>
+        (t.m_BlurHandler = () => {
+            // removed
+        }),
+
+    
+    ----- Notes -----
+
+    This appears to be Valve's attempt to add a visual effect when a miniprofile is displayed.
+    I don't know what the intended effect is, but it possibly is meant to blur the parent window which created the miniprofile, which would be pretty retarded.
+
+    Regardless, it doesn't work properly in the December 2022 client. It ends up making the miniprofile immediately close itself, since the miniprofile's m_OwningElement is itself. But only when the window which created the miniprofile popup has focus. If a different window has focus, the miniprofile works properly. Clearly a symptom of some more rootward problem.
+
+    This problem does not occur in the May 2023 client.
+
+    This effect appears to be written expressly for pure shit steam clients and thus has no reason to attempt itself on vgui capable Steam clients. In fact, despite not causing any problems in the May 2023, it does absolutely nothing to affect the look & behavior of the miniprofiles. They are the same whether or not this code is disabled/enabled.
+    Accordingly, disabling this code fixes the aforementioned issue under the Dec 2022 client and renders no changes to the unaffected clients.
+
+*/
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// <reference path="../Patches.ts" />
+// Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration" (see: https://stackoverflow.com/a/48189989/2489580)
+var SnapshotMakerTsJsRewriter;
+(function (SnapshotMakerTsJsRewriter) {
+    var Patches;
+    (function (Patches) {
+        var Definitions;
+        (function (Definitions) {
+            class DisableContenthashGetParamOnJsonJsFetchesCPDF extends Patches.ConfiguredPatchDefinitionFactory {
+                constructor() {
+                    super(...arguments);
+                    this.PatchIdName = "DisableContenthashGetParamOnJsonJsFetches";
+                }
+                CreatePatchDefinition() {
+                    return new Patches.PatchDefinition(this.PatchIdName, 
+                    // ____________________________________________________________________________________________________
+                    //
+                    //     Patch
+                    // ____________________________________________________________________________________________________
+                    //
+                    (context, sourceFile, node, detectionInfoData) => {
+                        let tnode = detectionInfoData.TypedNode; // e.g.  ".js?contenthash="
+                        // Change the "contenthash" get param to something different
+                        // Previously, the by-hand manul human version of this patch involved commenting out the entire string concatentation from ".js?contenthash=" to the end of the content array dictionary it indexes into
+                        // This works perfectly fine, but it takes significantly longer to write a detection and patch which does all that, rather than a simple string literal replacement
+                        // The Valve server only returns a 404 when the URL has a known GET param with a value Valve doesn't like
+                        // The Valve server ignores GET params that it doesn't know
+                        // So, an easy patch which saves me time and works just as well as the proper manual patch is simply changing the GET param "contenthash" to something the Valve server won't recognize
+                        let patched = context.factory.createStringLiteral(".js?_contenthash_=");
+                        if (SnapshotMakerTsJsRewriter.IncludeOldJsCommentAtPatchSites)
+                            ts.addSyntheticLeadingComment(patched, ts.SyntaxKind.MultiLineCommentTrivia, SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, node, sourceFile), false);
+                        return patched;
+                    }, 
+                    // ____________________________________________________________________________________________________
+                    //
+                    //     Detections
+                    // ____________________________________________________________________________________________________
+                    //
+                    [
+                        (context, sourceFile, node) => {
+                            if (node.kind == ts.SyntaxKind.StringLiteral) // e.g.  ".js?contenthash="
+                             {
+                                let tnode = node;
+                                if (tnode.text == ".js?contenthash=") {
+                                    return new Patches.DetectionInfo(true, {
+                                        "TypedNode": tnode,
+                                    });
+                                }
+                            }
+                        }
+                    ]);
+                }
+            }
+            Definitions.DisableContenthashGetParamOnJsonJsFetchesCPDF = DisableContenthashGetParamOnJsonJsFetchesCPDF;
         })(Definitions = Patches.Definitions || (Patches.Definitions = {}));
     })(Patches = SnapshotMakerTsJsRewriter.Patches || (SnapshotMakerTsJsRewriter.Patches = {}));
 })(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));

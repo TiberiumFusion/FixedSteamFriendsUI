@@ -148,6 +148,10 @@
 			}
 		},
 		
+		{
+			IdName: "DisableContenthashGetParamOnJsonJsFetches",
+		},
+		
 	]
 	
 }
