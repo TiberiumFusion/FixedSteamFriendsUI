@@ -203,9 +203,9 @@
                 SnapshotMakerTsJsRewriter.DefinePatches(config);
 
                 let inputJs = inputJsText.value;
-                let outputJs = SnapshotMakerTsJsRewriter.PatchJavascript(inputJs);
+                let patchResult = SnapshotMakerTsJsRewriter.PatchJavascript(inputJs);
 
-                outputJsText.value = outputJs;
+                outputJsText.value = patchResult.JavascriptString;
 
                 Status("Done");
                 console.log(">>>>>>>>>> PROCESS END >>>>>>>>>");

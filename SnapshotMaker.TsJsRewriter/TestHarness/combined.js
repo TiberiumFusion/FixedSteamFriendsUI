@@ -56,68 +56,121 @@ var SnapshotMakerTsJsRewriter;
     //
     var ConfiguredPatchDefinitions = [];
     function DefinePatches(patchDefinitionsConfig) {
+        //
+        // Ensure factories exist for all patch definitions
+        //
         SnapshotMakerTsJsRewriter.Patches.InitAllPatchDefinitionFactories();
+        //
+        // Create patch definitions for each patch specified in the provided config
+        //
         ConfiguredPatchDefinitions = [];
         //for (let definition in config.Definitions) // typescript fails to infer correct type for local `definition`
         patchDefinitionsConfig.Definitions.forEach((item) => {
             let factory = SnapshotMakerTsJsRewriter.Patches.GetPatchDefinitionFactoryByIdName(item.IdName);
             if (factory == null) {
-                console.warn("Unknown patch IdName '" + item.IdName + "'. Patch cannot be built and will be skipped.");
+                SnapshotMakerTsJsRewriter.Trace("[!] Unknown patch IdName '" + item.IdName + "'. Patch cannot be built and will be skipped. [!]");
                 return;
             }
             ConfiguredPatchDefinitions.push(factory.CreatePatchDefinition(item.Config));
         });
     }
     SnapshotMakerTsJsRewriter.DefinePatches = DefinePatches;
-    // --------------------------------------------------
-    //   Patch some javascript
-    // --------------------------------------------------
-    function PatchJavascript(code) {
-        let inputJsSourceFile = ts.createSourceFile("blah.js", code, ts.ScriptTarget.ES2015, /*setParentNodes*/ true, ts.ScriptKind.JS);
-        console.log(inputJsSourceFile);
-        let totalNodes = 0;
-        let appliedPatches = new Array(ConfiguredPatchDefinitions.length);
-        appliedPatches.fill(0);
-        // Method passed to ts.transform(); sole argument is supplied by ts.transform()
+    class PatchJavascriptResult {
+        constructor(patchDefinitions) {
+            this.TotalVisitedNodes = 0;
+            let appliedPatches = [];
+            for (let patchDef of patchDefinitions) {
+                appliedPatches.push({
+                    IdName: patchDef.IdName,
+                    Applications: [],
+                });
+            }
+            this.AppliedPatches = appliedPatches;
+            this.JavascriptString = "";
+        }
+    }
+    //
+    // Patch operation
+    //
+    function PatchJavascript(inputJs) {
+        let result = new PatchJavascriptResult(ConfiguredPatchDefinitions);
+        //
+        // Create a ts.SourceFile for the input javascript
+        //
+        let inputJsSourceFile = ts.createSourceFile("source.js", // Irrelevant, since we are not loading from the disk or writing to the disk. However, when the final param (ScriptKind) is omitted, typescript infers a ScripType from the extension of this file name.
+        inputJs, // Source code string
+        ts.ScriptTarget.ES2015, // Feature level of input javascript iiuc (i.e. not feature level of *output* js)
+        /*setParentNodes*/ true, // Required for ast traversal to actually be feasible. When false, each node is missing the reference to its parent node.
+        ts.ScriptKind.JS // Switch for javascript vs typescript source code
+        );
+        //console.log(inputJsSourceFile);
+        // The ts.SourceFile includes a complete AST model, which can be traversed and manipulated
+        //
+        // Modify the source file's AST
+        //
+        let totalVisitedNodes = 0;
+        // AST traverse occurs within a "transform" operation
+        // This method is passed to ts.transform(). Its sole argument is supplied by ts.transform().
         let megatron = function (context) {
             // Ugly js nested method, which somehow obtains its sole argument from the ts.transform() caller
+            // This is the actual AST node traversal, starting with the ts.SourceFile
             return function (sourceFile) {
                 let visitor = function (node) {
-                    totalNodes += 1;
+                    totalVisitedNodes++;
+                    // Run all detections against this node. The first match (if any) gets to patch the node.
                     for (let i = 0; i < ConfiguredPatchDefinitions.length; i++) {
                         let patchDefinition = ConfiguredPatchDefinitions[i];
                         let patchedNode = patchDefinition.DetectAndPatch(context, sourceFile, node);
                         if (patchedNode != null) // return is non-null if this node was detected & patched
                          {
-                            appliedPatches[i]++;
+                            let patchApplicationsInfo = result.AppliedPatches[i];
+                            patchApplicationsInfo.Applications.push({
+                                Location: sourceFile.getLineAndCharacterOfPosition(node.pos),
+                                OriginalNode: node,
+                                PatchedNode: patchedNode,
+                            });
+                            // Modification of the AST inside a transform operation is only possible by returning a different node in the traversal visit function of the victim node
                             return patchedNode;
                         }
                     }
+                    // Recurse to children of this node
                     return ts.visitEachChild(node, visitor, context);
                 };
+                // Start traverse with the root-level nodes
                 return ts.visitNode(sourceFile, visitor);
             };
         };
+        // Run the transform operation
         let inputJsTransformResult = ts.transform(inputJsSourceFile, [megatron]);
-        console.log(">>>>> TRANSFORM DONE >>>>>", totalNodes);
-        for (let i = 0; i < ConfiguredPatchDefinitions.length; i++) {
-            let patchDefinition = ConfiguredPatchDefinitions[i];
-            let applied = appliedPatches[i];
-            let message = "Patch '" + patchDefinition.IdName + "' applied " + applied + " time(s)";
-            if (applied == 0)
-                console.warn(message);
-            else
-                console.info(message);
-        }
-        console.log("EXPORT");
+        // Get the new ts.SourceFile which contains the modified AST
         let transformedInputJsSourceFile = inputJsTransformResult.transformed[0];
+        //
+        // Generate a javascript source code string from the modified AST
+        //
         let outputJs = SnapshotMakerTsJsRewriter.JsEmitPrinter.printFile(transformedInputJsSourceFile);
         // Fix line endings
         // The typescript js emitter uses the host OS to determine line endings. When running on Windows, the output js has CRLF endings. On everything else, its LF endings.
         // friends.js has LF line endings. For consistency's sake, we will ensure the patched js also has LF line endings.
         outputJs = outputJs.replace(/\r\n/g, "\n");
-        console.log(outputJs);
-        return outputJs;
+        //console.log(outputJs);
+        //
+        // Finalize result object
+        //
+        result.TotalVisitedNodes = totalVisitedNodes;
+        result.JavascriptString = outputJs;
+        //
+        // Report some result data
+        //
+        for (let i = 0; i < ConfiguredPatchDefinitions.length; i++) {
+            let patchDefinition = ConfiguredPatchDefinitions[i];
+            let patchApplicationsInfo = result.AppliedPatches[i];
+            let appliedCount = patchApplicationsInfo.Applications.length;
+            let message = "Patch '" + patchDefinition.IdName + "' applied " + appliedCount + " time(s)";
+            if (appliedCount == 0)
+                message = "[!] " + message + " [!]";
+            SnapshotMakerTsJsRewriter.Trace(message);
+        }
+        return result;
     }
     SnapshotMakerTsJsRewriter.PatchJavascript = PatchJavascript;
 })(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
@@ -151,7 +204,8 @@ var SnapshotMakerTsJsRewriter;
                 for (let detection of this.Detections) {
                     let detectionInfo = detection(context, sourceFile, node);
                     if (detectionInfo != null && detectionInfo.Match == true) {
-                        SnapshotMakerTsJsRewriter.Trace("> Detection '" + this.IdName + "' matched node: ", node);
+                        let nodePos = sourceFile.getLineAndCharacterOfPosition(node.pos);
+                        SnapshotMakerTsJsRewriter.Trace("> Detection '" + this.IdName + "' matched >>", "Line " + nodePos.line + ", char " + nodePos.character, ">>", "Node:", node);
                         let oldJs = SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, node, sourceFile);
                         SnapshotMakerTsJsRewriter.Trace("  - Original JS: ", oldJs);
                         let patchedNode = this.Patch(context, sourceFile, node, detectionInfo.Data);

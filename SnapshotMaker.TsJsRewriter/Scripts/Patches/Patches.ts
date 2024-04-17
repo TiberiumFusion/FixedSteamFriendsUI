@@ -40,7 +40,8 @@ namespace SnapshotMakerTsJsRewriter.Patches
                 let detectionInfo: DetectionInfo = detection(context, sourceFile, node);
                 if (detectionInfo != null && detectionInfo.Match == true)
                 {
-                    Trace("> Detection '" + this.IdName + "' matched node: ", node);
+                    let nodePos = sourceFile.getLineAndCharacterOfPosition(node.pos);
+                    Trace("> Detection '" + this.IdName + "' matched >>", "Line " + nodePos.line + ", char " + nodePos.character, ">>", "Node:", node);
 
                     let oldJs: string = JsEmitPrinter.printNode(ts.EmitHint.Unspecified, node, sourceFile);
                     Trace("  - Original JS: ", oldJs);

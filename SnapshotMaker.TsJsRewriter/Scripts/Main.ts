@@ -36,7 +36,15 @@
 
     export function DefinePatches(patchDefinitionsConfig: DefinePatchesConfig)
     {
+        //
+        // Ensure factories exist for all patch definitions
+        //
+
         Patches.InitAllPatchDefinitionFactories();
+
+        //
+        // Create patch definitions for each patch specified in the provided config
+        //
 
         ConfiguredPatchDefinitions = [];
 
@@ -47,7 +55,7 @@
 
             if (factory == null)
             {
-                console.warn("Unknown patch IdName '" + item.IdName + "'. Patch cannot be built and will be skipped.")
+                Trace("[!] Unknown patch IdName '" + item.IdName + "'. Patch cannot be built and will be skipped. [!]")
                 return;
             }
 
@@ -62,28 +70,101 @@
     //   Patch some javascript
     // --------------------------------------------------
 
-    export function PatchJavascript(code: string): string
+    //
+    // Patch result
+    //
+
+    export interface IPatchJavascriptResult
     {
-        let inputJsSourceFile = ts.createSourceFile("blah.js", code, ts.ScriptTarget.ES2015, /*setParentNodes*/ true, ts.ScriptKind.JS);
-        console.log(inputJsSourceFile);
+        TotalVisitedNodes: number; // Count of the nodes visited by the AST traverse
+        AppliedPatches: { // List of the applications of each patch definition
+            IdName: string; // The IdName of the PatchDefinition this item in the list is for
+            // todo: add patch def config (after refactoring that code)
+            Applications: { // Info about each time this PatchDefinition was applied
+                OriginalNode: ts.Node; // Original unpatched AST node
+                PatchedNode: ts.Node; // Patched AST node
+                Location: ts.LineAndCharacter; // Location in the source file of the ast node which was patched
+            }[];
+        }[];
+        JavascriptString: string; // The output patched javascript source code string
+    }
+
+    class PatchJavascriptResult implements IPatchJavascriptResult
+    {
+        TotalVisitedNodes: number;
+        AppliedPatches: {
+            IdName: string;
+            Applications: {
+                OriginalNode: ts.Node;
+                PatchedNode: ts.Node;
+                Location: ts.LineAndCharacter;
+            }[];
+        }[];
+        JavascriptString: string;
+
+        constructor(patchDefinitions: Patches.PatchDefinition[])
+        {
+            this.TotalVisitedNodes = 0;
+
+            let appliedPatches: any = [];
+            for (let patchDef of patchDefinitions)
+            {
+                appliedPatches.push({
+                    IdName: patchDef.IdName,
+                    Applications: [],
+                });
+            }
+            this.AppliedPatches = appliedPatches;
+
+            this.JavascriptString = "";
+        }
+    }
 
 
-        let totalNodes: number = 0;
+    //
+    // Patch operation
+    //
+
+    export function PatchJavascript(inputJs: string): IPatchJavascriptResult
+    {
+        let result: PatchJavascriptResult = new PatchJavascriptResult(ConfiguredPatchDefinitions);
 
 
-        let appliedPatches: number[] = new Array(ConfiguredPatchDefinitions.length);
-        appliedPatches.fill(0);
+        //
+        // Create a ts.SourceFile for the input javascript
+        //
 
-        // Method passed to ts.transform(); sole argument is supplied by ts.transform()
+        let inputJsSourceFile = ts.createSourceFile(
+            "source.js", // Irrelevant, since we are not loading from the disk or writing to the disk. However, when the final param (ScriptKind) is omitted, typescript infers a ScripType from the extension of this file name.
+            inputJs, // Source code string
+            ts.ScriptTarget.ES2015, // Feature level of input javascript iiuc (i.e. not feature level of *output* js)
+            /*setParentNodes*/ true, // Required for ast traversal to actually be feasible. When false, each node is missing the reference to its parent node.
+            ts.ScriptKind.JS // Switch for javascript vs typescript source code
+        );
+        //console.log(inputJsSourceFile);
+
+        // The ts.SourceFile includes a complete AST model, which can be traversed and manipulated
+
+
+        //
+        // Modify the source file's AST
+        //
+        
+        let totalVisitedNodes: number = 0;
+
+        // AST traverse occurs within a "transform" operation
+        // This method is passed to ts.transform(). Its sole argument is supplied by ts.transform().
         let megatron: ts.TransformerFactory<ts.SourceFile> = function(context)
         {
             // Ugly js nested method, which somehow obtains its sole argument from the ts.transform() caller
+            // This is the actual AST node traversal, starting with the ts.SourceFile
             return function(sourceFile)
             {
                 let visitor = function(node: ts.Node): ts.Node
                 {
-                    totalNodes += 1;
+                    totalVisitedNodes++;
 
+                    // Run all detections against this node. The first match (if any) gets to patch the node.
                     for (let i = 0; i < ConfiguredPatchDefinitions.length; i++)
                     {
                         let patchDefinition = ConfiguredPatchDefinitions[i];
@@ -91,47 +172,75 @@
                         let patchedNode: ts.Node = patchDefinition.DetectAndPatch(context, sourceFile, node);
                         if (patchedNode != null) // return is non-null if this node was detected & patched
                         {
-                            appliedPatches[i]++;
+                            let patchApplicationsInfo: IPatchJavascriptResult["AppliedPatches"][0] = result.AppliedPatches[i];
+                            patchApplicationsInfo.Applications.push({
+                                Location: sourceFile.getLineAndCharacterOfPosition(node.pos),
+                                OriginalNode: node,
+                                PatchedNode: patchedNode,
+                            });
+
+                            // Modification of the AST inside a transform operation is only possible by returning a different node in the traversal visit function of the victim node
                             return patchedNode;
                         }
                     }
 
+                    // Recurse to children of this node
                     return ts.visitEachChild(node, visitor, context)
                 }
 
+                // Start traverse with the root-level nodes
                 return ts.visitNode(sourceFile, visitor);
             }
         };
 
+        // Run the transform operation
         let inputJsTransformResult = ts.transform(inputJsSourceFile, [megatron]);
 
-        console.log(">>>>> TRANSFORM DONE >>>>>", totalNodes);
-
-        for (let i = 0; i < ConfiguredPatchDefinitions.length; i++)
-        {
-            let patchDefinition = ConfiguredPatchDefinitions[i];
-            let applied: number = appliedPatches[i];
-
-            let message: string = "Patch '" + patchDefinition.IdName + "' applied " + applied + " time(s)";
-            if (applied == 0)
-                console.warn(message);
-            else
-                console.info(message);
-        }
-
-        console.log("EXPORT");
-
+        // Get the new ts.SourceFile which contains the modified AST
         let transformedInputJsSourceFile = inputJsTransformResult.transformed[0];
 
-        let outputJs: string = JsEmitPrinter.printFile(transformedInputJsSourceFile);
 
+        //
+        // Generate a javascript source code string from the modified AST
+        //
+
+        let outputJs: string = JsEmitPrinter.printFile(transformedInputJsSourceFile);
+        
         // Fix line endings
         // The typescript js emitter uses the host OS to determine line endings. When running on Windows, the output js has CRLF endings. On everything else, its LF endings.
         // friends.js has LF line endings. For consistency's sake, we will ensure the patched js also has LF line endings.
         outputJs = outputJs.replace(/\r\n/g, "\n");
 
-        console.log(outputJs);
+        //console.log(outputJs);
 
-        return outputJs;
+
+        //
+        // Finalize result object
+        //
+
+        result.TotalVisitedNodes = totalVisitedNodes;
+
+        result.JavascriptString = outputJs;
+
+
+        //
+        // Report some result data
+        //
+
+        for (let i = 0; i < ConfiguredPatchDefinitions.length; i++)
+        {
+            let patchDefinition = ConfiguredPatchDefinitions[i];
+            let patchApplicationsInfo: IPatchJavascriptResult["AppliedPatches"][0] = result.AppliedPatches[i];
+
+            let appliedCount: number = patchApplicationsInfo.Applications.length;
+
+            let message: string = "Patch '" + patchDefinition.IdName + "' applied " + appliedCount + " time(s)";
+            if (appliedCount == 0)
+                message = "[!] " + message + " [!]";
+            Trace(message);
+        }
+
+
+        return result;
     }
 }
