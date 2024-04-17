@@ -201,6 +201,7 @@ var SnapshotMakerTsJsRewriter;
                 new Patches.Definitions.DisableLate2023ChatCensorshipFeatureAdditionCPDF(),
                 new Patches.Definitions.ShimSteamClientOpenVrSoiaCPDF(),
                 new Patches.Definitions.ShimSteamClientBrowserGetBrowserIdCheckCPDF(),
+                new Patches.Definitions.AddHtmlWebuiConfigOnLoadHookCPDF(),
             ];
             for (let factory of factories)
                 RegisterPatchDefinitionFactoryInstance(factory);
@@ -1072,46 +1073,48 @@ var SnapshotMakerTsJsRewriter;
                                                     14);
                                                     //console.log("- Child node gather count: ", childNodes.length);
                                                     //console.log("- Child nodes: ", childNodes);
-                                                    // Expectations in the child nodes
-                                                    let matchedTernarySteamClientPaths = false; // the true & false paths in  ... ? void 0 : i.SteamClient
-                                                    let matchedTernaryBrowserPaths = false; // the true & false paths in  ... ? void 0 : o.Browser
-                                                    let matchedTernaryBrowserIdPaths = false; // the true & false paths in  ... ? void 0 : r.GetBrowserID
-                                                    let steamClientPropertyAccess; // Expression which accesses i.SteamClient, which is passed as an argument to the shim method
-                                                    for (let childNode of childNodes) {
-                                                        if (childNode.kind == ts.SyntaxKind.ConditionalExpression) {
-                                                            let childNodeTyped = childNode;
-                                                            // Any of:
-                                                            //  null == i ? void 0 : i.SteamClient
-                                                            //  null === (o = null == i ? void 0 : i.SteamClient) || void 0 === o ? void 0 : o.Browser
-                                                            //  null === (r = null === (o = null == i ? void 0 : i.SteamClient) || void 0 === o ? void 0 : o.Browser) || void 0 === r ? void 0 : r.GetBrowserID
-                                                            // Note how each is nested in the ast in the reverse order of how a sane person would write this if they had to
-                                                            if (childNodeTyped.whenTrue.kind == ts.SyntaxKind.VoidExpression) // void 0
-                                                             {
-                                                                // All 3 ternaries have void 0 in their true path and a property access expression in their false path
-                                                                if (childNodeTyped.whenFalse.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  i.SteamClient
+                                                    if (childNodes.length > 0) {
+                                                        // Expectations in the child nodes
+                                                        let matchedTernarySteamClientPaths = false; // the true & false paths in  ... ? void 0 : i.SteamClient
+                                                        let matchedTernaryBrowserPaths = false; // the true & false paths in  ... ? void 0 : o.Browser
+                                                        let matchedTernaryBrowserIdPaths = false; // the true & false paths in  ... ? void 0 : r.GetBrowserID
+                                                        let steamClientPropertyAccess; // Expression which accesses i.SteamClient, which is passed as an argument to the shim method
+                                                        for (let childNode of childNodes) {
+                                                            if (childNode.kind == ts.SyntaxKind.ConditionalExpression) {
+                                                                let childNodeTyped = childNode;
+                                                                // Any of:
+                                                                //  null == i ? void 0 : i.SteamClient
+                                                                //  null === (o = null == i ? void 0 : i.SteamClient) || void 0 === o ? void 0 : o.Browser
+                                                                //  null === (r = null === (o = null == i ? void 0 : i.SteamClient) || void 0 === o ? void 0 : o.Browser) || void 0 === r ? void 0 : r.GetBrowserID
+                                                                // Note how each is nested in the ast in the reverse order of how a sane person would write this if they had to
+                                                                if (childNodeTyped.whenTrue.kind == ts.SyntaxKind.VoidExpression) // void 0
                                                                  {
-                                                                    let falsePath = childNodeTyped.whenFalse;
-                                                                    let falsePathJs = SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, falsePath, sourceFile);
-                                                                    if (falsePathJs.includes(".SteamClient")) {
-                                                                        matchedTernarySteamClientPaths = true;
-                                                                        steamClientPropertyAccess = falsePath;
-                                                                    }
-                                                                    else if (falsePathJs.includes(".Browser")) {
-                                                                        matchedTernaryBrowserPaths = true;
-                                                                    }
-                                                                    else if (falsePathJs.includes(".GetBrowserID")) {
-                                                                        matchedTernaryBrowserIdPaths = true;
+                                                                    // All 3 ternaries have void 0 in their true path and a property access expression in their false path
+                                                                    if (childNodeTyped.whenFalse.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  i.SteamClient
+                                                                     {
+                                                                        let falsePath = childNodeTyped.whenFalse;
+                                                                        let falsePathJs = SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, falsePath, sourceFile);
+                                                                        if (falsePathJs.includes(".SteamClient")) {
+                                                                            matchedTernarySteamClientPaths = true;
+                                                                            steamClientPropertyAccess = falsePath;
+                                                                        }
+                                                                        else if (falsePathJs.includes(".Browser")) {
+                                                                            matchedTernaryBrowserPaths = true;
+                                                                        }
+                                                                        else if (falsePathJs.includes(".GetBrowserID")) {
+                                                                            matchedTernaryBrowserIdPaths = true;
+                                                                        }
+                                                                        if (matchedTernarySteamClientPaths && matchedTernaryBrowserPaths && matchedTernaryBrowserIdPaths) {
+                                                                            // Highly likely match
+                                                                            return new Patches.DetectionInfo(true, {
+                                                                                "TypedNode": tnode,
+                                                                                "SteamClientPropertyAccess": steamClientPropertyAccess,
+                                                                            });
+                                                                        }
                                                                     }
                                                                 }
                                                             }
                                                         }
-                                                    }
-                                                    if (matchedTernarySteamClientPaths && matchedTernaryBrowserPaths && matchedTernaryBrowserIdPaths) {
-                                                        // Highly likely match
-                                                        return new Patches.DetectionInfo(true, {
-                                                            "TypedNode": tnode,
-                                                            "SteamClientPropertyAccess": steamClientPropertyAccess,
-                                                        });
                                                     }
                                                 }
                                             }
@@ -1124,6 +1127,156 @@ var SnapshotMakerTsJsRewriter;
                 }
             }
             Definitions.ShimSteamClientBrowserGetBrowserIdCheckCPDF = ShimSteamClientBrowserGetBrowserIdCheckCPDF;
+        })(Definitions = Patches.Definitions || (Patches.Definitions = {}));
+    })(Patches = SnapshotMakerTsJsRewriter.Patches || (SnapshotMakerTsJsRewriter.Patches = {}));
+})(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//    Hook site immediately after friends.js has loaded webui_config from html
+/*
+
+    ----- Target -----
+
+    1.  (8601984: line 57645)
+        function d(e = a) {
+            const t = {},
+                n = m("config", e);
+            n && (delete n.SESSIONID, Object.assign(r.De, n), (t.config = !0));
+            // << INSERT HERE >>
+            const i = m("userinfo", e);
+            i && (Object.assign(r.L7, i), (t.userConfig = !0), r.L7.is_support && _() && (r.L7.is_support = !1));
+      =>
+        TFP.Hooks.OnWebuiConfigLoaded(r.De);
+
+    
+    ----- Notes -----
+    
+    We need a way to modify the json config object that is baked into the html document which is running friends.js.
+    This is required for things like localized display strings and nation-specific behavior.
+
+    A good place for planting the hook is immediately after the deserialized json is assigned to the globalish object that all of friends.js references.
+
+*/
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// <reference path="../Patches.ts" />
+// Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration" (see: https://stackoverflow.com/a/48189989/2489580)
+var SnapshotMakerTsJsRewriter;
+(function (SnapshotMakerTsJsRewriter) {
+    var Patches;
+    (function (Patches) {
+        var Definitions;
+        (function (Definitions) {
+            class AddHtmlWebuiConfigOnLoadHookCPDF extends Patches.ConfiguredPatchDefinitionFactory {
+                constructor() {
+                    super(...arguments);
+                    this.PatchIdName = "AddHtmlWebuiConfigOnLoadHook";
+                }
+                CreatePatchDefinition(config) {
+                    return new Patches.PatchDefinition(this.PatchIdName, 
+                    // ____________________________________________________________________________________________________
+                    //
+                    //     Patch
+                    // ____________________________________________________________________________________________________
+                    //
+                    (context, sourceFile, node, detectionInfoData) => {
+                        let tnode = detectionInfoData.TypedNode; // the function body block where we will insert the hook function call
+                        let statementToInsertAfter = detectionInfoData.StatementToInsertAfter; // e.g.  n && (delete n.SESSIONID, Object.assign(r.De, n), (t.config = !0));
+                        let configObjectAccess = detectionInfoData.ConfigObjectAccess; // e.g.  r.De
+                        let insertIndex = tnode.statements.indexOf(statementToInsertAfter) + 1;
+                        let hookCall = context.factory.createExpressionStatement(context.factory.createCallExpression(context.factory.createIdentifier(config.HookMethodIdentifierExpression), null, [
+                            configObjectAccess,
+                        ]));
+                        let newStatements = tnode.statements.slice();
+                        newStatements.splice(insertIndex, 0, hookCall);
+                        return context.factory.updateBlock(tnode, newStatements);
+                    }, 
+                    // ____________________________________________________________________________________________________
+                    //
+                    //     Detections
+                    // ____________________________________________________________________________________________________
+                    //
+                    [
+                        (context, sourceFile, node) => {
+                            if (node.kind == ts.SyntaxKind.Block) // expected function's block of body statements
+                             {
+                                /* e.g. (8601984)
+                                    function d(e = a) {
+                                        const t = {},
+                                            n = m("config", e);
+                                        n && (delete n.SESSIONID, Object.assign(r.De, n), (t.config = !0));
+                                        const i = m("userinfo", e);
+                                        i && (Object.assign(r.L7, i), (t.userConfig = !0), r.L7.is_support && _() && (r.L7.is_support = !1));
+                                        const o = m("broadcast", e);
+                                        o && (Object.assign(r.dk, o), (t.broadcastConfig = !0));
+                                        const s = m("community", e);
+                                        s && (Object.assign(r.JA, s), (t.communityConfig = !0));
+                                        const l = m("event", e);
+                                        return l && (Object.assign(r.Wj, l), (t.eventConfig = !0)), t;
+                                    }
+                                */
+                                let tnode = node;
+                                if (tnode.statements.length <= 15) // 10 statements in 8601984, +5 for wiggle room
+                                 {
+                                    if (tnode.end - tnode.pos < 700) // entire body is 548 characters long in 8601984, +extra for wiggle room
+                                     {
+                                        let js = SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, tnode, sourceFile);
+                                        // Gather expected child nodes to verify of limited criteria
+                                        let validateNodes = Patches.AstGetAllChildNodes(tnode, 
+                                        // Node filter callback
+                                        (n) => {
+                                            return ( // only gather the expected nodes we want to validate
+                                            n.kind == ts.SyntaxKind.CallExpression ||
+                                                n.kind == ts.SyntaxKind.StringLiteral ||
+                                                n.kind == ts.SyntaxKind.Identifier);
+                                        }, 
+                                        // Recursion cull callback
+                                        null, 
+                                        // Maximum depth
+                                        10);
+                                        if (validateNodes.length > 0) {
+                                            // Expectations in the gathered nodes
+                                            let matchConfigStringLiteral = false; // "config"  from  const t = {}, n = m("config", e);
+                                            let matchSessionidIdentifier = false; // n.SESSIONID  from  n && (delete n.SESSIONID, Object.assign(r.De, n), (t.config = !0));
+                                            let statementToInsertAfter;
+                                            let propertyAccessToConfigObject; // r.De
+                                            for (let checkNode of validateNodes) {
+                                                if (checkNode.kind == ts.SyntaxKind.StringLiteral && checkNode.text == "config") {
+                                                    matchConfigStringLiteral = true;
+                                                }
+                                                else if (checkNode.kind == ts.SyntaxKind.Identifier && checkNode.escapedText == "SESSIONID") {
+                                                    matchSessionidIdentifier = true;
+                                                    statementToInsertAfter = Patches.AstFindFirstAncestor(checkNode, ts.SyntaxKind.ExpressionStatement); // get the statement this node is from
+                                                }
+                                                else if (checkNode.kind == ts.SyntaxKind.CallExpression) // e.g.  Object.assign(r.De, n)
+                                                 {
+                                                    let methodCall = checkNode;
+                                                    if (methodCall.expression.kind == ts.SyntaxKind.PropertyAccessExpression) {
+                                                        let methodAccess = methodCall.expression;
+                                                        if (methodAccess.expression.kind == ts.SyntaxKind.Identifier && methodAccess.expression.escapedText == "Object"
+                                                            && methodAccess.name.kind == ts.SyntaxKind.Identifier && methodAccess.name.escapedText == "assign") // Object.assign
+                                                         {
+                                                            propertyAccessToConfigObject = methodCall.arguments[0]; // first argument to Object.assign is r.De which is the parsed json object
+                                                        }
+                                                    }
+                                                }
+                                                if (matchSessionidIdentifier && matchSessionidIdentifier && propertyAccessToConfigObject != null) {
+                                                    // Highly likely match
+                                                    return new Patches.DetectionInfo(true, {
+                                                        "TypedNode": tnode,
+                                                        "StatementToInsertAfter": statementToInsertAfter,
+                                                        "ConfigObjectAccess": propertyAccessToConfigObject,
+                                                    });
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]);
+                }
+            }
+            Definitions.AddHtmlWebuiConfigOnLoadHookCPDF = AddHtmlWebuiConfigOnLoadHookCPDF;
         })(Definitions = Patches.Definitions || (Patches.Definitions = {}));
     })(Patches = SnapshotMakerTsJsRewriter.Patches || (SnapshotMakerTsJsRewriter.Patches = {}));
 })(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
@@ -1540,7 +1693,7 @@ var SnapshotMakerTsJsRewriter;
             return null;
         }
         Patches.AstFindFirstAncestor = AstFindFirstAncestor;
-        function AstGetAllChildNodes(node, filterCallback, cullCallback = null, maximumDepth = 0) {
+        function AstGetAllChildNodes(node, filterCallback = null, cullCallback = null, maximumDepth = 0) {
             let nodes = [];
             let seenNodes = {};
             function recurse(curNode, depth) {
@@ -1548,7 +1701,12 @@ var SnapshotMakerTsJsRewriter;
                 if (seenNodeId in seenNodes) // I don't know if cyclical references are possible in typescript's ast model, so it's possible this isn't even needed
                     return;
                 seenNodes[seenNodeId] = true;
-                for (let child of curNode.getChildren()) {
+                let children;
+                if (ts.isBlock(curNode))
+                    children = [...curNode.statements]; // for some reason, typescript does not consider Statements to be children of Blocks. Instead, the root Nodes of each Statement are the "immediate" children of the Block.
+                else
+                    children = curNode.getChildren();
+                for (let child of children) {
                     if (cullCallback != null && !cullCallback(child))
                         continue;
                     let addToList = true;
@@ -1557,7 +1715,7 @@ var SnapshotMakerTsJsRewriter;
                     if (addToList)
                         nodes.push(child);
                     let nextDepth = depth + 1;
-                    if (nextDepth > maximumDepth)
+                    if (maximumDepth > 0 && nextDepth > maximumDepth)
                         continue;
                     recurse(child, nextDepth);
                 }

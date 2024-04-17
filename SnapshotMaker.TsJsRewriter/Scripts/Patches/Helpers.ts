@@ -31,7 +31,7 @@ namespace SnapshotMakerTsJsRewriter.Patches
         return null;
     }
 
-    export function AstGetAllChildNodes(node: ts.Node, filterCallback: ((n: ts.Node) => boolean), cullCallback: ((n: ts.Node) => boolean) = null, maximumDepth: number = 0): ts.Node[]
+    export function AstGetAllChildNodes(node: ts.Node, filterCallback: ((n: ts.Node) => boolean) = null, cullCallback: ((n: ts.Node) => boolean) = null, maximumDepth: number = 0): ts.Node[]
     {
         let nodes: ts.Node[] = [];
 
@@ -45,7 +45,14 @@ namespace SnapshotMakerTsJsRewriter.Patches
 
             seenNodes[seenNodeId] = true;
 
-            for (let child of curNode.getChildren())
+            let children: ts.Node[];
+
+            if (ts.isBlock(curNode))
+                children = [ ...(curNode as ts.Block).statements ]; // for some reason, typescript does not consider Statements to be children of Blocks. Instead, the root Nodes of each Statement are the "immediate" children of the Block.
+            else
+                children = curNode.getChildren();
+
+            for (let child of children)
             {
                 if (cullCallback != null && !cullCallback(child))
                     continue;
@@ -58,7 +65,7 @@ namespace SnapshotMakerTsJsRewriter.Patches
                     nodes.push(child);
 
                 let nextDepth = depth + 1;
-                if (nextDepth > maximumDepth)
+                if (maximumDepth > 0 && nextDepth > maximumDepth)
                     continue;
 
                 recurse(child, nextDepth);

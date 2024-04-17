@@ -141,6 +141,13 @@
 			}
 		},
 		
+		{
+			IdName: "AddHtmlWebuiConfigOnLoadHook",
+			Config: {
+				HookMethodIdentifierExpression: "TFP.Hooks.OnWebuiConfigLoaded",
+			}
+		},
+		
 	]
 	
 }

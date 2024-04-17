@@ -138,57 +138,60 @@ namespace SnapshotMakerTsJsRewriter.Patches.Definitions
                                                 //console.log("- Child node gather count: ", childNodes.length);
                                                 //console.log("- Child nodes: ", childNodes);
 
-                                                // Expectations in the child nodes
-                                                let matchedTernarySteamClientPaths: boolean = false; // the true & false paths in  ... ? void 0 : i.SteamClient
-                                                let matchedTernaryBrowserPaths: boolean = false; // the true & false paths in  ... ? void 0 : o.Browser
-                                                let matchedTernaryBrowserIdPaths: boolean = false; // the true & false paths in  ... ? void 0 : r.GetBrowserID
-
-                                                let steamClientPropertyAccess: ts.Expression; // Expression which accesses i.SteamClient, which is passed as an argument to the shim method
-
-                                                for (let childNode of childNodes)
+                                                if (childNodes.length > 0)
                                                 {
-                                                    if (childNode.kind == ts.SyntaxKind.ConditionalExpression)
+                                                    // Expectations in the child nodes
+                                                    let matchedTernarySteamClientPaths: boolean = false; // the true & false paths in  ... ? void 0 : i.SteamClient
+                                                    let matchedTernaryBrowserPaths: boolean = false; // the true & false paths in  ... ? void 0 : o.Browser
+                                                    let matchedTernaryBrowserIdPaths: boolean = false; // the true & false paths in  ... ? void 0 : r.GetBrowserID
+
+                                                    let steamClientPropertyAccess: ts.Expression; // Expression which accesses i.SteamClient, which is passed as an argument to the shim method
+
+                                                    for (let childNode of childNodes)
                                                     {
-                                                        let childNodeTyped = childNode as ts.ConditionalExpression;
-                                                        // Any of:
-                                                        //  null == i ? void 0 : i.SteamClient
-                                                        //  null === (o = null == i ? void 0 : i.SteamClient) || void 0 === o ? void 0 : o.Browser
-                                                        //  null === (r = null === (o = null == i ? void 0 : i.SteamClient) || void 0 === o ? void 0 : o.Browser) || void 0 === r ? void 0 : r.GetBrowserID
-                                                        // Note how each is nested in the ast in the reverse order of how a sane person would write this if they had to
-
-                                                        if (childNodeTyped.whenTrue.kind == ts.SyntaxKind.VoidExpression) // void 0
+                                                        if (childNode.kind == ts.SyntaxKind.ConditionalExpression)
                                                         {
-                                                            // All 3 ternaries have void 0 in their true path and a property access expression in their false path
-                                                            if (childNodeTyped.whenFalse.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  i.SteamClient
-                                                            {
-                                                                let falsePath = childNodeTyped.whenFalse;
+                                                            let childNodeTyped = childNode as ts.ConditionalExpression;
+                                                            // Any of:
+                                                            //  null == i ? void 0 : i.SteamClient
+                                                            //  null === (o = null == i ? void 0 : i.SteamClient) || void 0 === o ? void 0 : o.Browser
+                                                            //  null === (r = null === (o = null == i ? void 0 : i.SteamClient) || void 0 === o ? void 0 : o.Browser) || void 0 === r ? void 0 : r.GetBrowserID
+                                                            // Note how each is nested in the ast in the reverse order of how a sane person would write this if they had to
 
-                                                                let falsePathJs: string = JsEmitPrinter.printNode(ts.EmitHint.Unspecified, falsePath, sourceFile);
-                                                                if (falsePathJs.includes(".SteamClient"))
+                                                            if (childNodeTyped.whenTrue.kind == ts.SyntaxKind.VoidExpression) // void 0
+                                                            {
+                                                                // All 3 ternaries have void 0 in their true path and a property access expression in their false path
+                                                                if (childNodeTyped.whenFalse.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  i.SteamClient
                                                                 {
-                                                                    matchedTernarySteamClientPaths = true;
-                                                                    steamClientPropertyAccess = falsePath;
-                                                                }
-                                                                else if (falsePathJs.includes(".Browser"))
-                                                                {
-                                                                    matchedTernaryBrowserPaths = true;
-                                                                }
-                                                                else if (falsePathJs.includes(".GetBrowserID"))
-                                                                {
-                                                                    matchedTernaryBrowserIdPaths = true;
+                                                                    let falsePath = childNodeTyped.whenFalse;
+
+                                                                    let falsePathJs: string = JsEmitPrinter.printNode(ts.EmitHint.Unspecified, falsePath, sourceFile);
+                                                                    if (falsePathJs.includes(".SteamClient"))
+                                                                    {
+                                                                        matchedTernarySteamClientPaths = true;
+                                                                        steamClientPropertyAccess = falsePath;
+                                                                    }
+                                                                    else if (falsePathJs.includes(".Browser"))
+                                                                    {
+                                                                        matchedTernaryBrowserPaths = true;
+                                                                    }
+                                                                    else if (falsePathJs.includes(".GetBrowserID"))
+                                                                    {
+                                                                        matchedTernaryBrowserIdPaths = true;
+                                                                    }
+
+                                                                    if (matchedTernarySteamClientPaths && matchedTernaryBrowserPaths && matchedTernaryBrowserIdPaths)
+                                                                    {
+                                                                        // Highly likely match
+                                                                        return new DetectionInfo(true, {
+                                                                            "TypedNode": tnode,
+                                                                            "SteamClientPropertyAccess": steamClientPropertyAccess,
+                                                                        });
+                                                                    }
                                                                 }
                                                             }
                                                         }
                                                     }
-                                                }
-
-                                                if (matchedTernarySteamClientPaths && matchedTernaryBrowserPaths && matchedTernaryBrowserIdPaths)
-                                                {
-                                                    // Highly likely match
-                                                    return new DetectionInfo(true, {
-                                                        "TypedNode": tnode,
-                                                        "SteamClientPropertyAccess": steamClientPropertyAccess,
-                                                    });
                                                 }
                                             }
                                         }
