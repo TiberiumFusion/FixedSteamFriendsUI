@@ -9,6 +9,17 @@
 				ShimMethodIdentifierExpression: "TFP.Resources.SelectCdnResourceUrl",
 				Targets: [
 					{
+						SpecialCase: "CssLoader",
+						UrlRootPathType: "Root_Public",
+						ResourceCategory: "JsCss",
+					},
+					{
+						SpecialCase: "JsLoader",
+						UrlRootPathType: "Root_Public",
+						ResourceCategory: "JsCss",
+						OverrideShimMethodIdentifierExpression: "TFP.Resources.SelectCdnResourceUrl_JsLoaderDirect",
+					},
+					{
 						ResourceUrl: "public/sounds/webui/steam_voice_channel_enter.m4a",
 						UrlRootPathType: "Root",
 						ResourceCategory: "JsSounds",
@@ -77,11 +88,6 @@
 						ResourceUrl: "images/webui/8669e97b288da32670e77181618c3dfb.png",
 						UrlRootPathType: "Root_Public",
 						ResourceCategory: "JsImages",
-					},
-					{
-						SpecialCase: "CssLoader",
-						UrlRootPathType: "Root_Public",
-						ResourceCategory: "JsCss",
 					},
 				]
 			}

@@ -55,6 +55,7 @@ namespace SnapshotMakerTsJsRewriter.Patches.Definitions
             SpecialCase: string, // For specific patch detections only.
             UrlRootPathType: string, // e.g.  "Root"
             ResourceCategory: string, // e.g.  "JsSounds"
+            OverrideShimMethodIdentifierExpression: string, // Override the ShimMethodIdentifierExpression for this specific target
         }[] // syntax for defining arrays of implicit nested interface types without having to hoist them all as sibling individual interface { } blocks
     }
 
@@ -80,9 +81,13 @@ namespace SnapshotMakerTsJsRewriter.Patches.Definitions
                     let matchedTarget: RewriteCdnAssetUrlStringBuildConfig["Targets"][0] = detectionInfoData.MatchedTarget; // e.g.  ["public/sounds/webui/steam_voice_channel_enter.m4a", "Root", "JsSounds"]
                     // syntax for retrieving implicit nested interface type ^--^
 
+                    let shimMethodId: string = config.ShimMethodIdentifierExpression;
+                    if (matchedTarget.OverrideShimMethodIdentifierExpression != null && matchedTarget.OverrideShimMethodIdentifierExpression.length > 0)
+                        shimMethodId = matchedTarget.OverrideShimMethodIdentifierExpression;
+
                     // Replace the binary expression with a method call that takes the original halves of the binary expr as arguments
                     let patched = context.factory.createCallExpression(
-                        context.factory.createIdentifier(config.ShimMethodIdentifierExpression),
+                        context.factory.createIdentifier(shimMethodId),
                         null,
                         [ // arguments
                             tnode.left,
@@ -178,7 +183,66 @@ namespace SnapshotMakerTsJsRewriter.Patches.Definitions
                                             }
                                         }
                                     }
-                                    
+                                }
+                            }
+                        }
+                    },
+
+                    //
+                    // Specific patch location 2: js loader
+                    //
+
+                    (context: ts.TransformationContext, sourceFile: ts.SourceFile, node: ts.Node) =>
+                    {
+                        if (node.kind == ts.SyntaxKind.BinaryExpression) // e.g.  s.p + s.u(t),
+                        {
+                            let tnode = node as ts.BinaryExpression;
+
+                            // Validate url string build binary expression being part of the expected variable definition list
+                            if (tnode.parent != null && tnode.parent.kind == ts.SyntaxKind.VariableDeclaration) // e.g.  var r = s.p + s.u(t)
+                            {
+                                let parentVarDec = tnode.parent as ts.VariableDeclaration;
+                                if (parentVarDec.parent != null) // e.g.  var r = s.p + s.u(t), a = new Error();
+                                {
+                                    let parentVarDecList = parentVarDec.parent as ts.VariableDeclarationList;
+
+                                    // Validate our expected location in the var dec list
+                                    if (parentVarDecList.declarations.indexOf(parentVarDec) == 0) // 1st declaration
+                                    {
+                                        // Validate the second item in the variable declaration list
+                                        // This has the almost unique signature of initializing a new Error() with zero ctor arguments
+                                        if (parentVarDecList.declarations.length == 2)
+                                        {
+                                            let dec1 = parentVarDecList.declarations[1];
+                                            if (dec1.initializer != null && dec1.initializer.kind == ts.SyntaxKind.NewExpression) // e.g.  new Error()
+                                            {
+                                                let dec0InitNew = dec1.initializer as ts.NewExpression;
+                                                if (dec0InitNew.expression.kind == ts.SyntaxKind.Identifier) // e.g.  Error
+                                                {
+                                                    let dec0InitNewTypeIndentifier = dec0InitNew.expression as ts.Identifier;
+                                                    if (dec0InitNewTypeIndentifier.escapedText == "Error")
+                                                    {
+                                                        if (dec0InitNew.arguments.length == 0) // e.g.  ()
+                                                        {
+                                                            // This node detection won't collide with the single other "new Error()" in friends.js, and unlikely to collide with later new Error() additions
+                                                            // If we need more data to validate against, we can look into the if statement shortly after new Error(), which has unqiue string literals in it like "Loading chunk" and "ChunkLoadError"
+
+                                                            // Get config for this target
+                                                            let matchedTarget = config.Targets.find(item => item.SpecialCase == "JsLoader");
+                                                            if (matchedTarget != null)
+                                                            {
+                                                                return new DetectionInfo(true, {
+                                                                    "Locaton": 3,
+                                                                    "TypedNode": tnode,
+                                                                    "MatchedTarget": matchedTarget,
+                                                                });
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
