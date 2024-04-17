@@ -91,17 +91,17 @@
     <TypeScriptCompile Include="Scripts\Main.ts" />
     <TypeScriptCompile Include="Scripts\Patches\Definitions\DisableLate2023ChatCensorshipFeatureAddition.ts" />
     <TypeScriptCompile Include="Scripts\Patches\Definitions\DisableBrokenXssAttackValveReliance.ts" />
-    <TypeScriptCompile Include="Scripts\Patches\Definitions\DisableContenthashGetParamOnJsonJsFetches.ts" />
+    <TypeScriptCompile Include="Scripts\Patches\Definitions\DisableContenthashGetParamOnFetches.ts" />
     <TypeScriptCompile Include="Scripts\Patches\Definitions\FixBrokenIsMaximizedCopypasta.ts" />
     <TypeScriptCompile Include="Scripts\Patches\Definitions\FixBlackFrameBug.ts" />
     <TypeScriptCompile Include="Scripts\Patches\Definitions\DisableMiniprofileBrokenBlurHandler.ts" />
+    <TypeScriptCompile Include="Scripts\Patches\Definitions\RewriteCdnAssetUrlStringBuild.ts" />
     <TypeScriptCompile Include="Scripts\Patches\Definitions\ShimSteamClientBrowserGetBrowserId.ts" />
     <TypeScriptCompile Include="Scripts\Patches\Definitions\ShimSteamClientBrowserGetBrowserIdCheck.ts" />
     <TypeScriptCompile Include="Scripts\Patches\Definitions\AddHtmlWebuiConfigOnLoadHook.ts" />
     <TypeScriptCompile Include="Scripts\Patches\Definitions\ShimSteamClientOpenVrSoia.ts" />
     <TypeScriptCompile Include="Scripts\Patches\Definitions\ShimSteamClientIsSteamInTournamentMode.ts" />
     <TypeScriptCompile Include="Scripts\Patches\Definitions\ShimSettingsStoreIsSteamInTournamentMode.ts" />
-    <TypeScriptCompile Include="Scripts\Patches\Definitions\RewriteCdnAssetUrlStringBuild.ts" />
     <TypeScriptCompile Include="Scripts\Patches\Helpers.ts" />
     <TypeScriptCompile Include="Scripts\Patches\Patches.ts" />
   </ItemGroup>

@@ -136,7 +136,7 @@ namespace SnapshotMakerTsJsRewriter.Patches
             new Definitions.ShimSteamClientOpenVrSoiaCPDF(),
             new Definitions.ShimSteamClientBrowserGetBrowserIdCheckCPDF(),
             new Definitions.AddHtmlWebuiConfigOnLoadHookCPDF(),
-            new Definitions.DisableContenthashGetParamOnJsonJsFetchesCPDF(),
+            new Definitions.DisableContenthashGetParamOnFetchesCPDF(),
         ];
 
         for (let factory of factories)

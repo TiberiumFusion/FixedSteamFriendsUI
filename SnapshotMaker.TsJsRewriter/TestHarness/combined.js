@@ -202,7 +202,7 @@ var SnapshotMakerTsJsRewriter;
                 new Patches.Definitions.ShimSteamClientOpenVrSoiaCPDF(),
                 new Patches.Definitions.ShimSteamClientBrowserGetBrowserIdCheckCPDF(),
                 new Patches.Definitions.AddHtmlWebuiConfigOnLoadHookCPDF(),
-                new Patches.Definitions.DisableContenthashGetParamOnJsonJsFetchesCPDF(),
+                new Patches.Definitions.DisableContenthashGetParamOnFetchesCPDF(),
             ];
             for (let factory of factories)
                 RegisterPatchDefinitionFactoryInstance(factory);
@@ -504,32 +504,22 @@ var SnapshotMakerTsJsRewriter;
 })(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-//    Disable broken (t.m_BlurHandler = () => { this.HideByElement(t.m_OwningElement); }) code in the ShowPopup() handler for miniprofiles
+//    Disable the "contenthash" get param on the -json.js file fetches
 /*
 
     ----- Targets -----
 
-    1.  (8601984: line 13927)
-        (t.m_BlurHandler = () => {
-            this.HideByElement(t.m_OwningElement);
-        }),
+    1.  (8601984: line 58790)
+        ".js?contenthash=" +
       =>
-        (t.m_BlurHandler = () => {
-            // removed
-        }),
+        ".js?_contenthash_=" +
 
     
     ----- Notes -----
 
-    This appears to be Valve's attempt to add a visual effect when a miniprofile is displayed.
-    I don't know what the intended effect is, but it possibly is meant to blur the parent window which created the miniprofile, which would be pretty retarded.
+    We must strip the contenthash GET param because Valve redacts old versions and returns a 404 for those requests, instead of ignoring the contenthash and just serving the current version instead (which is what they do for their .js files only)
 
-    Regardless, it doesn't work properly in the December 2022 client. It ends up making the miniprofile immediately close itself, since the miniprofile's m_OwningElement is itself. But only when the window which created the miniprofile popup has focus. If a different window has focus, the miniprofile works properly. Clearly a symptom of some more rootward problem.
-
-    This problem does not occur in the May 2023 client.
-
-    This effect appears to be written expressly for pure shit steam clients and thus has no reason to attempt itself on vgui capable Steam clients. In fact, despite not causing any problems in the May 2023, it does absolutely nothing to affect the look & behavior of the miniprofiles. They are the same whether or not this code is disabled/enabled.
-    Accordingly, disabling this code fixes the aforementioned issue under the Dec 2022 client and renders no changes to the unaffected clients.
+    The old manual version of this patch included commenting out the entire block with the hashes dictionary and string concat into it, but this patch simply renames the GET param which also works.
 
 */
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -541,10 +531,10 @@ var SnapshotMakerTsJsRewriter;
     (function (Patches) {
         var Definitions;
         (function (Definitions) {
-            class DisableContenthashGetParamOnJsonJsFetchesCPDF extends Patches.ConfiguredPatchDefinitionFactory {
+            class DisableContenthashGetParamOnFetchesCPDF extends Patches.ConfiguredPatchDefinitionFactory {
                 constructor() {
                     super(...arguments);
-                    this.PatchIdName = "DisableContenthashGetParamOnJsonJsFetches";
+                    this.PatchIdName = "DisableContenthashGetParamOnFetches";
                 }
                 CreatePatchDefinition() {
                     return new Patches.PatchDefinition(this.PatchIdName, 
@@ -554,17 +544,33 @@ var SnapshotMakerTsJsRewriter;
                     // ____________________________________________________________________________________________________
                     //
                     (context, sourceFile, node, detectionInfoData) => {
-                        let tnode = detectionInfoData.TypedNode; // e.g.  ".js?contenthash="
-                        // Change the "contenthash" get param to something different
-                        // Previously, the by-hand manul human version of this patch involved commenting out the entire string concatentation from ".js?contenthash=" to the end of the content array dictionary it indexes into
-                        // This works perfectly fine, but it takes significantly longer to write a detection and patch which does all that, rather than a simple string literal replacement
-                        // The Valve server only returns a 404 when the URL has a known GET param with a value Valve doesn't like
-                        // The Valve server ignores GET params that it doesn't know
-                        // So, an easy patch which saves me time and works just as well as the proper manual patch is simply changing the GET param "contenthash" to something the Valve server won't recognize
-                        let patched = context.factory.createStringLiteral(".js?_contenthash_=");
-                        if (SnapshotMakerTsJsRewriter.IncludeOldJsCommentAtPatchSites)
-                            ts.addSyntheticLeadingComment(patched, ts.SyntaxKind.MultiLineCommentTrivia, SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, node, sourceFile), false);
-                        return patched;
+                        //
+                        // -json.js files
+                        //
+                        if (detectionInfoData.Location == 1) {
+                            let tnode = detectionInfoData.TypedNode; // e.g.  ".js?contenthash="
+                            // Change the "contenthash" get param to something different
+                            // Previously, the by-hand manul human version of this patch involved commenting out the entire string concatentation from ".js?contenthash=" to the end of the content array dictionary it indexes into
+                            // This works perfectly fine, but it takes significantly longer to write a detection and patch which does all that, rather than a simple string literal replacement
+                            // The Valve server only returns a 404 when the URL has a known GET param with a value Valve doesn't like
+                            // The Valve server ignores GET params that it doesn't know
+                            // So, an easy patch which saves me time and works just as well as the proper manual patch is simply changing the GET param "contenthash" to something the Valve server won't recognize
+                            let patched = context.factory.createStringLiteral(".js?_contenthash_=");
+                            if (SnapshotMakerTsJsRewriter.IncludeOldJsCommentAtPatchSites)
+                                ts.addSyntheticLeadingComment(patched, ts.SyntaxKind.MultiLineCommentTrivia, SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, node, sourceFile), false);
+                            return patched;
+                        }
+                        //
+                        // .css files
+                        //
+                        else if (detectionInfoData.Location == 2) {
+                            let tnode = detectionInfoData.TypedNode; // e.g.  ".css?contenthash="
+                            // Same thing, but for the .css file loader, shortly after the -json.js file loader
+                            let patched = context.factory.createStringLiteral(".css?_contenthash_=");
+                            if (SnapshotMakerTsJsRewriter.IncludeOldJsCommentAtPatchSites)
+                                ts.addSyntheticLeadingComment(patched, ts.SyntaxKind.MultiLineCommentTrivia, SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, node, sourceFile), false);
+                            return patched;
+                        }
                     }, 
                     // ____________________________________________________________________________________________________
                     //
@@ -572,21 +578,42 @@ var SnapshotMakerTsJsRewriter;
                     // ____________________________________________________________________________________________________
                     //
                     [
+                        //
+                        // -json.js files (localized strings)
+                        //
                         (context, sourceFile, node) => {
                             if (node.kind == ts.SyntaxKind.StringLiteral) // e.g.  ".js?contenthash="
                              {
                                 let tnode = node;
-                                if (tnode.text == ".js?contenthash=") {
+                                if (tnode.text == ".js?contenthash=") // unique string, only appears once in friends.js
+                                 {
                                     return new Patches.DetectionInfo(true, {
+                                        "Location": 1,
                                         "TypedNode": tnode,
                                     });
                                 }
                             }
-                        }
+                        },
+                        //
+                        // .css files
+                        //
+                        (context, sourceFile, node) => {
+                            if (node.kind == ts.SyntaxKind.StringLiteral) // e.g.  ".css?contenthash="
+                             {
+                                let tnode = node;
+                                if (tnode.text == ".css?contenthash=") // unique string, only appears once in friends.js
+                                 {
+                                    return new Patches.DetectionInfo(true, {
+                                        "Location": 2,
+                                        "TypedNode": tnode,
+                                    });
+                                }
+                            }
+                        },
                     ]);
                 }
             }
-            Definitions.DisableContenthashGetParamOnJsonJsFetchesCPDF = DisableContenthashGetParamOnJsonJsFetchesCPDF;
+            Definitions.DisableContenthashGetParamOnFetchesCPDF = DisableContenthashGetParamOnFetchesCPDF;
         })(Definitions = Patches.Definitions || (Patches.Definitions = {}));
     })(Patches = SnapshotMakerTsJsRewriter.Patches || (SnapshotMakerTsJsRewriter.Patches = {}));
 })(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
@@ -932,6 +959,121 @@ var SnapshotMakerTsJsRewriter;
                 }
             }
             Definitions.DisableMiniprofileBrokenBlurHandlerCPDF = DisableMiniprofileBrokenBlurHandlerCPDF;
+        })(Definitions = Patches.Definitions || (Patches.Definitions = {}));
+    })(Patches = SnapshotMakerTsJsRewriter.Patches || (SnapshotMakerTsJsRewriter.Patches = {}));
+})(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//    CDN asset fetch url rewriting
+/*
+
+    ----- Generic Target Examples -----
+
+    1.  u.Ul.AudioPlaybackManager.PlayAudioURL( o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_enter.m4a?v=1" )
+      =>
+        u.Ul.AudioPlaybackManager.PlayAudioURL( TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_voice_channel_enter.m4a?v=1", "Root", "JsSounds") )
+
+    
+    ----- Specific Targets -----
+
+    1. (8601984: line 58917 :: css file loader)
+        if ("undefined" != typeof document) {
+            var e = (e) =>
+                    new Promise((t, n) => {
+                        var i = s.miniCssF(e),
+                            o = s.p + i;
+                        if (
+                            ((e, t) => {
+                                for (var n = document.getElementsByTagName("link"), i = 0; i < n.length; i++) { ...
+      =>
+        if ("undefined" != typeof document) {
+            var e = (e) =>
+                    new Promise((t, n) => {
+                        var i = s.miniCssF(e),
+                            o = TFP.Resources.SelectCdnResourceUrl(s.p, i, "Root_Public", "JsCss");
+                        if (
+                            ((e, t) => {
+                                for (var n = document.getElementsByTagName("link"), i = 0; i < n.length; i++) {
+    
+    
+    ----- Notes -----
+    
+    In order for the snapshot to be 100% local, all resource fetches must go to steamloopback.host instead of the remote Valve servers.
+    We achieve that by inserting a shim method in all locations where Valve's js builds url path strings. The shim method will return a different url that originates from the steamloopback.host.
+
+*/
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// <reference path="../Patches.ts" />
+// Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration" (see: https://stackoverflow.com/a/48189989/2489580)
+var SnapshotMakerTsJsRewriter;
+(function (SnapshotMakerTsJsRewriter) {
+    var Patches;
+    (function (Patches) {
+        var Definitions;
+        (function (Definitions) {
+            class RewriteCdnAssetUrlStringBuildCPDF extends Patches.ConfiguredPatchDefinitionFactory {
+                constructor() {
+                    super(...arguments);
+                    this.PatchIdName = "RewriteCdnAssetUrlStringBuild";
+                }
+                CreatePatchDefinition(config) {
+                    return new Patches.PatchDefinition(this.PatchIdName, 
+                    // ____________________________________________________________________________________________________
+                    //
+                    //     Patch
+                    // ____________________________________________________________________________________________________
+                    //
+                    (context, sourceFile, node, detectionInfoData) => {
+                        let tnode = detectionInfoData.TypedNode; // e.g.  o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_enter.m4a?v=1"
+                        let matchedTarget = detectionInfoData.MatchedTarget; // e.g.  ["public/sounds/webui/steam_voice_channel_enter.m4a", "Root", "JsSounds"]
+                        // syntax for retrieving implicit nested interface type ^--^
+                        // Replace the binary expression with a method call that takes the original halves of the binary expr as arguments
+                        let patched = context.factory.createCallExpression(context.factory.createIdentifier(config.ShimMethodIdentifierExpression), null, [
+                            tnode.left,
+                            tnode.right,
+                            context.factory.createStringLiteral(matchedTarget.UrlRootPathType),
+                            context.factory.createStringLiteral(matchedTarget.ResourceCategory),
+                        ]); // e.g.  TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_voice_channel_enter.m4a?v=1", "Root", "JsSounds")
+                        if (SnapshotMakerTsJsRewriter.IncludeOldJsCommentAtPatchSites)
+                            ts.addSyntheticLeadingComment(patched, ts.SyntaxKind.MultiLineCommentTrivia, SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, node, sourceFile), false);
+                        return patched;
+                    }, 
+                    // ____________________________________________________________________________________________________
+                    //
+                    //     Detections
+                    // ____________________________________________________________________________________________________
+                    //
+                    [
+                        //
+                        // Generic patch location
+                        //
+                        (context, sourceFile, node) => {
+                            if (node.kind == ts.SyntaxKind.BinaryExpression) // e.g.  o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_enter.m4a?v=1"
+                             {
+                                let tnode = node;
+                                if (tnode.right.kind == ts.SyntaxKind.StringLiteral) // e.g.  "public/sounds/webui/steam_voice_channel_enter.m4a?v=1"
+                                 {
+                                    let rightTNode = tnode.right;
+                                    let matchedTarget = config.Targets.find(item => item.ResourceUrl == SnapshotMakerTsJsRewriter.RemoveQueryTailFromUrl(rightTNode.text));
+                                    if (matchedTarget != null) {
+                                        return new Patches.DetectionInfo(true, {
+                                            "Location": 1,
+                                            "TypedNode": tnode,
+                                            "MatchedTarget": matchedTarget,
+                                        });
+                                    }
+                                }
+                            }
+                        },
+                        //
+                        // Specific patch location 1: css loader
+                        //
+                        (context, sourceFile, node) => {
+                        },
+                    ]);
+                }
+            }
+            Definitions.RewriteCdnAssetUrlStringBuildCPDF = RewriteCdnAssetUrlStringBuildCPDF;
         })(Definitions = Patches.Definitions || (Patches.Definitions = {}));
     })(Patches = SnapshotMakerTsJsRewriter.Patches || (SnapshotMakerTsJsRewriter.Patches = {}));
 })(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
@@ -1669,90 +1811,6 @@ var SnapshotMakerTsJsRewriter;
                 }
             }
             Definitions.ShimSettingsStoreIsSteamInTournamentModeCPDF = ShimSettingsStoreIsSteamInTournamentModeCPDF;
-        })(Definitions = Patches.Definitions || (Patches.Definitions = {}));
-    })(Patches = SnapshotMakerTsJsRewriter.Patches || (SnapshotMakerTsJsRewriter.Patches = {}));
-})(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-//    CDN asset fetch url rewriting
-/*
-
-    ----- Target Examples -----
-
-    1.  u.Ul.AudioPlaybackManager.PlayAudioURL( o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_enter.m4a?v=1" )
-      =>
-        u.Ul.AudioPlaybackManager.PlayAudioURL( TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_voice_channel_enter.m4a?v=1", "Root", "JsSounds") )
-
-    
-    ----- Notes -----
-    
-    In order for the snapshot to be 100% local, all resource fetches must go to steamloopback.host instead of the remote Valve servers.
-    We achieve that by inserting a shim method in all locations where Valve's js builds url path strings. The shim method will return a different url that originates from the steamloopback.host.
-
-*/
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// <reference path="../Patches.ts" />
-// Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration" (see: https://stackoverflow.com/a/48189989/2489580)
-var SnapshotMakerTsJsRewriter;
-(function (SnapshotMakerTsJsRewriter) {
-    var Patches;
-    (function (Patches) {
-        var Definitions;
-        (function (Definitions) {
-            class RewriteCdnAssetUrlStringBuildCPDF extends Patches.ConfiguredPatchDefinitionFactory {
-                constructor() {
-                    super(...arguments);
-                    this.PatchIdName = "RewriteCdnAssetUrlStringBuild";
-                }
-                CreatePatchDefinition(config) {
-                    return new Patches.PatchDefinition(this.PatchIdName, 
-                    // ____________________________________________________________________________________________________
-                    //
-                    //     Patch
-                    // ____________________________________________________________________________________________________
-                    //
-                    (context, sourceFile, node, detectionInfoData) => {
-                        let tnode = detectionInfoData.TypedNode; // e.g.  o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_enter.m4a?v=1"
-                        let matchedTarget = detectionInfoData.MatchedTarget; // e.g.  ["public/sounds/webui/steam_voice_channel_enter.m4a", "Root", "JsSounds"]
-                        // syntax for retrieving implicit nested interface type ^--^
-                        // Replace the binary expression with a method call that takes the original halves of the binary expr as arguments
-                        let patched = context.factory.createCallExpression(context.factory.createIdentifier(config.ShimMethodIdentifierExpression), null, [
-                            tnode.left,
-                            tnode.right,
-                            context.factory.createStringLiteral(matchedTarget.UrlRootPathType),
-                            context.factory.createStringLiteral(matchedTarget.ResourceCategory),
-                        ]); // e.g.  TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_voice_channel_enter.m4a?v=1", "Root", "JsSounds")
-                        if (SnapshotMakerTsJsRewriter.IncludeOldJsCommentAtPatchSites)
-                            ts.addSyntheticLeadingComment(patched, ts.SyntaxKind.MultiLineCommentTrivia, SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, node, sourceFile), false);
-                        return patched;
-                    }, 
-                    // ____________________________________________________________________________________________________
-                    //
-                    //     Detections
-                    // ____________________________________________________________________________________________________
-                    //
-                    [
-                        (context, sourceFile, node) => {
-                            if (node.kind == ts.SyntaxKind.BinaryExpression) // e.g.  o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_enter.m4a?v=1"
-                             {
-                                let tnode = node;
-                                if (tnode.right.kind == ts.SyntaxKind.StringLiteral) // e.g.  "public/sounds/webui/steam_voice_channel_enter.m4a?v=1"
-                                 {
-                                    let rightTNode = tnode.right;
-                                    let matchedTarget = config.Targets.find(item => item.ResourceUrl == SnapshotMakerTsJsRewriter.RemoveQueryTailFromUrl(rightTNode.text));
-                                    if (matchedTarget != null) {
-                                        return new Patches.DetectionInfo(true, {
-                                            "TypedNode": tnode,
-                                            "MatchedTarget": matchedTarget,
-                                        });
-                                    }
-                                }
-                            }
-                        }
-                    ]);
-                }
-            }
-            Definitions.RewriteCdnAssetUrlStringBuildCPDF = RewriteCdnAssetUrlStringBuildCPDF;
         })(Definitions = Patches.Definitions || (Patches.Definitions = {}));
     })(Patches = SnapshotMakerTsJsRewriter.Patches || (SnapshotMakerTsJsRewriter.Patches = {}));
 })(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
