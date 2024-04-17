@@ -42,6 +42,7 @@ var SnapshotMakerTsJsRewriter;
 })(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
 var SnapshotMakerTsJsRewriter;
 (function (SnapshotMakerTsJsRewriter) {
+    SnapshotMakerTsJsRewriter.Version = "1.0.0.0";
     // ____________________________________________________________________________________________________
     //
     //     Configuration

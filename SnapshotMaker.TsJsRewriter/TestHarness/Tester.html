@@ -198,6 +198,8 @@
 
                 await AsyncSleep(cheapUiUpdateTimeoutDelay);
 
+                console.log("SnapshotMakerTsJsRewriter version:", SnapshotMakerTsJsRewriter.Version);
+
                 let configJson = patchDefsConfigText.value;
                 let config = JSON5.parse(configJson);
                 SnapshotMakerTsJsRewriter.DefinePatches(config);
