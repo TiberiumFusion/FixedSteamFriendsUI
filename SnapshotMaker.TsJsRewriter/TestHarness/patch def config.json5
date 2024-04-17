@@ -16,7 +16,7 @@
 					{
 						SpecialCase: "JsLoader",
 						UrlRootPathType: "Root_Public",
-						ResourceCategory: "JsCss",
+						ResourceCategory: "CoreJs",
 						OverrideShimMethodIdentifierExpression: "TFP.Resources.SelectCdnResourceUrl_JsLoaderDirect",
 					},
 					{
