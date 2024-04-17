@@ -13,9 +13,17 @@ namespace SnapshotMakerTsJsRewriter.Patches
     // ____________________________________________________________________________________________________
     //
 
-    export function AstFindFirstAncestor(node: ts.Node, ...kind: ts.SyntaxKind[]): ts.Node
+    export function AstFindFirstAncestor(node: ts.Node, kind: ts.SyntaxKind | ts.SyntaxKind[], maximumDepth: number = 0): ts.Node
     {
+        let matchKinds: ts.SyntaxKind[];
+        if (Array.isArray(kind))
+            matchKinds = kind;
+        else
+            matchKinds = [kind];
+
         let curNode: ts.Node = node;
+        let depth: number = 0;
+
         do
         {
             curNode = curNode.parent;
@@ -23,7 +31,12 @@ namespace SnapshotMakerTsJsRewriter.Patches
             if (curNode == null)
                 return null;
 
-            else if (kind.indexOf(curNode.kind) != -1)
+            depth++;
+
+            if (maximumDepth > 0 && depth > maximumDepth)
+                return null;
+
+            else if (matchKinds.indexOf(curNode.kind) != -1)
                 return curNode;
         }
         while (curNode.parent != null)
