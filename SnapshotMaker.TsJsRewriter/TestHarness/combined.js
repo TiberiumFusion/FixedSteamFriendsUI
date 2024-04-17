@@ -100,6 +100,10 @@ var SnapshotMakerTsJsRewriter;
         console.log("EXPORT");
         let transformedInputJsSourceFile = inputJsTransformResult.transformed[0];
         let outputJs = SnapshotMakerTsJsRewriter.JsEmitPrinter.printFile(transformedInputJsSourceFile);
+        // Fix line endings
+        // The typescript js emitter uses the host OS to determine line endings. When running on Windows, the output js has CRLF endings. On everything else, its LF endings.
+        // friends.js has LF line endings. For consistency's sake, we will ensure the patched js also has LF line endings.
+        outputJs = outputJs.replace(/\r\n/g, "\n");
         console.log(outputJs);
         return outputJs;
     }
