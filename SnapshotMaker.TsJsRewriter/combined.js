@@ -1024,6 +1024,7 @@ var SnapshotMakerTsJsRewriter;
                     // ____________________________________________________________________________________________________
                     //
                     (context, sourceFile, node, detectionInfoData) => {
+                        // Common patch logic works for both Location 0 and Location 1
                         let tnode = detectionInfoData.TypedNode; // e.g.  o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_enter.m4a?v=1"
                         let matchedTarget = detectionInfoData.MatchedTarget; // e.g.  ["public/sounds/webui/steam_voice_channel_enter.m4a", "Root", "JsSounds"]
                         // syntax for retrieving implicit nested interface type ^--^
@@ -1069,6 +1070,45 @@ var SnapshotMakerTsJsRewriter;
                         // Specific patch location 1: css loader
                         //
                         (context, sourceFile, node) => {
+                            if (node.kind == ts.SyntaxKind.BinaryExpression) // e.g.  s.p + i
+                             {
+                                let tnode = node;
+                                // Validate url string build binary expression being part of the expected variable definition list
+                                if (tnode.parent != null && tnode.parent.kind == ts.SyntaxKind.VariableDeclaration) // e.g.  [var] o = s.p + i
+                                 {
+                                    let parentVarDec = tnode.parent;
+                                    if (parentVarDec.parent != null) // e.g.  var i = s.miniCssF(e), o = s.p + i;
+                                     {
+                                        let parentVarDecList = parentVarDec.parent;
+                                        // Validate our expected location in the var dec list
+                                        if (parentVarDecList.declarations.indexOf(parentVarDec) == 1) // 2nd declaration
+                                         {
+                                            // Validate the first item in the variable declaration list
+                                            // This has the unique identifier miniCssF ("miniCssF" only appears in friends.js once)
+                                            let dec0 = parentVarDecList.declarations[0];
+                                            if (dec0.initializer != null && dec0.initializer.kind == ts.SyntaxKind.CallExpression) // e.g.  s.miniCssF(e)
+                                             {
+                                                let dec0InitCall = dec0.initializer;
+                                                if (dec0InitCall.expression.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  s.miniCssF
+                                                 {
+                                                    let dec0InitCallAccessExpression = dec0InitCall.expression;
+                                                    if (dec0InitCallAccessExpression.name.kind == ts.SyntaxKind.Identifier && dec0InitCallAccessExpression.name.escapedText == "miniCssF") {
+                                                        // Get config for this target
+                                                        let matchedTarget = config.Targets.find(item => item.SpecialCase == "CssLoader");
+                                                        if (matchedTarget != null) {
+                                                            return new Patches.DetectionInfo(true, {
+                                                                "Locaton": 2,
+                                                                "TypedNode": tnode,
+                                                                "MatchedTarget": matchedTarget,
+                                                            });
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         },
                     ]);
                 }

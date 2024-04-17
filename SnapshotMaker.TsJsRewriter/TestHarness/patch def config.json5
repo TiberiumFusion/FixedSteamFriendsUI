@@ -78,6 +78,11 @@
 						UrlRootPathType: "Root_Public",
 						ResourceCategory: "JsImages",
 					},
+					{
+						SpecialCase: "CssLoader",
+						UrlRootPathType: "Root_Public",
+						ResourceCategory: "JsCss",
+					},
 				]
 			}
 		},
