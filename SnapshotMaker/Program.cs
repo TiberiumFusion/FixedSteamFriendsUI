@@ -1,5 +1,4 @@
-﻿using CefSharp;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -7,6 +6,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using CefSharp;
+using Newtonsoft.Json;
 using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.CefJsProvider;
 using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.PatchSnapshot;
 using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot;
@@ -60,9 +61,11 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
             //   Configuration
             // --------------------------------------------------
 
-            // Load snapshot manifests from disk
-            SnapshotManifest.LoadManifests(@".\Config\SnapshotManifests", CatchUnhandledExceptions);
-
+            // Load all config files from disk at the default location
+            string defaultConfigDir = @".\Configs";
+            Config.LoadSnapshotManifestsFrom(Path.Combine(defaultConfigDir, "SnapshotManifests"), true, CatchUnhandledExceptions);
+            Config.LoadPatcherConfigsFrom(Path.Combine(defaultConfigDir, "PatcherConfigs"), true, CatchUnhandledExceptions);
+            
             // Stages to perform
             bool StageScrape = cmdArgs.Stages.Contains("s");
             bool StageAmend = cmdArgs.Stages.Contains("a");

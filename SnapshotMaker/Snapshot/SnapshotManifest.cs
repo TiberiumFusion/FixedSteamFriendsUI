@@ -59,120 +59,14 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot
                 UnboundedMaxCLSTAMP ? "+" : ""
             ) + "}";
         }
+    }
 
-
-
-        /// <summary>
-        /// All known manifests, in order of CLSTAMP.
-        /// </summary>
-        public static List<SnapshotManifest> KnownManifests { get; private set; } = new List<SnapshotManifest>();
-
-
-        /// <summary>
-        /// Loads all .json files found in the provided directory as SnapshotManifests.
-        /// </summary>
-        /// <param name="directoryPath">Path to the folder from which to load the manifests.</param>
-        /// <param name="ignoreExceptions">Ignore exceptions on nonexistent paths and continue loading the remaining paths.</param>
-        public static void LoadManifests(string directoryPath, bool ignoreExceptions = false)
-        {
-            KnownManifests.Clear();
-
-            if (!Directory.Exists(directoryPath))
-            {
-                if (ignoreExceptions)
-                    return;
-                else
-                    throw new DirectoryNotFoundException("Cannot find directory '" + directoryPath + "'");
-            }
-
-            DirectoryInfo dir = new DirectoryInfo(directoryPath);
-            foreach (FileInfo file in dir.EnumerateFiles("*.json", SearchOption.AllDirectories))
-            {
-                string manifestText = null;
-                try
-                {
-                    manifestText = File.ReadAllText(file.FullName, Encoding.UTF8);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Unhandled exception while reading file '" + file.FullName + '"');
-                    Console.WriteLine(e);
-
-                    if (!ignoreExceptions)
-                        throw e;
-
-                    Console.WriteLine("Skipping file");
-                }
-
-                if (manifestText != null)
-                {
-                    SnapshotManifest manifest = null;
-                    try
-                    {
-                        manifest = JsonConvert.DeserializeObject<SnapshotManifest>(manifestText);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Unhandled exception while deserializing file '" + file.FullName + '"');
-                        Console.WriteLine(e);
-
-                        if (!ignoreExceptions)
-                            throw e;
-
-                        Console.WriteLine("Skipping file");
-                    }
-
-                    if (manifest != null)
-                        KnownManifests.Add(manifest);
-                }
-            }
-        }
-
-
-
-        /// <summary>
-        /// Gets a known manifest which most closely matches the supplied <paramref name="clstamp"/>.
-        /// </summary>
-        /// <param name="clstamp"></param>
-        /// <param name="matchType"></param>
-        /// <returns></returns>
-        public static SnapshotManifest GetClosestManifestForClstamp(long clstamp, out ManifestMatchType matchType)
-        {
-            // If we have a perfect match, use that
-            // Otherwise, use to the newest known manifest that is also closest to the provided CLSTAMP
-            // Lastly, fall back to the latest known manifest if all known manifests are older than the provided clstamp
-
-            foreach (SnapshotManifest knownManifest in KnownManifests.OrderByDescending(a => a.MinCLSTAMP))
-            {
-                if (clstamp >= knownManifest.MinCLSTAMP && clstamp <= knownManifest.MaxCLSTAMP)
-                {
-                    matchType = ManifestMatchType.ExactKnown;
-                    return knownManifest;
-                }
-                else if (clstamp >= knownManifest.MinCLSTAMP && knownManifest.UnboundedMaxCLSTAMP)
-                {
-                    matchType = ManifestMatchType.ExactTentative;
-                    return knownManifest;
-                }
-                else if (clstamp >= knownManifest.MinCLSTAMP)
-                {
-                    matchType = ManifestMatchType.ClosestNewer;
-                    return knownManifest;
-                }
-            }
-
-            matchType = ManifestMatchType.NewestKnown;
-            return KnownManifests.Last();
-        }
-
-        public enum ManifestMatchType
-        {
-            Any,
-            ExactKnown,
-            ExactTentative,
-            ClosestNewer,
-            NewestKnown,
-        }
-
+    public enum ManifestMatchType
+    {
+        Any,
+        ExactKnown,
+        ExactTentative,
+        ClosestNewer,
+        NewestKnown,
     }
 }

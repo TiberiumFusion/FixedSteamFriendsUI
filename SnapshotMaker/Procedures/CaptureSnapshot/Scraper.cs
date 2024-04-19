@@ -273,10 +273,10 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.C
             // We need to select a manifest to supply us with a list of expected files to check for and download
             // Our manifests are keyed by the CLSTAMP in the public/javascript/webui/friends.js file
 
-            SnapshotManifest manifest = SnapshotManifest.KnownManifests.Last(); // Fallback: use the most recent manifest if we are unable to select one per friends.js
+            SnapshotManifest manifest = Config.SnapshotManifests.OrderByDescending(a => a.MinCLSTAMP).Last(); // Fallback: use the most recent manifest if we are unable to select one per friends.js
 
             bool manifestSelectionFailed = false;
-            SnapshotManifest.ManifestMatchType clstampMatchType = SnapshotManifest.ManifestMatchType.Any;
+            ManifestMatchType clstampMatchType = ManifestMatchType.Any;
 
             //
             // Get friends.js file
@@ -366,7 +366,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.C
                             Log("Selecting snapshot manifest...");
 
                             // Pick the manifest which is closest to the CLSTAMP in the friends.js file
-                            manifest = SnapshotManifest.GetClosestManifestForClstamp(clStampLong, out clstampMatchType);
+                            manifest = Config.GetClosestSnapshotManifestForClstamp(clStampLong, out clstampMatchType);
                         }
                     }
                 }
@@ -378,10 +378,10 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.C
             {
                 LogOK();
                 string matchTypeInfo = "";
-                if (clstampMatchType == SnapshotManifest.ManifestMatchType.ExactKnown) matchTypeInfo = "exact range match for remote friends.js";
-                else if (clstampMatchType == SnapshotManifest.ManifestMatchType.ExactTentative) matchTypeInfo = "tenative range match for remote friends.js";
-                else if (clstampMatchType == SnapshotManifest.ManifestMatchType.ClosestNewer) matchTypeInfo = "closest locally known manifest (newer than remote friends.js!)";
-                else if (clstampMatchType == SnapshotManifest.ManifestMatchType.NewestKnown) matchTypeInfo = "newest locally known manifest (older than remote friends.js!)";
+                if (clstampMatchType == ManifestMatchType.ExactKnown) matchTypeInfo = "exact range match for remote friends.js";
+                else if (clstampMatchType == ManifestMatchType.ExactTentative) matchTypeInfo = "tenative range match for remote friends.js";
+                else if (clstampMatchType == ManifestMatchType.ClosestNewer) matchTypeInfo = "closest locally known manifest (newer than remote friends.js!)";
+                else if (clstampMatchType == ManifestMatchType.NewestKnown) matchTypeInfo = "newest locally known manifest (older than remote friends.js!)";
                 LogLine("Using snapshot manifest for CLSTAMP "
                     + manifest.MinCLSTAMP + " thru " + manifest.MaxCLSTAMP + (manifest.UnboundedMaxCLSTAMP ? "+" : "")
                     + "  <- " + matchTypeInfo
