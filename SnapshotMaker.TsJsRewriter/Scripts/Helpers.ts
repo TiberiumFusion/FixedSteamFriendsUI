@@ -13,7 +13,7 @@
         if (!EnableTraces)
             return;
 
-        UserTraceHandler(...message);
+        SnapshotMakerTsJsRewriter.UserTraceHandler(...message);
     }
 
     // User can replace this with their own trace handler

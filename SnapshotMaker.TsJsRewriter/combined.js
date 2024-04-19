@@ -9,7 +9,7 @@ var SnapshotMakerTsJsRewriter;
     function Trace(...message) {
         if (!SnapshotMakerTsJsRewriter.EnableTraces)
             return;
-        UserTraceHandler(...message);
+        SnapshotMakerTsJsRewriter.UserTraceHandler(...message);
     }
     SnapshotMakerTsJsRewriter.Trace = Trace;
     // User can replace this with their own trace handler
