@@ -77,7 +77,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
                 if (StageAmend) Log("A");
                 if (StagePatch) Log("P");
                 if (StageClean) Log("C");
-                LogLine("\n");
+                LogLine("");
             }
             else
             {
