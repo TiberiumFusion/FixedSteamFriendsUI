@@ -1,5 +1,7 @@
 {
 
+    "Version": 1,
+
     "MinCLSTAMP": 8200419, // ca late july 2023
     "MaxCLSTAMP": 8601984, // ca 2023-12-22
     "UnboundedMaxCLSTAMP": false,
