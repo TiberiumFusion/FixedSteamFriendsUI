@@ -110,6 +110,7 @@ var SnapshotMakerTsJsRewriter;
         // Modify the source file's AST
         //
         let totalVisitedNodes = 0;
+        let totalPatchedNodes = 0;
         // AST traverse occurs within a "transform" operation
         // This method is passed to ts.transform(). Its sole argument is supplied by ts.transform().
         let megatron = function (context) {
@@ -124,6 +125,7 @@ var SnapshotMakerTsJsRewriter;
                         let patchedNode = patchDefinition.DetectAndPatch(context, sourceFile, node);
                         if (patchedNode != null) // return is non-null if this node was detected & patched
                          {
+                            totalPatchedNodes++;
                             let patchApplicationsInfo = result.AppliedPatches[i];
                             patchApplicationsInfo.Applications.push({
                                 Location: sourceFile.getLineAndCharacterOfPosition(node.pos),
@@ -158,10 +160,13 @@ var SnapshotMakerTsJsRewriter;
         // Finalize result object
         //
         result.TotalVisitedNodes = totalVisitedNodes;
+        result.TotalPatchedNodes = totalPatchedNodes;
         result.JavascriptString = outputJs;
         //
         // Report some result data
         //
+        SnapshotMakerTsJsRewriter.Trace("Total visited ast nodes: " + totalVisitedNodes);
+        SnapshotMakerTsJsRewriter.Trace("Total applied patches: " + totalPatchedNodes);
         SnapshotMakerTsJsRewriter.Trace("Applied patches:");
         for (let i = 0; i < ConfiguredPatchDefinitions.length; i++) {
             let patchDefinition = ConfiguredPatchDefinitions[i];

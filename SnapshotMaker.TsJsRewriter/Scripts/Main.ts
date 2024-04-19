@@ -95,6 +95,7 @@
     class PatchJavascriptResult implements IPatchJavascriptResult
     {
         TotalVisitedNodes: number;
+        TotalPatchedNodes: number;
         AppliedPatches: {
             IdName: string;
             Applications: {
@@ -154,6 +155,7 @@
         //
         
         let totalVisitedNodes: number = 0;
+        let totalPatchedNodes: number = 0;
 
         // AST traverse occurs within a "transform" operation
         // This method is passed to ts.transform(). Its sole argument is supplied by ts.transform().
@@ -175,6 +177,8 @@
                         let patchedNode: ts.Node = patchDefinition.DetectAndPatch(context, sourceFile, node);
                         if (patchedNode != null) // return is non-null if this node was detected & patched
                         {
+                            totalPatchedNodes++;
+
                             let patchApplicationsInfo: IPatchJavascriptResult["AppliedPatches"][0] = result.AppliedPatches[i];
                             patchApplicationsInfo.Applications.push({
                                 Location: sourceFile.getLineAndCharacterOfPosition(node.pos),
@@ -222,6 +226,7 @@
         //
 
         result.TotalVisitedNodes = totalVisitedNodes;
+        result.TotalPatchedNodes = totalPatchedNodes;
 
         result.JavascriptString = outputJs;
 
@@ -229,6 +234,10 @@
         //
         // Report some result data
         //
+
+        Trace("Total visited ast nodes: " + totalVisitedNodes);
+
+        Trace("Total applied patches: " + totalPatchedNodes);
 
         Trace("Applied patches:");
 
