@@ -101,7 +101,9 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.PatchSnaps
 
                 long clstamp = -1;
                 bool gotClstamp = Utils.TryScrapeClstampFieldFromFriendsJsJavascript(sourceJs, out clstamp, out string clstampErrorMessage);
-                if (!gotClstamp)
+                if (gotClstamp)
+                    LogLine("- CLSTMAP = " + clstamp);
+                else
                     LogLine("[!] Failed to scrape CLSTAMP from friends.js [!]");
 
 
