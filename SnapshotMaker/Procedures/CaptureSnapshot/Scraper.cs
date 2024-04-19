@@ -382,7 +382,10 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.C
                 else if (clstampMatchType == SnapshotManifest.ManifestMatchType.ExactTentative) matchTypeInfo = "tenative range match for remote friends.js";
                 else if (clstampMatchType == SnapshotManifest.ManifestMatchType.ClosestNewer) matchTypeInfo = "closest locally known manifest (newer than remote friends.js!)";
                 else if (clstampMatchType == SnapshotManifest.ManifestMatchType.NewestKnown) matchTypeInfo = "newest locally known manifest (older than remote friends.js!)";
-                LogLine("Using snapshot manifest for CLSTAMP " + manifest.MinCLSTAMP + " thru " + manifest.MaxCLSTAMP + "  <- " + matchTypeInfo);
+                LogLine("Using snapshot manifest for CLSTAMP "
+                    + manifest.MinCLSTAMP + " thru " + manifest.MaxCLSTAMP + (manifest.UnboundedMaxCLSTAMP ? "+" : "")
+                    + "  <- " + matchTypeInfo
+                );
             }
 
 
