@@ -1,11 +1,16 @@
 {
+
 	"Version": 1,
 
+	"TargetCLSTAMP": 8825046,
+
+
+
 	// ____________________________________________________________________________________________________
-    // 
-    //     SnapshotMaker.TsJsRewriter configuration
-    // ____________________________________________________________________________________________________
-    //
+	// 
+	//     SnapshotMaker.TsJsRewriter configuration
+	// ____________________________________________________________________________________________________
+	//
 
 	// Passed to SnapshotMakerTsJsRewriter.DefinePatches to create the desired configured patches
 

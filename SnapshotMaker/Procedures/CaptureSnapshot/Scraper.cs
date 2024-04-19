@@ -10,6 +10,7 @@ using CurlThin.Helpers;
 using CurlThin.Native;
 using CurlThin.SafeHandles;
 using HtmlAgilityPack;
+using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures;
 using static TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Helpers;
 using static TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Helpers.HtmlAgilityPack;
 
@@ -267,23 +268,22 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.C
 
 
             // --------------------------------------------------
-            //   Manifest
+            //   friends.js
             // --------------------------------------------------
 
-            // We need to select a manifest to supply us with a list of expected files to check for and download
-            // Our manifests are keyed by the CLSTAMP in the public/javascript/webui/friends.js file
+            // The centerpiece of this whole affair. We need to scrape data from it and of course include it in the snapshot.
 
-            SnapshotManifest manifest = Config.SnapshotManifests.OrderByDescending(a => a.MinCLSTAMP).Last(); // Fallback: use the most recent manifest if we are unable to select one per friends.js
+            long friendsJsClstamp = -1;
+            bool gotFriendsJsClstamp = false;
 
-            bool manifestSelectionFailed = false;
-            ManifestMatchType clstampMatchType = ManifestMatchType.Any;
 
             //
-            // Get friends.js file
+            // Download it
             //
 
-            LogLine("Downloading & inspecting friends.js");
+            LogLine("Retrieving friends.js");
 
+            // Get its URL from the root html
             HtmlNode headScriptFriendsJs = rhHeadScripts.Where(a =>
             {
                 string src = a.GetAttributeValue("src", "");
@@ -295,101 +295,79 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.C
 
             if (headScriptFriendsJs == null)
             {
-                LogERROR();
                 LogLine("[!] Failed to find friends.js <script> in <head> of root html document [!]");
-                manifestSelectionFailed = true;
+
+                // friends.js is missing, but we can still the rest of the snapshot
             }
             else
             {
-                //
-                // Download it
-                //
-
+                // Fetch from the url
                 string headScriptFriendsJsSrc = headScriptFriendsJs.GetAttributeValue("src", "");
-                string jsRaw = (string)DownloadValveResource(headScriptFriendsJsSrc, ResourceByteFormat.StringUtf8, outputDirPath:null, log:false);
+                string jsRaw = (string)DownloadValveResource(headScriptFriendsJsSrc, ResourceByteFormat.StringUtf8, outputDirPath: null, log: false);
+
 
                 //
-                // Scrape it
+                // Scrape it for the CLSTAMP
                 //
 
-                // This file always seems to start the same way:
-                // 1. 10 pointless newlines
-                // 2. Valve's fucker eula stub comment
-                // 3. 3MB of bastardized javascript on a single line
+                Log("Scraping CLSTAMP from friends.js...");
 
-                // The very start of item no.3 always seems to be the CLSTAMP declaration, like so:
-                //   var CLSTAMP="8804332";(()=>{var e,t,n,i,o,r={3119:(e,t,n)=>{var ...
-                // The string "CLSTAMP" also only appears once in the entire file, at this location
-
-                // Start of var declaration
-                string clstampStartMagic = "CLSTAMP=\"";
-                int clstampStart = jsRaw.IndexOf(clstampStartMagic);
-                if (clstampStart == -1)
+                gotFriendsJsClstamp = Utils.TryScrapeClstampFieldFromFriendsJsJavascript(jsRaw, out friendsJsClstamp, out string errorMessage);
+                if (gotFriendsJsClstamp)
                 {
-                    LogERROR();
-                    Log("[!] Failed to find start of CLSTAMP in friends.js [!]");
-                    manifestSelectionFailed = true;
+                    LogOK();
+                    LogLine("- CLSTMAP = " + friendsJsClstamp);
                 }
                 else
                 {
-                    // End of var declaration
-                    int clStampEnd = jsRaw.IndexOf('"', clstampStart + clstampStartMagic.Length);
-                    if (clStampEnd == -1)
-                    {
-                        LogERROR();
-                        Log("[!] Failed to find end of CLSTAMP in friends.js [!]");
-                        manifestSelectionFailed = true;
-                    }
-                    else
-                    {
-                        // CLSTAMP var value
-                        int valueStart = clstampStart + clstampStartMagic.Length;
-                        string clStamp = jsRaw.Substring(valueStart, clStampEnd - valueStart);
-
-                        long clStampLong;
-                        if (!long.TryParse(clStamp, out clStampLong))
-                        {
-                            LogERROR();
-                            Log("[!] Failed to parse CLSTAMP value \"" + clStamp + "\" to long [!]");
-                            manifestSelectionFailed = true;
-                        }
-                        else
-                        {
-                            // Report CLSTAMP
-                            LogLine("friends.js CLSTMAP: " + clStamp);
-
-
-                            //
-                            // Select a manifest
-                            //
-
-                            Log("Selecting snapshot manifest...");
-
-                            // Pick the manifest which is closest to the CLSTAMP in the friends.js file
-                            manifest = Config.GetClosestSnapshotManifestForClstamp(clStampLong, out clstampMatchType);
-                        }
-                    }
+                    LogERROR();
+                    LogLine("- " + errorMessage);
                 }
             }
 
-            if (manifestSelectionFailed)
-                LogLine("    Default fallback manifest will be used instead -> manifest for CLSTAMP " + manifest.MinCLSTAMP + " thru " + manifest.MaxCLSTAMP);
+
+
+            // --------------------------------------------------
+            //   Manifest
+            // --------------------------------------------------
+
+            // We need to select a manifest to supply us with a list of expected files to check for and download
+            // Our manifests are keyed by the CLSTAMP in the public/javascript/webui/friends.js file
+
+            SnapshotManifest manifest = Config.SnapshotManifests.OrderByDescending(a => a.MinCLSTAMP).First(); // Fallback: use the most recent manifest if we are unable to select one per friends.js
+
+
+            //
+            // Select a manifest
+            //
+
+            LogLine("Selecting snapshot manifest");
+
+            if (gotFriendsJsClstamp)
+            {
+                // Pick the manifest which is closest to the CLSTAMP in the friends.js file
+                manifest = Config.GetClosestSnapshotManifestForClstamp(friendsJsClstamp, out SnapshotManifestMatchType clstampMatchType);
+
+                string matchTypeInfo = "";
+                if (clstampMatchType == SnapshotManifestMatchType.ExactKnown) matchTypeInfo = "exact range match for remote friends.js";
+                else if (clstampMatchType == SnapshotManifestMatchType.ExactTentative) matchTypeInfo = "tenative range match for remote friends.js";
+                else if (clstampMatchType == SnapshotManifestMatchType.ClosestNewer) matchTypeInfo = "closest locally known manifest (newer than remote friends.js!)";
+                else if (clstampMatchType == SnapshotManifestMatchType.NewestKnown) matchTypeInfo = "newest locally known manifest (older than remote friends.js!)";
+                LogLine("- Using snapshot manifest for CLSTAMP "
+                    + manifest.MinCLSTAMP + " thru " + manifest.MaxCLSTAMP + (manifest.UnboundedMaxCLSTAMP ? "+" : "")
+                    + " (" + matchTypeInfo + ")"
+                );
+            }
             else
             {
-                LogOK();
-                string matchTypeInfo = "";
-                if (clstampMatchType == ManifestMatchType.ExactKnown) matchTypeInfo = "exact range match for remote friends.js";
-                else if (clstampMatchType == ManifestMatchType.ExactTentative) matchTypeInfo = "tenative range match for remote friends.js";
-                else if (clstampMatchType == ManifestMatchType.ClosestNewer) matchTypeInfo = "closest locally known manifest (newer than remote friends.js!)";
-                else if (clstampMatchType == ManifestMatchType.NewestKnown) matchTypeInfo = "newest locally known manifest (older than remote friends.js!)";
-                LogLine("Using snapshot manifest for CLSTAMP "
+                // Fallback to default manifest
+                LogLine("- Lack of CLSTAMP from friends.js means default fallback manifest will be used: "
                     + manifest.MinCLSTAMP + " thru " + manifest.MaxCLSTAMP + (manifest.UnboundedMaxCLSTAMP ? "+" : "")
-                    + "  <- " + matchTypeInfo
                 );
             }
 
-
             // Now that we have a manifest, we can start scraping everything starting from the root of the HTML
+
 
 
             // --------------------------------------------------
@@ -507,6 +485,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.C
                     DownloadValveResource(url, ResourceByteFormat.StringUtf8, ResourceTypesToDownload[ResourceCategory.Js] ? outputDir : null);
                 }
             }
+
 
 
             // --------------------------------------------------

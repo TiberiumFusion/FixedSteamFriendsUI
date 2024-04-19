@@ -29,6 +29,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
         public const int RESULT_ERROR = 1;
 
 
+
         internal static CefJsHost SharedCefJsHost { get; private set; }
 
 
@@ -61,15 +62,29 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
             //   Configuration
             // --------------------------------------------------
 
-            // Load all config files from disk at the default location
-            string defaultConfigDir = @".\Configs";
-            Config.LoadSnapshotManifestsFrom(Path.Combine(defaultConfigDir, "SnapshotManifests"), true, CatchUnhandledExceptions);
-            Config.LoadPatcherConfigsFrom(Path.Combine(defaultConfigDir, "PatcherConfigs"), true, CatchUnhandledExceptions);
-            
             // Stages to perform
             bool StageScrape = cmdArgs.Stages.Contains("s");
             bool StageAmend = cmdArgs.Stages.Contains("a");
             bool StagePatch = cmdArgs.Stages.Contains("p");
+
+            // Load all config files from disk at the default location
+            string defaultConfigDir = @".\Configs";
+
+            Config.LoadSnapshotManifestsFrom(Path.Combine(defaultConfigDir, "SnapshotManifests"), true, CatchUnhandledExceptions);
+            if (StageScrape && Config.SnapshotManifests.Count == 0)
+            {
+                LogLine("[!!!] Zero snapshot manifest files found in default config folder! [!!!]");
+                LogLine("Program cannot continue. The Scrape stage requires at least one snapshot manifest.");
+                return RESULT_ERROR;
+            }
+
+            Config.LoadPatcherConfigsFrom(Path.Combine(defaultConfigDir, "PatcherConfigs"), true, CatchUnhandledExceptions);
+            if (StagePatch && Config.PatcherConfigs.Count == 0)
+            {
+                LogLine("[!!!] Zero patcher config files found in default config folder! [!!!]");
+                LogLine("Program cannot continue. The Patcher stage requires at least one patcher config.");
+                return RESULT_ERROR;
+            }
 
             // Local output folder for the snapshot
             string outputPath = "snapshot";

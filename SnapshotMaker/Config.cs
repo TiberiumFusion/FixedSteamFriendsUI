@@ -110,37 +110,40 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
 
 
         /// <summary>
-        /// Gets a known manifest which most closely matches the supplied <paramref name="clstamp"/>.
+        /// Gets a loaded <see cref="SnapshotManifest"/> which most closely matches the supplied <paramref name="clstamp"/>.
         /// </summary>
-        /// <param name="clstamp"></param>
-        /// <param name="matchType"></param>
-        /// <returns></returns>
-        public static SnapshotManifest GetClosestSnapshotManifestForClstamp(long clstamp, out ManifestMatchType matchType)
+        /// <param name="clstamp">The CLSTAMP to query by, as a number.</param>
+        /// <param name="matchType">Indicates the type of match that was made.</param>
+        /// <returns>The matched <see cref="SnapshotManifest"/></returns>
+        public static SnapshotManifest GetClosestSnapshotManifestForClstamp(long clstamp, out SnapshotManifestMatchType matchType)
         {
-            // If we have a perfect match, use that
-            // Otherwise, use to the newest known manifest that is also closest to the provided CLSTAMP
-            // Lastly, fall back to the latest known manifest if all known manifests are older than the provided clstamp
+            // Each SnapshotManifest specifies itself to be valid for a CLSTAMP range
+            // A match here is defined as a SnapshotManifest whose CLSTAMP range includes the provided clstamp parameter
 
-            foreach (SnapshotManifest knownManifest in SnapshotManifests.OrderByDescending(a => a.MinCLSTAMP))
+            // If we have a perfect match, use that
+            // Otherwise, use to the newest manifest that is also closest to the provided CLSTAMP
+            // Lastly, fall back to the latest manifest if all manifests are older than the provided clstamp
+
+            foreach (SnapshotManifest manifest in SnapshotManifests.OrderByDescending(a => a.MinCLSTAMP))
             {
-                if (clstamp >= knownManifest.MinCLSTAMP && clstamp <= knownManifest.MaxCLSTAMP)
+                if (clstamp >= manifest.MinCLSTAMP && clstamp <= manifest.MaxCLSTAMP)
                 {
-                    matchType = ManifestMatchType.ExactKnown;
-                    return knownManifest;
+                    matchType = SnapshotManifestMatchType.ExactKnown;
+                    return manifest;
                 }
-                else if (clstamp >= knownManifest.MinCLSTAMP && knownManifest.UnboundedMaxCLSTAMP)
+                else if (clstamp >= manifest.MinCLSTAMP && manifest.UnboundedMaxCLSTAMP)
                 {
-                    matchType = ManifestMatchType.ExactTentative;
-                    return knownManifest;
+                    matchType = SnapshotManifestMatchType.ExactTentative;
+                    return manifest;
                 }
-                else if (clstamp >= knownManifest.MinCLSTAMP)
+                else if (clstamp >= manifest.MinCLSTAMP)
                 {
-                    matchType = ManifestMatchType.ClosestNewer;
-                    return knownManifest;
+                    matchType = SnapshotManifestMatchType.ClosestNewer;
+                    return manifest;
                 }
             }
 
-            matchType = ManifestMatchType.NewestKnown;
+            matchType = SnapshotManifestMatchType.NewestKnown;
             return SnapshotManifests.Last();
         }
 
@@ -166,6 +169,43 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
         public static void LoadPatcherConfigsFrom(string directoryPath, bool deep = true, bool ignoreExceptions = false)
         {
             PatcherConfigs.AddRange(LoadJsonConfigsFromDirectory<PatcherConfig>(directoryPath, deep, ignoreExceptions));
+        }
+
+
+        /// <summary>
+        /// Gets a loaded <see cref="PatcherConfig"/> which most closely matches the supplied <paramref name="clstamp"/>.
+        /// </summary>
+        /// <param name="clstamp">The CLSTAMP to query by, as a number.</param>
+        /// <returns>The matched <see cref="PatcherConfig"/></returns>
+        public static PatcherConfig GetClosestPatcherConfigForClstamp(long clstamp)
+        {
+            // Patcher configs are currently designed only for a specific certain CLSTAMP, since they take magnitudes more time to create and test than SnapshotManifests
+            // A match here is defined as the PatcherConfig whose CLSTAMP exactly matches the provided clstamp param
+
+            // If we have a perfect match, use that
+            // Otherwise, use to the newest config that is also closest to the provided CLSTAMP
+            // Lastly, fall back to the latest config if all configs are older than the provided clstamp
+
+            PatcherConfig curMatch = null;
+
+            IEnumerable<PatcherConfig> configsNewestToOldest = PatcherConfigs.OrderByDescending(a => a.TargetCLSTAMP);
+
+            foreach (PatcherConfig config in configsNewestToOldest)
+            {
+                if (   curMatch == null
+                    || ( config.TargetCLSTAMP >= clstamp && (clstamp - config.TargetCLSTAMP) < (clstamp - curMatch.TargetCLSTAMP) )
+                    )
+                {
+                    curMatch = config;
+                }
+            }
+
+            if (curMatch == null)
+            {
+                curMatch = configsNewestToOldest.First();
+            }
+
+            return curMatch;
         }
 
     }

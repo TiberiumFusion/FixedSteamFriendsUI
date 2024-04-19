@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.CefJsProvider;
 using static TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Helpers;
@@ -80,6 +81,46 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.PatchSnaps
 
 
                 //
+                // Validate and read in file
+                //
+
+                string targetJsPath = "public/javascript/webui/friends.js";
+
+                string targetJsPathFullPath = QualifyPathWebFile(snapshotDirectoryPath, targetJsPath);
+                if (!File.Exists(targetJsPathFullPath))
+                    throw new FileNotFoundException("Rewrite target \"" + targetJsPath + "\" does not exist in snapshot directory \"" + snapshotDirectoryPath + "\"", targetJsPath);
+
+                string sourceJs = File.ReadAllText(GetPathForHighestIncrementOfFile(targetJsPathFullPath), Encoding.UTF8);
+
+
+                //
+                // Scrape CLSTAMP
+                //
+
+                long clstamp = -1;
+                bool gotClstamp = Utils.TryScrapeClstampFieldFromFriendsJsJavascript(sourceJs, out clstamp, out string clstampErrorMessage);
+                if (!gotClstamp)
+                    LogLine("[!] Failed to scrape CLSTAMP from friends.js [!]");
+
+
+                //
+                // Get patcher configuration
+                //
+
+                LogLine("Selecting patcher config");
+
+                PatcherConfig config = Config.PatcherConfigs.OrderByDescending(a => a.TargetCLSTAMP).First(); // default fallback: newest patch config
+
+                if (gotClstamp)
+                {
+                    config = Config.GetClosestPatcherConfigForClstamp(clstamp);
+                    LogLine("- Using patcher config for CLSTAMP " + config.TargetCLSTAMP);
+                }
+                else
+                    LogLine("- Lack of CLSTAMP from friends.js means default fallback patcher config will be used");
+
+
+                //
                 // Ensure our cef js host is initialized
                 //
 
@@ -88,19 +129,10 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.PatchSnaps
 
 
                 //
-                // Send the source javascript to our babel-powered rewriter in the cef js host
+                // Send the source javascript to our typescript-powered rewriter in the cef js host
                 //
 
-                string targetJsPath = "public/javascript/webui/friends.js";
-
                 Log("Rewriting \"" + targetJsPath + "\"...");
-
-                // Validate and read in file
-                string targetJsPathFullPath = QualifyPathWebFile(snapshotDirectoryPath, targetJsPath);
-                if (!File.Exists(targetJsPathFullPath))
-                    throw new FileNotFoundException("Rewrite target \"" + targetJsPath + "\" does not exist in snapshot directory \"" + snapshotDirectoryPath + "\"", targetJsPath);
-
-                string sourceJs = File.ReadAllText(GetPathForHighestIncrementOfFile(targetJsPathFullPath), Encoding.UTF8);
 
                 // Rewrite the javascript
                 string rewrittenJs = null;

@@ -61,7 +61,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot
         }
     }
 
-    public enum ManifestMatchType
+    public enum SnapshotManifestMatchType
     {
         Any,
         ExactKnown,

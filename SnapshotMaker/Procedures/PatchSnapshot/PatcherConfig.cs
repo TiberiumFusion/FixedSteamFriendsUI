@@ -18,6 +18,11 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.PatchSnaps
         public long Version;
 
         /// <summary>
+        /// Target version of steam-chat.com for which this PatcherConfig was designed.
+        /// </summary>
+        public long TargetCLSTAMP;
+
+        /// <summary>
         /// Configuration for the SnapshotMaker.TsJsRewriter library used to rewrite the inner friends.js file.
         /// </summary>
         /// <remarks>
