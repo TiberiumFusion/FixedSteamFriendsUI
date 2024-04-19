@@ -14,6 +14,11 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot
     public class SnapshotManifest
     {
         /// <summary>
+        /// For future use.
+        /// </summary>
+        public long Version;
+
+        /// <summary>
         /// Minimum version of steam-chat.com for which this manifest is known to be valid.
         /// </summary>
         public long MinCLSTAMP;
