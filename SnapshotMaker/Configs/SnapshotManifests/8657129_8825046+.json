@@ -1,9 +1,9 @@
 {
 
-    "Version":  1,
+    "Version": 1,
 
-    "MinCLSTAMP": 8657129, // 2024-01-26
-    "MaxCLSTAMP": 8811541, // 2024-04-10
+    "MinCLSTAMP": 8657129, // ca 2024-01-26
+    "MaxCLSTAMP": 8825046, // ca 2024-04-18
     "UnboundedMaxCLSTAMP": true,
 
     "ResourcesByCategory":

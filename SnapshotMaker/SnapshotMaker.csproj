@@ -116,10 +116,10 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="app.manifest" />
-    <None Include="Configs\PatcherConfigs\8811541.json" />
+    <None Include="Configs\PatcherConfigs\8825046.json" />
     <None Include="Directory.Build.props" />
     <None Include="packages.config" />
-    <None Include="Configs\SnapshotManifests\8657129_8811541+.json" />
+    <None Include="Configs\SnapshotManifests\8657129_8825046+.json" />
     <None Include="Configs\SnapshotManifests\8622903_8636951.json" />
     <None Include="Configs\SnapshotManifests\8200419_8601984.json" />
   </ItemGroup>
