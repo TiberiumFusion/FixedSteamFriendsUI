@@ -24,11 +24,11 @@
             "public/javascript/webui/libraries_cm.js",
             "public/javascript/webui/steammessages.js",
             
-            "public/javascript/webui/broadcastapp.js", // // In friends.js; in the  "javascript/webui/" + ({ ...  block
+            "public/javascript/webui/broadcastapp.js", // In friends.js; in the  "javascript/webui/" + ({ ...  block
             "public/javascript/webui/navevents.js", // ditto
             "public/javascript/webui/noisegate-audio-worklet.js", // In friends.js nearly verbatim
             
-            "public/javascript/webui/2388.js",
+            "public/javascript/webui/2388.js", // In friends.js; in the  "javascript/webui/" + ({ ...  block
 
             // Items without comments are directly referenced in the src="" attribute of the root html's <script> tags
         ],
