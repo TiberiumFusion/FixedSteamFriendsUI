@@ -116,6 +116,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="app.manifest" />
+    <None Include="Configs\PatcherConfigs\8601984.json" />
     <None Include="Configs\PatcherConfigs\8825046.json" />
     <None Include="Directory.Build.props" />
     <None Include="packages.config" />
