@@ -56,10 +56,12 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
             // Cef is *not* initialized yet. Each procedure can call CefJsHost.Initialize() if it needs the cef js host. This will instantiate cef and prepare it for work.
 
 
-
             // --------------------------------------------------
             //   Configuration
             // --------------------------------------------------
+
+            // Load snapshot manifests from disk
+            SnapshotManifest.LoadManifests(@".\SnapshotManifests", CatchUnhandledExceptions);
 
             // Stages to perform
             bool StageScrape = cmdArgs.Stages.Contains("s");
