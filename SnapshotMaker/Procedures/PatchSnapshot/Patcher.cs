@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.CefJsProvider;
+using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.CefJsProvider.Apis;
 using static TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Helpers;
 
 namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.PatchSnapshot
@@ -133,7 +134,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.PatchSnaps
                 // Send the source javascript and config to our typescript-powered rewriter in the cef js host
                 //
 
-                Log("Rewriting \"" + targetJsPath + "\"...");
+                LogLine("\nRewriting \"" + targetJsPath + "\"...");
 
                 // Rewrite the javascript
                 string rewrittenJs = null;
@@ -143,35 +144,78 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.PatchSnaps
                 }
                 catch (CefSharpJavascriptEvalExceptionException e)
                 {
+                    LogLine("...FAILED");
+                    LogLine("[!!!] JS threw an exception [!!!]");
+                    LogLine(e.ToString());
+                    goto TaskEnd; // Swallow exceptions and skip to the next task
+                }
+                catch (CefSharpJavascriptEvalFailureException e)
+                {
+                    LogLine("...FAILED");
+                    LogLine("[!!!] JS experienced a non-halting eval failure [!!!]");
+                    LogLine(e.ToString());
+                    goto TaskEnd;
+                }
+
+                string writeToDiskJs = rewrittenJs;
+
+
+                //
+                // Run the source javascript back through prettier.io to reformat it
+                //
+
+                Log("\nReformatting rewritten js with prettier.io...");
+
+                string reformatedRewrittenJs = null;
+                try
+                {
+                    reformatedRewrittenJs = cefJsHost.ApiJsDeMinifier.DeMin(rewrittenJs);
+                }
+                catch (CefSharpJavascriptEvalExceptionException e)
+                {
                     LogERROR();
                     LogLine("[!!!] JS threw an exception [!!!]");
                     LogLine(e.ToString());
-                    goto AfterWriteToDisk; // Swallow exceptions and continue
                 }
                 catch (CefSharpJavascriptEvalFailureException e)
                 {
                     LogERROR();
                     LogLine("[!!!] JS experienced a non-halting eval failure [!!!]");
                     LogLine(e.ToString());
-                    goto AfterWriteToDisk;
+                }
+                catch (JsDeMinifier.PretterIoFailureException e)
+                {
+                    LogERROR();
+                    LogLine("[!!!] prettier.io returned null [!!!]");
+                    LogLine(e.ToString());
                 }
 
+                if (reformatedRewrittenJs == null)
+                    LogLine("Originally formatted rewritten JS will be used instead");
+                else
+                    writeToDiskJs = reformatedRewrittenJs;
+
+
+                //
                 // Write modified js to disk
+                //
+                
+                Log("\nWriting to disk...");
+
                 try
                 {
-                    WriteModifiedFileUtf8(targetJsPathFullPath, rewrittenJs, ModifiedFileWriteMode, incrementNameSuffix: "patch");
+                    WriteModifiedFileUtf8(targetJsPathFullPath, writeToDiskJs, ModifiedFileWriteMode, incrementNameSuffix: "patch");
+                    LogOK();
                 }
                 catch (Exception e)
                 {
-                    LogERROR();
                     LogLine("[!!!] An unhandled exception occurred while writing the rewritten javascript back to the disk [!!!]");
                     LogLine(e.ToString());
-                    goto AfterWriteToDisk;
+                    goto TaskEnd;
                 }
 
-                LogOK();
 
-                AfterWriteToDisk:;
+                TaskEnd:;
             }
 
         }
