@@ -11,7 +11,7 @@ using CefSharp;
 using CefSharp.OffScreen;
 using HtmlAgilityPack;
 using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.CefJsProvider;
-using static TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.CefJsProvider.Apis.JsDeMinifier;
+using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.CefJsProvider.Apis;
 using static TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Helpers;
 using static TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Helpers.HtmlAgilityPack;
 
@@ -269,7 +269,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.A
                             LogLine(e.ToString());
                             continue;
                         }
-                        catch (PretterIoFailureException e)
+                        catch (JsDeMinifier.PretterIoFailureException e)
                         {
                             LogERROR();
                             LogLine("[!!!] prettier.io returned null [!!!]");
