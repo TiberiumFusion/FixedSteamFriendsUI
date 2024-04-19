@@ -211,10 +211,13 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
             //   Snapshot complete and ready for use
             // --------------------------------------------------
 
-            Log("\nSnapshot Maker :: Finished at " + DateTime.Now.ToString("G"));
+            LogLine("\nSnapshot Maker :: Finished at " + DateTime.Now.ToString("G"));
 
             if (cmdArgs.WriteLogFileToSnapshot)
                 WriteLogToFile(Path.Combine(outputPath, logFileName));
+
+
+            LogLine("");
 
 
             // --------------------------------------------------
