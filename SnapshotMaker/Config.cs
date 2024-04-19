@@ -193,7 +193,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
             foreach (PatcherConfig config in configsNewestToOldest)
             {
                 if (   curMatch == null
-                    || ( config.TargetCLSTAMP >= clstamp && (clstamp - config.TargetCLSTAMP) < (clstamp - curMatch.TargetCLSTAMP) )
+                    || ( config.TargetCLSTAMP >= clstamp && (config.TargetCLSTAMP - clstamp) < (curMatch.TargetCLSTAMP - clstamp) )
                     )
                 {
                     curMatch = config;
