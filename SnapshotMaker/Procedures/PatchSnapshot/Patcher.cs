@@ -170,6 +170,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.PatchSnaps
                 try
                 {
                     reformatedRewrittenJs = cefJsHost.ApiJsDeMinifier.DeMin(rewrittenJs);
+                    LogOK();
                 }
                 catch (CefSharpJavascriptEvalExceptionException e)
                 {
