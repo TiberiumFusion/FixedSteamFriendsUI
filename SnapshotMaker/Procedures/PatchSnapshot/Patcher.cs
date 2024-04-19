@@ -64,6 +64,9 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.PatchSnaps
 
         public void PatchSteamchatDotComSnapshot(string snapshotDirectoryPath)
         {
+            // todo: eventually add root html patching, once we reach that stage of consolidation of the pipeline
+
+
             // --------------------------------------------------
             //   Patch inner friends.js
             // --------------------------------------------------
