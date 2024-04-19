@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CefSharp;
 using CefSharp.OffScreen;
+using Newtonsoft.Json;
 using static TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Helpers;
 
 namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.CefJsProvider.Apis
@@ -58,14 +60,16 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.CefJsProvider.Apis
         //
 
         /// <summary>
-        /// Rewrites portions of steam-chat.com/public/javascript/webui/friends.js. Inclues 1) automatic patching of the various patch locations, and 2) marking of patch locations that require a human.
+        /// Rewrites portions of steam-chat.com/public/javascript/webui/friends.js, per the provided patch definitions configuration, using the SnapshotMaker.TsJsRewriter program.
         /// </summary>
         /// <param name="sourceJs">The friends.js javascript code to rewrite.</param>
-        /// <returns>A string containing the rewritten friends.js javascript code.</returns>
-        public string Rewrite(string sourceJs)
+        /// <param name="tsJsRewriterConfig">Configuration object required by the TsJsRewriter. Defines patches and their configuration.</param>
+        /// <returns>The rewritten javascript string.</returns>
+        public string Rewrite(string sourceJs, ExpandoObject tsJsRewriterConfig)
         {
             // Same interop pattern as the JsDeMinifier
-            Jib.Input = sourceJs;
+            Jib.InputJavascript = sourceJs;
+            Jib.InputTsJsRewriterConfigJson = JsonConvert.SerializeObject(tsJsRewriterConfig);
 
             // Rewrite the javascript
             Task<JavascriptResponse> scriptTask = CefBrowser.EvaluateScriptAsync(@"ValveFriendsJsRewriter.Rewrite();");
@@ -81,23 +85,11 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.CefJsProvider.Apis
             while (!Jib.GotResult) { } // insurance against slow/sloppy cefsharp async marshalling from js -> c#
 
             object rewriteResult = Jib.Result;
-            //if (prettierResult == null)
-            //    throw new PretterIoFailureException(sourceJs);
 
             string rewrittenJs = (string)rewriteResult; // ValveFriendsJsRewriter.Rewrite() returns a string
 
             return rewrittenJs;
         }
-        /*
-        public class PretterIoFailureException : Exception
-        {
-            public string InputJavascriptString { get; private set; }
-            public PretterIoFailureException(string inputJavascriptString)
-            {
-                InputJavascriptString = inputJavascriptString;
-            }
-        }
-        */
 
 
         // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -112,21 +104,23 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.CefJsProvider.Apis
             // C# -> JS
             //
 
-            public object Input; // The data JS needs, assigned here in C#
-            public object GetInput() // JS calls this to get that data
-            {
-                return Input;
-            }
+            public string InputJavascript;
+            public string GetInputJavascript() { return InputJavascript; }
+
+
+            public string InputTsJsRewriterConfigJson;
+            public string GetInputTsJsRewriterConfigJson() { return InputTsJsRewriterConfigJson; }
+
 
             //
             // JS -> C#
             //
 
-            public object Result; // The data we want from JS
+            public string Result; // The data we want from JS
             public bool GotResult = false;
-            public void SetResult(object result) // JS calls this to set that data
+            public void SetResult(string result) // JS calls this to set that data
             {
-                Result = result;
+                Result = result; // JS return is the rewritten javascript string
                 GotResult = true;
             }
         }

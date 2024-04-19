@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -129,7 +130,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.PatchSnaps
 
 
                 //
-                // Send the source javascript to our typescript-powered rewriter in the cef js host
+                // Send the source javascript and config to our typescript-powered rewriter in the cef js host
                 //
 
                 Log("Rewriting \"" + targetJsPath + "\"...");
@@ -138,22 +139,24 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.PatchSnaps
                 string rewrittenJs = null;
                 try
                 {
-                    rewrittenJs = cefJsHost.ApiValveFriendsJsRewriter.Rewrite(sourceJs);
+                    rewrittenJs = cefJsHost.ApiValveFriendsJsRewriter.Rewrite(sourceJs, config.TsJsRewriterConfig);
                 }
                 catch (CefSharpJavascriptEvalExceptionException e)
                 {
                     LogERROR();
                     LogLine("[!!!] JS threw an exception [!!!]");
                     LogLine(e.ToString());
+                    goto AfterWriteToDisk; // Swallow exceptions and continue
                 }
                 catch (CefSharpJavascriptEvalFailureException e)
                 {
                     LogERROR();
                     LogLine("[!!!] JS experienced a non-halting eval failure [!!!]");
                     LogLine(e.ToString());
+                    goto AfterWriteToDisk;
                 }
 
-                // Write deminified js to disk
+                // Write modified js to disk
                 try
                 {
                     WriteModifiedFileUtf8(targetJsPathFullPath, rewrittenJs, ModifiedFileWriteMode, incrementNameSuffix: "patch");
@@ -163,9 +166,12 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.PatchSnaps
                     LogERROR();
                     LogLine("[!!!] An unhandled exception occurred while writing the rewritten javascript back to the disk [!!!]");
                     LogLine(e.ToString());
+                    goto AfterWriteToDisk;
                 }
 
                 LogOK();
+
+                AfterWriteToDisk:;
             }
 
         }

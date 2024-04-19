@@ -73,26 +73,55 @@
         let jib = api.GetJib();
         let jtb = api.GetJtb();
 
-        //console.log("Check JIB", jib);
-        //console.log(jib.GetInput, jib.SetResult);
 
+        //
+        // Get input data from C#
+        //
 
-        jtb.Trace("test1");
+        // Input javascript to rewrite
+        let inputJsCodeString = await jib.GetInputJavascript();
         
-        // Input js code string to rewrite
-        let inputJsCodeString = await jib.GetInput();
+        // SnapshotMaker.TsJsRewriter config
+        // CefSharp fails to marshal ExpandoObjects from C# -> JS correctly (they become arrays of item key-value tuples, instead of an actual object)
+        // So we send the config over as a json string and then have to parse it back into an object here
+        let inputTsJsRewriterConfigJson = await jib.GetInputTsJsRewriterConfigJson();
+        let inputTsJsRewriterConfig = JSON.parse(inputTsJsRewriterConfigJson);
 
 
+        //
+        // Extra config
+        //
 
-        jtb.Trace("test2");
+        // Enable traces from the rewriter
+        SnapshotMakerTsJsRewriter.EnableTraces = true;
 
-        jtb.Trace("test3", "and more");
+        // Set the trace handler to our own message printer
+        SnapshotMakerTsJsRewriter.UserTraceHandler = jtb.Trace;
 
-        // todo: rewrite js
-        let rewrittenJsCodeString = api.RewriteInternal(inputJsCodeString);
 
-        // Send rewritten code back to C#
-        jib.SetResult(rewrittenJsCodeString);
+        //
+        // Main
+        //
+
+        // Prepare the patches defined in the config
+        SnapshotMakerTsJsRewriter.DefinePatches(inputTsJsRewriterConfig);
+
+        // Rewrite the javascript
+        let rewriteResult = SnapshotMakerTsJsRewriter.PatchJavascript(inputJsCodeString);
+        // return is a SnapshotMaker.TsJsRewriter.PatchJavascriptResult object
+
+
+        //
+        // Distill rewrite result & return
+        //
+
+        // PatchJavascriptResult.AppliedPatches[].Applications[].OriginalNode and .PatchedNode are both ts.Nodes with parent references, meaning that the PatchJavascriptResult has cyclical references and fails to stringify to json with the default json library
+        // CefSharp is not smart enough to detect this and silently aborts the marshalling process and provides a null instead. Very helpful.
+        // The solution is to extract the non-reference data and return that instead, which CefSharp will correctly marshal
+
+        // For now, the C# caller only really cares about the rewritten javascript string. The statistics about the rewrite operation are not needed.
+        // So, we will simply return just the rewritten javascript string
+        jib.SetResult(rewriteResult.JavascriptString);
     }
 
 })();
