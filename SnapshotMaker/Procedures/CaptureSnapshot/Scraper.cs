@@ -278,11 +278,11 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.C
             bool manifestSelectionFailed = false;
             SnapshotManifest.ManifestMatchType clstampMatchType = SnapshotManifest.ManifestMatchType.Any;
 
-            Log("Selecting snapshot manifest...");
-
             //
             // Get friends.js file
             //
+
+            LogLine("Downloading & inspecting friends.js");
 
             HtmlNode headScriptFriendsJs = rhHeadScripts.Where(a =>
             {
@@ -355,9 +355,15 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.C
                         }
                         else
                         {
+                            // Report CLSTAMP
+                            LogLine("friends.js CLSTMAP: " + clStamp);
+
+
                             //
                             // Select a manifest
                             //
+
+                            Log("Selecting snapshot manifest...");
 
                             // Pick the manifest which is closest to the CLSTAMP in the friends.js file
                             manifest = SnapshotManifest.GetClosestManifestForClstamp(clStampLong, out clstampMatchType);
