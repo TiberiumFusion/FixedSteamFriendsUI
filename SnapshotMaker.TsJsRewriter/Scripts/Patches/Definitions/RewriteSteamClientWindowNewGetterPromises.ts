@@ -1,6 +1,6 @@
 ﻿// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-//    Compat shim for SteamClient.Browser.GetBrowserID()
+//    Rewrite e.SteamClient.Window.*().then() promise syntax to old callback syntax
 /*
 
     ----- Target Examples -----
@@ -14,7 +14,10 @@
 			n(e);
 		});
 
-    2. 
+    2.  (8811541: line 47421)
+        i.SteamClient.Window.GetWindowRestoreDetails().then((e) => { ...
+      =>
+        i.SteamClient.Window.GetWindowRestoreDetails((e) => { ...
 
     
     ----- Notes -----
@@ -25,7 +28,7 @@
     
     Reconciling this change means rewriting all the  method().then(() => {})  call sites in 8811541+ to the old  method(then(() => {})  syntax which works on our target Steam clients.
 
-    Related: see patch <todo>.
+    >> Related: see patch RewriteEarly2024NewWindowGettersUsage.
 
 */
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -113,7 +113,7 @@ var SnapshotMakerTsJsRewriter;
         // AST traverse occurs within a "transform" operation
         // This method is passed to ts.transform(). Its sole argument is supplied by ts.transform().
         let megatron = function (context) {
-            // Ugly js nested method, which somehow obtains its sole argument from the ts.transform() caller
+            // Ugly js nested method that must be returned from this transformer init method. Its sole argument is supplied by the actual transform process.
             // This is the actual AST node traversal, starting with the ts.SourceFile
             return function (sourceFile) {
                 let visitor = function (node) {
@@ -221,7 +221,7 @@ var SnapshotMakerTsJsRewriter;
                         let oldJs = SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, node, sourceFile);
                         SnapshotMakerTsJsRewriter.Trace("  - Original JS: ", oldJs);
                         let patchedNode = this.Patch(context, sourceFile, node, detectionInfo.Data);
-                        let newJs = SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, patchedNode, sourceFile);
+                        let newJs = SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, patchedNode, patchedNode.getSourceFile());
                         SnapshotMakerTsJsRewriter.Trace("  - Patched JS:  ", newJs);
                         return patchedNode;
                         // Only the first matched detection will result in applying patch to the visited note. Any remaining detections are skipped.
@@ -298,6 +298,7 @@ var SnapshotMakerTsJsRewriter;
                 new Patches.Definitions.AddHtmlWebuiConfigOnLoadHookCPDF(),
                 new Patches.Definitions.DisableContenthashGetParamOnFetchesCPDF(),
                 new Patches.Definitions.RewriteSteamClientWindowNewGetterPromisesCPDF(),
+                new Patches.Definitions.RewriteEarly2024NewWindowGettersUsageCPDF(),
             ];
             for (let factory of factories)
                 RegisterPatchDefinitionFactoryInstance(factory);
@@ -1268,7 +1269,177 @@ var SnapshotMakerTsJsRewriter;
 })(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-//    Compat shim for SteamClient.Browser.GetBrowserID()
+//    Rewrite bare this.m_popup.SteamClient.Window.*() promise getters to old promise creator syntax
+/*
+
+    ----- Targets -----
+
+    1.  (8811541: line 33706)
+        return (0, v.w3)(this.m_popup, "Window.GetWindowRestoreDetails") && !this.m_popup.closed ? this.m_popup.SteamClient.Window.GetWindowRestoreDetails() : Promise.resolve("");
+      =>
+        return (0, v.w3)(this.m_popup, "Window.GetWindowRestoreDetails") && !this.m_popup.closed
+            ? new Promise((e, t) => {
+                    this.m_popup.SteamClient.Window.GetWindowRestoreDetails((t) => {
+                        e(t);
+                    });
+                })
+            : Promise.resolve("");
+
+    2.  (8811541: line 33709)
+        return (0, v.w3)(this.m_popup, "Window.IsWindowMinimized") && !this.m_popup.closed ? this.m_popup.SteamClient.Window.IsWindowMinimized() : Promise.resolve(!1);
+      =>
+        return (0, v.w3)(this.m_popup, "Window.IsWindowMinimized") && !this.m_popup.closed
+            ? new Promise((e, t) => {
+                    this.m_popup.SteamClient.Window.IsWindowMinimized((t) => {
+                        e(t);
+                    });
+                })
+            : Promise.resolve(!1);
+
+    3.  (8811541: line 33712)
+        return (0, v.w3)(this.m_popup, "Window.IsWindowMaximized") && !this.m_popup.closed ? this.m_popup.SteamClient.Window.IsWindowMaximized() : Promise.resolve(!1);
+      =>
+        return (0, v.w3)(this.m_popup, "Window.IsWindowMaximized") && !this.m_popup.closed
+            ? new Promise((e, t) => {
+                    this.m_popup.SteamClient.Window.IsWindowMaximized((t) => {
+                        e(t);
+                    });
+                })
+            : Promise.resolve(!1);
+
+    
+    ----- Notes -----
+    
+    Some time between 8601984 and 8811541, Valve released a Steam client update which changed how the SteamClient.Window.*() getter methods work.
+    - In 8601984, these methods require a callback argument and return nothing
+    - Circa 8811541, these methods now have zero arguments and return a promise
+    
+    Here we are patching a specific component of friends.js which uses these functions.
+
+    Check the Targets list above. The original version of each item is the circa 8811541 version. The patched version of each item is its circa 8601984 equivalent.
+
+    Since circa 8811541 blindly assumes these SteamClient.Window.* returns promises now despite the fact they don't do that in our target Steam clients, we have to reintroduce the old 8601984 logic. Our target Steam clients take a callback as an arg and return nothing. 8601984 understands this and uses it correctly, so we can simply copy+paste the 8601984 logic and everything works.
+
+    This change to the Steam client and steam-chat.com seems very abrupt. 8811541 is ~4 months after 8601984. 8601984 is circa the December 2023 Steam client. And there is no dual logic in 8601984 to use both the old style and new style Window.* methods.
+    From this information, we can infer that Valve very quickly rammed a Steam client down users' throats between Dec 2023 and Apr 2024 which changed the SteamClient.Window.* methods to return promises, and accordingly very quickly updated steam-chat.com to exclusively use the changed methods without any dual logic to continue supporting Steam clients yet to update.
+    This is now part of a growing pile of evidence to Valve's disregard for users' who do not immediately take Steam client updates and thus get screwed by unconditional breaking changes in very small timeframes previously unheard of.
+
+    >> Related: see patch RewriteSteamClientWindowNewGetterPromises.
+
+*/
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// <reference path="../Patches.ts" />
+// Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration" (see: https://stackoverflow.com/a/48189989/2489580)
+var SnapshotMakerTsJsRewriter;
+(function (SnapshotMakerTsJsRewriter) {
+    var Patches;
+    (function (Patches) {
+        var Definitions;
+        (function (Definitions) {
+            class RewriteEarly2024NewWindowGettersUsageCPDF extends Patches.ConfiguredPatchDefinitionFactory {
+                constructor() {
+                    super(...arguments);
+                    this.PatchIdName = "RewriteEarly2024NewWindowGettersUsage";
+                }
+                CreatePatchDefinition(config) {
+                    return new Patches.ConfiguredPatchDefinition(this.PatchIdName, config, 
+                    // ____________________________________________________________________________________________________
+                    //
+                    //     Patch
+                    // ____________________________________________________________________________________________________
+                    //
+                    (context, sourceFile, node, detectionInfoData) => {
+                        let tnode = detectionInfoData.TypedNode; // e.g.  this.m_popup.SteamClient.Window.IsWindowMaximized()
+                        /* Rewrite the target site like so:
+                            new Promise((e, t) => {
+                                this.m_popup.SteamClient.Window.IsWindowMaximized((t) => {
+                                    e(t);
+                                });
+                            })
+                        */
+                        let memberToCallAccessJs = SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, tnode.expression, sourceFile);
+                        let snippetJs = `
+                        new Promise((e, t) => {
+							${memberToCallAccessJs}((t) => {
+								e(t);
+							});
+						})
+                    `;
+                        let snippetSourceFile = ts.createSourceFile("snippet.js", snippetJs, ts.ScriptTarget.ES2015, /*setParentNodes*/ true, ts.ScriptKind.JS);
+                        // setParentNodes MUST be true, otherwise typescript fucks up and fails to associate the nodes with their SourceFile, which causes ts.addSyntheticLeadingComment() to always complain and throw due to the missing source file
+                        let patchNode = snippetSourceFile.statements[0].expression; // Extract the node we want from the implicit statement wrapper it's inside of
+                        if (SnapshotMakerTsJsRewriter.IncludeOldJsCommentAtPatchSites)
+                            ts.addSyntheticLeadingComment(patchNode, ts.SyntaxKind.MultiLineCommentTrivia, SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, node, sourceFile), false);
+                        // Note: currently there is some screw up happening where typescript is duplicating the leading comment (i.e. valve copyright notice) of the sourceFile to the start of each emitted node using the node from this snippet file
+                        // After hours of searching and tests, there is no clear fix to this, and the lack of quality information on the internet regarding the typescript compiler does not help at all
+                        // It is obnoxious but does not break anything, so it gets to stay for now. I'd like to fix it eventually.
+                        return patchNode;
+                    }, 
+                    // ____________________________________________________________________________________________________
+                    //
+                    //     Detections
+                    // ____________________________________________________________________________________________________
+                    //
+                    [
+                        (context, sourceFile, node) => {
+                            if (node.kind == ts.SyntaxKind.CallExpression) // e.g.  this.m_popup.SteamClient.Window.IsWindowMaximized()
+                             {
+                                let tnode = node;
+                                // Validate call arguments
+                                if (tnode.arguments.length == 0) {
+                                    // Validate name of member to call
+                                    if (tnode.expression.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  this.m_popup.SteamClient.Window.IsWindowMaximized
+                                     {
+                                        let memberToCall = tnode.expression;
+                                        if (memberToCall.name.kind == ts.SyntaxKind.Identifier) // e.g.  IsWindowMaximized
+                                         {
+                                            let memberToCallName = memberToCall.name;
+                                            let matchedTarget = config.Targets.find(item => item.NameOfMemberCallToRewrite == memberToCallName.escapedText);
+                                            if (matchedTarget != null) {
+                                                // Validate immediate qualification of member to call
+                                                if (memberToCall.expression.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  this.m_popup.SteamClient.Window
+                                                 {
+                                                    let memberToCallAccess = memberToCall.expression;
+                                                    if (memberToCallAccess.name.kind == ts.SyntaxKind.Identifier && memberToCallAccess.name.escapedText == "Window") {
+                                                        // Validate that the return value of the called member is not dereferenced
+                                                        //   Yes: this.m_popup.SteamClient.Window.GetWindowRestoreDetails()
+                                                        //   No:  this.m_popup.SteamClient.Window.GetWindowRestoreDetails().then(() => { ... })
+                                                        let tnodeParent = tnode.parent;
+                                                        if (tnodeParent != null && tnode.parent.kind != ts.SyntaxKind.PropertyAccessExpression) // this is not a comprehensive check and is only valid for this local target site
+                                                         {
+                                                            // Validate the location of this method call belonging to the matched target method definition
+                                                            let method = Patches.AstFindFirstAncestor(tnode, ts.SyntaxKind.MethodDeclaration);
+                                                            if (method != null) {
+                                                                let methodT = method;
+                                                                if (methodT.name.kind == ts.SyntaxKind.Identifier) {
+                                                                    let methodName = methodT.name;
+                                                                    if (methodName.escapedText == matchedTarget.OwningMethodName) {
+                                                                        // Highly likely match
+                                                                        return new Patches.DetectionInfo(true, {
+                                                                            "TypedNode": tnode,
+                                                                        });
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]);
+                }
+            }
+            Definitions.RewriteEarly2024NewWindowGettersUsageCPDF = RewriteEarly2024NewWindowGettersUsageCPDF;
+        })(Definitions = Patches.Definitions || (Patches.Definitions = {}));
+    })(Patches = SnapshotMakerTsJsRewriter.Patches || (SnapshotMakerTsJsRewriter.Patches = {}));
+})(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//    Rewrite e.SteamClient.Window.*().then() promise syntax to old callback syntax
 /*
 
     ----- Target Examples -----
@@ -1282,7 +1453,10 @@ var SnapshotMakerTsJsRewriter;
             n(e);
         });
 
-    2.
+    2.  (8811541: line 47421)
+        i.SteamClient.Window.GetWindowRestoreDetails().then((e) => { ...
+      =>
+        i.SteamClient.Window.GetWindowRestoreDetails((e) => { ...
 
     
     ----- Notes -----
@@ -1293,7 +1467,7 @@ var SnapshotMakerTsJsRewriter;
     
     Reconciling this change means rewriting all the  method().then(() => {})  call sites in 8811541+ to the old  method(then(() => {})  syntax which works on our target Steam clients.
 
-    Related: see patch <todo>.
+    >> Related: see patch RewriteEarly2024NewWindowGettersUsage.
 
 */
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

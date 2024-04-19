@@ -159,7 +159,7 @@
         // This method is passed to ts.transform(). Its sole argument is supplied by ts.transform().
         let megatron: ts.TransformerFactory<ts.SourceFile> = function(context)
         {
-            // Ugly js nested method, which somehow obtains its sole argument from the ts.transform() caller
+            // Ugly js nested method that must be returned from this transformer init method. Its sole argument is supplied by the actual transform process.
             // This is the actual AST node traversal, starting with the ts.SourceFile
             return function(sourceFile)
             {

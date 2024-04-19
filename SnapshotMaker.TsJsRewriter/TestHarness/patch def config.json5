@@ -167,6 +167,26 @@
 			IdName: "RewriteSteamClientWindowNewGetterPromises",
 		},
 		
+		{
+			IdName: "RewriteEarly2024NewWindowGettersUsage",
+			Config: {
+				Targets: [
+					{
+						NameOfMemberCallToRewrite: "GetWindowRestoreDetails",
+						OwningMethodName: "GetWindowRestoreDetails",
+					},
+					{
+						NameOfMemberCallToRewrite: "IsWindowMinimized",
+						OwningMethodName: "IsMinimized",
+					},
+					{
+						NameOfMemberCallToRewrite: "IsWindowMaximized",
+						OwningMethodName: "IsMaximized",
+					},
+				]
+			}
+		},
+		
 	]
 	
 }

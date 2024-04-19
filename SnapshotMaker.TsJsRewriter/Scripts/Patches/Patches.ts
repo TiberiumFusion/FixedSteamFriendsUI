@@ -52,7 +52,7 @@ namespace SnapshotMakerTsJsRewriter.Patches
 
                     let patchedNode: ts.Node = this.Patch(context, sourceFile, node, detectionInfo.Data);
 
-                    let newJs: string = JsEmitPrinter.printNode(ts.EmitHint.Unspecified, patchedNode, sourceFile);
+                    let newJs: string = JsEmitPrinter.printNode(ts.EmitHint.Unspecified, patchedNode, patchedNode.getSourceFile());
                     Trace("  - Patched JS:  ", newJs);
 
                     return patchedNode;
@@ -160,6 +160,7 @@ namespace SnapshotMakerTsJsRewriter.Patches
             new Definitions.AddHtmlWebuiConfigOnLoadHookCPDF(),
             new Definitions.DisableContenthashGetParamOnFetchesCPDF(),
             new Definitions.RewriteSteamClientWindowNewGetterPromisesCPDF(),
+            new Definitions.RewriteEarly2024NewWindowGettersUsageCPDF(),
         ];
 
         for (let factory of factories)
