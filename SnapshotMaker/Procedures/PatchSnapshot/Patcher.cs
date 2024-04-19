@@ -107,7 +107,10 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.PatchSnaps
                 if (gotClstamp)
                     LogLine("- CLSTMAP = " + clstamp);
                 else
+                {
                     LogLine("[!] Failed to scrape CLSTAMP from friends.js [!]");
+                    LogLine("  - " + clstampErrorMessage);
+                }
 
 
                 //

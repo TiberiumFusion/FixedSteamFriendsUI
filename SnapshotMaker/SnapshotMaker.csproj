@@ -104,6 +104,7 @@
     <Compile Include="Helpers.cs" />
     <Compile Include="Procedures\AmendSnapshot\Fixer.cs" />
     <Compile Include="Procedures\CaptureSnapshot\Scraper.cs" />
+    <Compile Include="Procedures\CleanSnapshot\Cleaner.cs" />
     <Compile Include="Procedures\PatchSnapshot\Patcher.cs" />
     <Compile Include="Procedures\PatchSnapshot\PatcherConfig.cs" />
     <Compile Include="Procedures\Utils.cs" />

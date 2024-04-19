@@ -38,7 +38,10 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot
         /// </summary>
         public Dictionary<ResourceCategory, List<string>> ResourcesByCategory;
 
-        public SnapshotManifest() { }
+        public SnapshotManifest()
+        {
+            InitResourceLists();
+        }
 
         public SnapshotManifest(long clstampMin = 0, long clstampMax = 0, bool unboundedMaxCLSTAMP = false)
         {
@@ -46,10 +49,16 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot
             MaxCLSTAMP = clstampMax; // -1 means this manifest is (probably) valid for the latest steam-chat.com
             UnboundedMaxCLSTAMP = unboundedMaxCLSTAMP;
 
+            InitResourceLists();
+        }
+
+        private void InitResourceLists()
+        {
             ResourcesByCategory = new Dictionary<ResourceCategory, List<string>>();
             foreach (ResourceCategory category in Enum.GetValues(typeof(ResourceCategory)))
                 ResourcesByCategory[category] = new List<string>();
         }
+
 
         public override string ToString()
         {
@@ -58,6 +67,25 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot
                 MaxCLSTAMP,
                 UnboundedMaxCLSTAMP ? "+" : ""
             ) + "}";
+        }
+
+
+        public bool DeclaresFile(string filePath, ResourceCategory? resourceCategory = null)
+        {
+            if (resourceCategory != null)
+            {
+                List<string> filesInCategory = ResourcesByCategory[(ResourceCategory)resourceCategory];
+                return filesInCategory.Contains(filePath);
+            }
+            else
+            {
+                foreach (List<string> filesInCategory in ResourcesByCategory.Values)
+                {
+                    if (filesInCategory.Contains(filePath))
+                        return true;
+                }
+                return false;
+            }
         }
     }
 

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using CefSharp;
 using Newtonsoft.Json;
 using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.CefJsProvider;
+using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.CleanSnapshot;
 using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.PatchSnapshot;
 using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot;
 using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.AmendSnapshot;
@@ -66,12 +67,13 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
             bool StageScrape = cmdArgs.Stages.Contains("s");
             bool StageAmend = cmdArgs.Stages.Contains("a");
             bool StagePatch = cmdArgs.Stages.Contains("p");
+            bool StageClean = cmdArgs.Stages.Contains("c");
 
             // Load all config files from disk at the default location
             string defaultConfigDir = @".\Configs";
 
             Config.LoadSnapshotManifestsFrom(Path.Combine(defaultConfigDir, "SnapshotManifests"), true, CatchUnhandledExceptions);
-            if (StageScrape && Config.SnapshotManifests.Count == 0)
+            if (Config.SnapshotManifests.Count == 0 && (StageScrape || StageClean))
             {
                 LogLine("[!!!] Zero snapshot manifest files found in default config folder! [!!!]");
                 LogLine("Program cannot continue. The Scrape stage requires at least one snapshot manifest.");
@@ -79,7 +81,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
             }
 
             Config.LoadPatcherConfigsFrom(Path.Combine(defaultConfigDir, "PatcherConfigs"), true, CatchUnhandledExceptions);
-            if (StagePatch && Config.PatcherConfigs.Count == 0)
+            if (Config.PatcherConfigs.Count == 0 && StagePatch)
             {
                 LogLine("[!!!] Zero patcher config files found in default config folder! [!!!]");
                 LogLine("Program cannot continue. The Patcher stage requires at least one patcher config.");
@@ -187,8 +189,8 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
 
             if (StagePatch)
             {
-                // Automated patching of some spots that are tedious to do manually and can be automated without significant effort
-                // Notable examples include the many CDN asset fetches in friends.js and easy shim sites like tournament mode
+                // Automated patching of various patch sites in the snapshot
+                // Notable examples include the many CDN asset fetches in friends.js, shims for things like tournament mode, and fixes for breaking changes like Valve's botched xss attack dependent logic
 
                 LogLine("\n---------- |  Patching Snapshot  | ----------");
 
@@ -201,6 +203,31 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
                 {
                     LogERROR(onlyIfOpenLine: true);
                     LogLine("[!!!] An unhandled exception occurred during the patch operation [!!!]");
+                    LogLine(e.ToString());
+                    return RESULT_ERROR;
+                }
+            }
+
+
+            // --------------------------------------------------
+            //   Clean snapshot
+            // --------------------------------------------------
+
+            if (StageClean)
+            {
+                // Removes unused files from the snapshot
+
+                LogLine("\n---------- |  Cleaning Snapshot  | ----------");
+
+                try
+                {
+                    Cleaner cleaner = new Cleaner();
+                    cleaner.CleanSteamChatDotComSnapshot(outputPath);
+                }
+                catch (Exception e) when (CatchUnhandledExceptions)
+                {
+                    LogERROR(onlyIfOpenLine: true);
+                    LogLine("[!!!] An unhandled exception occurred during the clean operation [!!!]");
                     LogLine(e.ToString());
                     return RESULT_ERROR;
                 }
