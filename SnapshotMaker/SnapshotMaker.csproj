@@ -115,15 +115,20 @@
     <None Include="app.manifest" />
     <None Include="Directory.Build.props" />
     <None Include="packages.config" />
-    <None Include="Snapshot\Manifests\8657129_8811541+.json" />
-    <None Include="Snapshot\Manifests\8622903_8636951.json" />
-    <None Include="Snapshot\Manifests\8200419_8601984.json" />
+    <None Include="Config\SnapshotManifests\8657129_8811541+.json" />
+    <None Include="Config\SnapshotManifests\8622903_8636951.json" />
+    <None Include="Config\SnapshotManifests\8200419_8601984.json" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\SnapshotMaker.TsJsRewriter\combined.js">
+      <Link>CefJsProviderWebFiles\lib\TsJsRewriter\combined.js</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="CefJsProviderWebFiles\Api\ValveFriendsJsRewriter.js" />
     <Content Include="CefJsProviderWebFiles\lib\prettier%403.2.5\plugins\babel.js" />
     <Content Include="CefJsProviderWebFiles\lib\prettier%403.2.5\plugins\estree.js" />
     <Content Include="CefJsProviderWebFiles\lib\prettier%403.2.5\standalone.js" />
+    <Content Include="CefJsProviderWebFiles\lib\typescript%404.9.5\typescript.js" />
     <Content Include="CefJsProviderWebFiles\Main.html" />
     <Content Include="CefJsProviderWebFiles\Api\JsDeMinifier.js" />
   </ItemGroup>

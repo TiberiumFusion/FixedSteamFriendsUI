@@ -82,6 +82,8 @@
         // Input js code string to rewrite
         let inputJsCodeString = await jib.GetInput();
 
+
+
         jtb.Trace("test2");
 
         jtb.Trace("test3", "and more");

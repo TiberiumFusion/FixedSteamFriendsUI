@@ -61,7 +61,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
             // --------------------------------------------------
 
             // Load snapshot manifests from disk
-            SnapshotManifest.LoadManifests(@".\SnapshotManifests", CatchUnhandledExceptions);
+            SnapshotManifest.LoadManifests(@".\Config\SnapshotManifests", CatchUnhandledExceptions);
 
             // Stages to perform
             bool StageScrape = cmdArgs.Stages.Contains("s");

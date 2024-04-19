@@ -2,14 +2,17 @@
 <Project>
     
     <ItemGroup>
+        
         <Content Include="CefJsProviderWebFiles\**">
             <TargetPath>CefJsProviderWebFiles\%(RecursiveDir)\%(Filename)%(Extension)</TargetPath>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <Content Include="Snapshot\Manifests\**">
-            <TargetPath>SnapshotManifests\%(RecursiveDir)\%(Filename)%(Extension)</TargetPath>
+        
+        <Content Include="Config\SnapshotManifests\**">
+            <TargetPath>Config\SnapshotManifests\%(RecursiveDir)\%(Filename)%(Extension)</TargetPath>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+        
     </ItemGroup>
     
 </Project>
