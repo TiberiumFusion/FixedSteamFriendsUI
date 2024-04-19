@@ -44,7 +44,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
             string logFileName = string.Format( "Snapshot Maker Log - {0} (stages={1}).txt", startTime.ToString("yyyy-MM-dd HH꞉mm꞉ss.fff"), cmdArgs.Stages.ToUpper() );
 
             LogLine("Snapshot Maker (v" + Assembly.GetExecutingAssembly().GetName().Version + ") :: Started at " + startTime.ToString("G"));
-            LogLine("Args: " + (args.Length > 0 ? string.Join(" ", args) : "(none)"));
+            LogLine("Launch args: " + (args.Length > 0 ? string.Join(" ", args) : "(none)"));
 
             LogLine("");
 
@@ -68,6 +68,21 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
             bool StageAmend = cmdArgs.Stages.Contains("a");
             bool StagePatch = cmdArgs.Stages.Contains("p");
             bool StageClean = cmdArgs.Stages.Contains("c");
+
+            bool anyStageEnabled = StageScrape || StageAmend || StagePatch || StageClean;
+            if (anyStageEnabled)
+            {
+                Log("Enabled stages: ");
+                if (StageScrape) Log("S");
+                if (StageAmend) Log("A");
+                if (StagePatch) Log("P");
+                if (StageClean) Log("C");
+                LogLine("\n");
+            }
+            else
+            {
+                LogLine("[!] No stages are enabled [!]");
+            }
 
             // Load all config files from disk at the default location
             string defaultConfigDir = @".\Configs";
