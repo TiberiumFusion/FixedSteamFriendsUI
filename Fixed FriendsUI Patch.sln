@@ -8,6 +8,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Patch Files", "Patch Files\Patch Files.csproj", "{2C5398C0-EC81-41E4-A1BD-AF5544A56551}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnapshotMaker", "SnapshotMaker\SnapshotMaker.csproj", "{6817AB40-0944-4E8E-B9DD-B5FEA1F3E5B2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2574F603-4B6C-4A30-BFDD-E3BC09EEDFDF} = {2574F603-4B6C-4A30-BFDD-E3BC09EEDFDF}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnapshotMaker.TsJsRewriter", "SnapshotMaker.TsJsRewriter\SnapshotMaker.TsJsRewriter.csproj", "{2574F603-4B6C-4A30-BFDD-E3BC09EEDFDF}"
 EndProject
