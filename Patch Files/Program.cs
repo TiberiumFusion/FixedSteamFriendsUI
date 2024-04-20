@@ -129,6 +129,21 @@ namespace TiberiumFusion.FixedSteamFriendsUI.PatchFilesPackager
 
 
             //
+            // Remove some files
+            //
+
+            Console.WriteLine("Removing unnecessary files...");
+
+            // Remove snapshot maker log files
+            DirectoryInfo workingSnapshotRootDir = new DirectoryInfo(Path.Combine(buildWorkingDirPath, @"clientui\steam-chat.com-snapshot-mod"));
+            foreach (FileInfo file in workingSnapshotRootDir.GetFiles("*.txt", SearchOption.TopDirectoryOnly))
+            {
+                if (file.Name.StartsWith("Snapshot Maker Log"))
+                    file.Delete();
+            }
+
+
+            //
             // Load template directives
             //
 
