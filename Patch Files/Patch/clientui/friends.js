@@ -35,8 +35,8 @@ var TfusionPatchMetadataJson = JSON.parse(TfusionPatchMetadataJsonRaw);
 
 if (PATCH_ENABLE)
 {
-	console.log("Fixed FriendsUI v" + TfusionPatchMetadataJson.Level0.Version + " (rel " + TfusionPatchMetadataJson.Level0.ReleaseDateFriendly + ") by TiberiumFusion");
-	console.log("Patch metadata: ", TfusionPatchMetadataJson);
+	console.log("Fixed Steam FriendsUI local steam-chat.com snapshot v" + TfusionPatchMetadataJson.Level0.Version + " (released " + TfusionPatchMetadataJson.Level0.ReleaseDateFriendly + ") by TiberiumFusion");
+    console.log("Valve CLSTAMP:", TfusionPatchMetadataJson.Level0.CoreBase, ", Patch metadata:", TfusionPatchMetadataJson);
 }
 
 
