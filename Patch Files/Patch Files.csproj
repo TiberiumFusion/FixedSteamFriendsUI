@@ -73,11 +73,12 @@
     <Content Include="Patch\clientui\friends.js" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\favicon.ico" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\index.html" />
-    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\css\webui\461.css" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\css\webui\2388.css" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\css\webui\broadcastapp.css" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\css\webui\friends.css" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\images\webui\8669e97b288da32670e77181618c3dfb.png" />
-    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\461.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\2388.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\broadcastapp.js" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friends.js" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_arabic-json.js" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_brazilian-json.js" />
@@ -110,9 +111,8 @@
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_ukrainian-json.js" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_vietnamese-json.js" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\libraries.js" />
-    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\libraries\react-dom.production.min.js" />
-    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\libraries\react.production.min.js" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\libraries_cm.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\navevents.js" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\noisegate-audio-worklet.js" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_arabic-json.js" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_brazilian-json.js" />

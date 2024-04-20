@@ -1188,6 +1188,12 @@ select.blueish {
 	line-height: 32px;
 }
 
+.waiting_dialog_centered
+{
+	display: flex;
+	justify-content: center;
+}
+
 .waiting_dialog_throbber
 {
 	width: 32px;
@@ -2708,6 +2714,7 @@ body.v6 #footer_nav .popup_menu .hr{
 .shared_game_rating .game_rating_agency {
 	margin-top: 8px;
 }
+
 .shared_game_rating .game_rating_required_age {
     		font-family: "Motiva Sans", Sans-serif;
 		font-weight: normal; /* normal */
@@ -2721,15 +2728,21 @@ body.v6 #footer_nav .popup_menu .hr{
 			font-family: "Motiva Sans", Sans-serif;
 		font-weight: normal; /* normal */
 
-			margin-bottom: 5px;
-	font-size: 14px;
+			font-size: 16px;
 	color: white;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	padding: 0;
+	margin-bottom: 8px;
+	margin-top: -4px;
 }
 .shared_game_rating .game_rating_title .game_rating_banned {
 	color: red;
 }
 .shared_game_rating .game_rating_details {
 	display: flex;
+	margin-bottom: 4px;
 }
 .shared_game_rating .game_rating_icon {
 	margin-right: 10px;
@@ -2737,10 +2750,14 @@ body.v6 #footer_nav .popup_menu .hr{
 .shared_game_rating p.descriptorText {
 	margin: 0;
 
-	font-size: 11px !important;
+	font-size: 12px !important;
 	color: #c6d4df !important;
-	text-transform: uppercase;
 	line-height: 14px;
+}
+.shared_game_rating .block_title {
+	font-size: 13px;
+	color: #d3d9dd;
+	font-weight: 500;
 }
 
 /* community awards hover */
@@ -2907,7 +2924,7 @@ body.v6 #footer.china_footer {
 }
 
 body.v6 #footer_spacer.china_spacer {
-	height: 330px;
+	height: 360px;
 }
 
 .china_footer_content a, #footer .china_footer_content a {
@@ -3098,4 +3115,16 @@ html.responsive .gpfocus .ds_steam_deck_compat {
 .steam_deck_compat.unknown {
 	display: inline-block;
 	background: url('https://community.cloudflare.steamstatic.com/public/shared/images/ico/ico-deck-logo.svg') left no-repeat, url('https://community.cloudflare.steamstatic.com/public/shared/images/ico/ico-deck-unknown.svg') right no-repeat;
+}
+
+.private_app_indicator {
+	height: 1.25em;
+	width: 1.25em;
+	vertical-align: middle;
+	display: inline-block;
+}
+
+.private_app_indicator svg line,
+.private_app_indicator svg path {
+	stroke: rgb(110, 141, 80);
 }

@@ -1,0 +1,356 @@
+Snapshot Maker (v1.1.0.0) :: Started at 4/19/2024 7:45:08 PM
+Launch args: /stages:pc
+
+Enabled stages: PC
+
+---------- |  Patching Snapshot  | ----------
+
+Preparing to rewrite inner friends.js javascript
+- CLSTMAP = 8825046
+Selecting patcher config
+- Using patcher config for CLSTAMP 8825046
+Initializing CefJsHost
+- Creating cef instance... OK
+- Binding apis
+  - JsDeMinifier... OK
+  - ValveFriendsJsRewriter... OK
+
+Rewriting "public/javascript/webui/friends.js"...
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 5305, char 74 >> Node: 
+[JS]   - Original JS:  o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_enter.m4a?v=1"
+[JS]   - Patched JS:   /*o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_enter.m4a?v=1"*/ TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_voice_channel_enter.m4a?v=1", "Root", "JsSounds")
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 5305, char 202 >> Node: 
+[JS]   - Original JS:  o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_exit.m4a?v=1"
+[JS]   - Patched JS:   /*o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_exit.m4a?v=1"*/ TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_voice_channel_exit.m4a?v=1", "Root", "JsSounds")
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 5454, char 87 >> Node: 
+[JS]   - Original JS:  o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_chatroom_notification.m4a?v=1"
+[JS]   - Patched JS:   /*o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_chatroom_notification.m4a?v=1"*/ TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_chatroom_notification.m4a?v=1", "Root", "JsSounds")
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 5457, char 87 >> Node: 
+[JS]   - Original JS:  o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_at_mention.m4a?v=1"
+[JS]   - Patched JS:   /*o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_at_mention.m4a?v=1"*/ TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_at_mention.m4a?v=1", "Root", "JsSounds")
+[JS] > Detection 'ShimSettingsStoreIsSteamInTournamentMode' matched >> Line 7917, char 57 >> Node: 
+[JS]   - Original JS:  b.Ul.SettingsStore.IsSteamInTournamentMode()
+[JS]   - Patched JS:   /*b.Ul.SettingsStore.IsSteamInTournamentMode()*/ TFP.Compat.SettingsStore_IsSteamInTournamentMode(b.Ul.SettingsStore, "IsSteamInTournamentMode")
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 8228, char 87 >> Node: 
+[JS]   - Original JS:  o.De.COMMUNITY_CDN_URL + "public/sounds/webui/ui_steam_smoother_friend_join.m4a"
+[JS]   - Patched JS:   /*o.De.COMMUNITY_CDN_URL + "public/sounds/webui/ui_steam_smoother_friend_join.m4a"*/ TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/ui_steam_smoother_friend_join.m4a", "Root", "JsSounds")
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 8231, char 87 >> Node: 
+[JS]   - Original JS:  o.De.COMMUNITY_CDN_URL + "public/sounds/webui/ui_steam_smoother_friend_online.m4a"
+[JS]   - Patched JS:   /*o.De.COMMUNITY_CDN_URL + "public/sounds/webui/ui_steam_smoother_friend_online.m4a"*/ TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/ui_steam_smoother_friend_online.m4a", "Root", "JsSounds")
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 8702, char 87 >> Node: 
+[JS]   - Original JS:  r.De.COMMUNITY_CDN_URL + "public/sounds/webui/ui_steam_message_old_smooth.m4a"
+[JS]   - Patched JS:   /*r.De.COMMUNITY_CDN_URL + "public/sounds/webui/ui_steam_message_old_smooth.m4a"*/ TFP.Resources.SelectCdnResourceUrl(r.De.COMMUNITY_CDN_URL, "public/sounds/webui/ui_steam_message_old_smooth.m4a", "Root", "JsSounds")
+[JS] > Detection 'ShimSettingsStoreIsSteamInTournamentMode' matched >> Line 9487, char 57 >> Node: 
+[JS]   - Original JS:  h.Ul.SettingsStore.IsSteamInTournamentMode()
+[JS]   - Patched JS:   /*h.Ul.SettingsStore.IsSteamInTournamentMode()*/ TFP.Compat.SettingsStore_IsSteamInTournamentMode(h.Ul.SettingsStore, "IsSteamInTournamentMode")
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 11384, char 14 >> Node: 
+[JS]   - Original JS:  n.p + "javascript/webui/noisegate-audio-worklet.js?contenthash=ef007c9e0249549f997c"
+[JS]   - Patched JS:   /*n.p + "javascript/webui/noisegate-audio-worklet.js?contenthash=ef007c9e0249549f997c"*/ TFP.Resources.SelectCdnResourceUrl(n.p, "javascript/webui/noisegate-audio-worklet.js?contenthash=ef007c9e0249549f997c", "Root_Public", "LibraryJs")
+[JS] > Detection 'RewriteEarly2024NewWindowGettersUsage' matched >> Line 11613, char 68 >> Node: 
+[JS]   - Original JS:  this.m_window.SteamClient.Window.IsWindowMinimized()
+[JS]   - Patched JS:   /*this.m_window.SteamClient.Window.IsWindowMinimized()*/ new Promise((e, t) => {
+    this.m_window.SteamClient.Window.IsWindowMinimized((t) => {
+        e(t);
+    });
+})
+[JS] > Detection 'ShimSettingsStoreIsSteamInTournamentMode' matched >> Line 11640, char 47 >> Node: 
+[JS]   - Original JS:  h.Ul.SettingsStore.IsSteamInTournamentMode()
+[JS]   - Patched JS:   /*h.Ul.SettingsStore.IsSteamInTournamentMode()*/ TFP.Compat.SettingsStore_IsSteamInTournamentMode(h.Ul.SettingsStore, "IsSteamInTournamentMode")
+[JS] > Detection 'ShimSettingsStoreIsSteamInTournamentMode' matched >> Line 11938, char 66 >> Node: 
+[JS]   - Original JS:  this.m_FriendsUIApp.SettingsStore.IsSteamInTournamentMode()
+[JS]   - Patched JS:   /*this.m_FriendsUIApp.SettingsStore.IsSteamInTournamentMode()*/ TFP.Compat.SettingsStore_IsSteamInTournamentMode(this.m_FriendsUIApp.SettingsStore, "IsSteamInTournamentMode")
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 12802, char 155 >> Node: 
+[JS]   - Original JS:  o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_rpt_leave.m4a"
+[JS]   - Patched JS:   /*o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_rpt_leave.m4a"*/ TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_rpt_leave.m4a", "Root", "JsSounds")
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 12811, char 204 >> Node: 
+[JS]   - Original JS:  o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_rpt_join.m4a"
+[JS]   - Patched JS:   /*o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_rpt_join.m4a"*/ TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_rpt_join.m4a", "Root", "JsSounds")
+[JS] > Detection 'ShimSteamClientIsSteamInTournamentMode' matched >> Line 12966, char 588 >> Node: 
+[JS]   - Original JS:  SteamClient.System.IsSteamInTournamentMode()
+[JS]   - Patched JS:   /*SteamClient.System.IsSteamInTournamentMode()*/ TFP.Compat.SteamClient_System_IsSteamInTournamentMode(SteamClient, "System", "IsSteamInTournamentMode")
+[JS] > Detection 'DisableMiniprofileBrokenBlurHandler' matched >> Line 13952, char 31 >> Node: 
+[JS]   - Original JS:  {
+    this.HideByElement(t.m_OwningElement);
+}
+[JS]   - Patched JS:   {
+    /*this.HideByElement(t.m_OwningElement);*/ ;
+}
+[JS] > Detection 'ShimSettingsStoreIsSteamInTournamentMode' matched >> Line 14161, char 57 >> Node: 
+[JS]   - Original JS:  r.Ul.SettingsStore.IsSteamInTournamentMode()
+[JS]   - Patched JS:   /*r.Ul.SettingsStore.IsSteamInTournamentMode()*/ TFP.Compat.SettingsStore_IsSteamInTournamentMode(r.Ul.SettingsStore, "IsSteamInTournamentMode")
+[JS] > Detection 'ShimSettingsStoreIsSteamInTournamentMode' matched >> Line 14538, char 210 >> Node: 
+[JS]   - Original JS:  r.Ul.SettingsStore.IsSteamInTournamentMode()
+[JS]   - Patched JS:   /*r.Ul.SettingsStore.IsSteamInTournamentMode()*/ TFP.Compat.SettingsStore_IsSteamInTournamentMode(r.Ul.SettingsStore, "IsSteamInTournamentMode")
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 15494, char 168 >> Node: 
+[JS]   - Original JS:  o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_exit.m4a?v=1"
+[JS]   - Patched JS:   /*o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_exit.m4a?v=1"*/ TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_voice_channel_exit.m4a?v=1", "Root", "JsSounds")
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 15507, char 172 >> Node: 
+[JS]   - Original JS:  o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_exit.m4a?v=1"
+[JS]   - Patched JS:   /*o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_exit.m4a?v=1"*/ TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_voice_channel_exit.m4a?v=1", "Root", "JsSounds")
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 15554, char 248 >> Node: 
+[JS]   - Original JS:  o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_enter.m4a?v=1"
+[JS]   - Patched JS:   /*o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_enter.m4a?v=1"*/ TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_voice_channel_enter.m4a?v=1", "Root", "JsSounds")
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 15559, char 333 >> Node: 
+[JS]   - Original JS:  o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_exit.m4a?v=1"
+[JS]   - Patched JS:   /*o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_exit.m4a?v=1"*/ TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_voice_channel_exit.m4a?v=1", "Root", "JsSounds")
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 15578, char 173 >> Node: 
+[JS]   - Original JS:  o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_phonecall.m4a?v=1"
+[JS]   - Patched JS:   /*o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_phonecall.m4a?v=1"*/ TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_phonecall.m4a?v=1", "Root", "JsSounds")
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 15972, char 133 >> Node: 
+[JS]   - Original JS:  o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_ui_ptt_short_02_quiet.m4a"
+[JS]   - Patched JS:   /*o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_ui_ptt_short_02_quiet.m4a"*/ TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_ui_ptt_short_02_quiet.m4a", "Root", "JsSounds")
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 15972, char 254 >> Node: 
+[JS]   - Original JS:  o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_ui_ptt_short_01_quiet.m4a"
+[JS]   - Patched JS:   /*o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_ui_ptt_short_01_quiet.m4a"*/ TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_ui_ptt_short_01_quiet.m4a", "Root", "JsSounds")
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 15984, char 96 >> Node: 
+[JS]   - Original JS:  o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_ui_ptt_short_01_quiet.m4a"
+[JS]   - Patched JS:   /*o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_ui_ptt_short_01_quiet.m4a"*/ TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_ui_ptt_short_01_quiet.m4a", "Root", "JsSounds")
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 15985, char 96 >> Node: 
+[JS]   - Original JS:  o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_ui_ptt_short_02_quiet.m4a"
+[JS]   - Patched JS:   /*o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_ui_ptt_short_02_quiet.m4a"*/ TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_ui_ptt_short_02_quiet.m4a", "Root", "JsSounds")
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 16525, char 121 >> Node: 
+[JS]   - Original JS:  o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_phonecall.m4a?v=1"
+[JS]   - Patched JS:   /*o.De.COMMUNITY_CDN_URL + "public/sounds/webui/steam_phonecall.m4a?v=1"*/ TFP.Resources.SelectCdnResourceUrl(o.De.COMMUNITY_CDN_URL, "public/sounds/webui/steam_phonecall.m4a?v=1", "Root", "JsSounds")
+[JS] > Detection 'ShimSteamClientBrowserGetBrowserId' matched >> Line 24034, char 299 >> Node: 
+[JS]   - Original JS:  n.SteamClient.Browser.GetBrowserID()
+[JS]   - Patched JS:   /*n.SteamClient.Browser.GetBrowserID()*/ TFP.Compat.SteamClient_Browser_GetBrowserID(n.SteamClient)
+[JS] > Detection 'RewriteSteamClientWindowNewGetterPromises' matched >> Line 24070, char 33 >> Node: 
+[JS]   - Original JS:  this.props.target.ownerDocument.defaultView.SteamClient.Window.GetWindowRestoreDetails().then((e) => {
+    const t = this.state.x - this.props.target.ownerDocument.defaultView.screenX, n = this.state.y - this.props.target.ownerDocument.defaultView.screenY;
+    try {
+        this.props.popup.SteamClient.Window.PositionWindowRelative(e, t, n, this.state.width, this.state.height);
+    }
+    catch (e) {
+        console.error(e);
+    }
+})
+[JS]   - Patched JS:   /*this.props.target.ownerDocument.defaultView.SteamClient.Window.GetWindowRestoreDetails().then((e) => {
+    const t = this.state.x - this.props.target.ownerDocument.defaultView.screenX, n = this.state.y - this.props.target.ownerDocument.defaultView.screenY;
+    try {
+        this.props.popup.SteamClient.Window.PositionWindowRelative(e, t, n, this.state.width, this.state.height);
+    }
+    catch (e) {
+        console.error(e);
+    }
+})*/ this.props.target.ownerDocument.defaultView.SteamClient.Window.GetWindowRestoreDetails((e) => {
+    const t = this.state.x - this.props.target.ownerDocument.defaultView.screenX, n = this.state.y - this.props.target.ownerDocument.defaultView.screenY;
+    try {
+        this.props.popup.SteamClient.Window.PositionWindowRelative(e, t, n, this.state.width, this.state.height);
+    }
+    catch (e) {
+        console.error(e);
+    }
+})
+[JS] > Detection 'ShimSettingsStoreIsSteamInTournamentMode' matched >> Line 29355, char 12 >> Node: 
+[JS]   - Original JS:  r.Ul.SettingsStore.IsSteamInTournamentMode()
+[JS]   - Patched JS:   /*r.Ul.SettingsStore.IsSteamInTournamentMode()*/ TFP.Compat.SettingsStore_IsSteamInTournamentMode(r.Ul.SettingsStore, "IsSteamInTournamentMode")
+[JS] > Detection 'FixBlackFrameBug' matched >> Line 33634, char 31 >> Node: 
+[JS]   - Original JS:  s && (this.OnCreateInternal(), i != c.IF.k_EWindowBringToFrontInvalid && this.Focus(i))
+[JS]   - Patched JS:   /*s && (this.OnCreateInternal(), i != c.IF.k_EWindowBringToFrontInvalid && this.Focus(i))*/ s ? (this.OnCreateInternal(), i != c.IF.k_EWindowBringToFrontInvalid && this.Focus(i)) : this.OnCreateInternal()
+[JS] > Detection 'RewriteEarly2024NewWindowGettersUsage' matched >> Line 33707, char 96 >> Node: 
+[JS]   - Original JS:  this.m_popup.SteamClient.Window.GetWindowRestoreDetails()
+[JS]   - Patched JS:   /*this.m_popup.SteamClient.Window.GetWindowRestoreDetails()*/ new Promise((e, t) => {
+    this.m_popup.SteamClient.Window.GetWindowRestoreDetails((t) => {
+        e(t);
+    });
+})
+[JS] > Detection 'RewriteEarly2024NewWindowGettersUsage' matched >> Line 33710, char 90 >> Node: 
+[JS]   - Original JS:  this.m_popup.SteamClient.Window.IsWindowMinimized()
+[JS]   - Patched JS:   /*this.m_popup.SteamClient.Window.IsWindowMinimized()*/ new Promise((e, t) => {
+    this.m_popup.SteamClient.Window.IsWindowMinimized((t) => {
+        e(t);
+    });
+})
+[JS] > Detection 'RewriteEarly2024NewWindowGettersUsage' matched >> Line 33713, char 90 >> Node: 
+[JS]   - Original JS:  this.m_popup.SteamClient.Window.IsWindowMaximized()
+[JS]   - Patched JS:   /*this.m_popup.SteamClient.Window.IsWindowMaximized()*/ new Promise((e, t) => {
+    this.m_popup.SteamClient.Window.IsWindowMaximized((t) => {
+        e(t);
+    });
+})
+[JS] > Detection 'ShimSteamClientBrowserGetBrowserId' matched >> Line 33858, char 99 >> Node: 
+[JS]   - Original JS:  t.center_on_window.SteamClient.Browser.GetBrowserID()
+[JS]   - Patched JS:   /*t.center_on_window.SteamClient.Browser.GetBrowserID()*/ TFP.Compat.SteamClient_Browser_GetBrowserID(t.center_on_window.SteamClient)
+[JS] > Detection 'DisableBrokenXssAttackValveReliance' matched >> Line 37194, char 6 >> Node: 
+[JS]   - Original JS:  try {
+    if (window.parent != window) {
+        const t = window.parent;
+        if (t.__SHARED_FRIENDSUI_GLOBALS && t.__SHARED_FRIENDSUI_GLOBALS[e])
+            return t.__SHARED_FRIENDSUI_GLOBALS[e];
+        (0, o.X)(!1, `SharedFriendsUIGlobal "${e}" not initialized by parent, proceeding with local copy`);
+    }
+}
+catch (e) { }
+[JS]   - Patched JS:   /*try {
+    if (window.parent != window) {
+        const t = window.parent;
+        if (t.__SHARED_FRIENDSUI_GLOBALS && t.__SHARED_FRIENDSUI_GLOBALS[e])
+            return t.__SHARED_FRIENDSUI_GLOBALS[e];
+        (0, o.X)(!1, `SharedFriendsUIGlobal "${e}" not initialized by parent, proceeding with local copy`);
+    }
+}
+catch (e) { }*/ ;
+[JS] > Detection 'DisableLate2023ChatCensorshipFeatureAddition' matched >> Line 46269, char 31 >> Node: 
+[JS]   - Original JS:  {
+    this.m_WebUIServiceTransport.BIsValid() && (this.m_WebUIServiceTransport.messageHandlers.RegisterServiceNotificationHandler(K.gi.NotifyTextFilterDictionaryChangedHandler, this.OnTextFilterDictionaryChanged), this.InitSteamEngineLanguage(h.De.LANGUAGE), "english" !== h.De.LANGUAGE && this.InitSteamEngineLanguage("english"));
+}
+[JS]   - Patched JS:   {
+    /*this.m_WebUIServiceTransport.BIsValid() && (this.m_WebUIServiceTransport.messageHandlers.RegisterServiceNotificationHandler(K.gi.NotifyTextFilterDictionaryChangedHandler, this.OnTextFilterDictionaryChanged), this.InitSteamEngineLanguage(h.De.LANGUAGE), "english" !== h.De.LANGUAGE && this.InitSteamEngineLanguage("english"));*/ ;
+}
+[JS] > Detection 'DisableLate2023ChatCensorshipFeatureAddition' matched >> Line 46417, char 15 >> Node: 
+[JS]   - Original JS:  if (this.m_WebUIServiceTransport.BIsValid())
+    try {
+        {
+            const t = yield this.GetSteamEngineTextFilterDictionary(e, "banned");
+            this.m_strBannedWords += t.Body().dictionary();
+        }
+        {
+            const t = yield this.GetSteamEngineTextFilterDictionary(e, "profanity");
+            this.m_strProfanityWords += t.Body().dictionary();
+        }
+        n = !0;
+    }
+    catch (e) {
+        console.warn("LoadLanguage caught while loading from cache:", e);
+    }
+[JS]   - Patched JS:   if (/*this.m_WebUIServiceTransport.BIsValid()*/ false)
+    try {
+        {
+            const t = yield this.GetSteamEngineTextFilterDictionary(e, "banned");
+            this.m_strBannedWords += t.Body().dictionary();
+        }
+        {
+            const t = yield this.GetSteamEngineTextFilterDictionary(e, "profanity");
+            this.m_strProfanityWords += t.Body().dictionary();
+        }
+        n = !0;
+    }
+    catch (e) {
+        console.warn("LoadLanguage caught while loading from cache:", e);
+    }
+[JS] > Detection 'ShimSteamClientOpenVrSoia' matched >> Line 46846, char 185 >> Node: 
+[JS]   - Original JS:  r.SetOverlayInteractionAffordance(t, l)
+[JS]   - Patched JS:   /*r.SetOverlayInteractionAffordance(t, l)*/ TFP.Compat.SteamClient_OpenVR_SetOverlayInteractionAffordance(i.SteamClient, t, l)
+[JS] > Detection 'RewriteSteamClientWindowNewGetterPromises' matched >> Line 47427, char 22 >> Node: 
+[JS]   - Original JS:  i.SteamClient.Window.GetWindowRestoreDetails().then((e) => {
+    const t = this.state.menuLeft - this.parentWin.screenX, n = this.state.menuTop - this.parentWin.screenY;
+    try {
+        null == o || o.SteamClient.Window.PositionWindowRelative(e, t, n, this.state.menuWidth, this.state.menuHeight);
+    }
+    catch (e) {
+        console.error(e);
+    }
+})
+[JS]   - Patched JS:   /*i.SteamClient.Window.GetWindowRestoreDetails().then((e) => {
+    const t = this.state.menuLeft - this.parentWin.screenX, n = this.state.menuTop - this.parentWin.screenY;
+    try {
+        null == o || o.SteamClient.Window.PositionWindowRelative(e, t, n, this.state.menuWidth, this.state.menuHeight);
+    }
+    catch (e) {
+        console.error(e);
+    }
+})*/ i.SteamClient.Window.GetWindowRestoreDetails((e) => {
+    const t = this.state.menuLeft - this.parentWin.screenX, n = this.state.menuTop - this.parentWin.screenY;
+    try {
+        null == o || o.SteamClient.Window.PositionWindowRelative(e, t, n, this.state.menuWidth, this.state.menuHeight);
+    }
+    catch (e) {
+        console.error(e);
+    }
+})
+[JS] > Detection 'ShimSteamClientBrowserGetBrowserIdCheck' matched >> Line 52797, char 31 >> Node: 
+[JS]   - Original JS:  (null === (r = null === (o = null == i ? void 0 : i.SteamClient) || void 0 === o ? void 0 : o.Browser) || void 0 === r ? void 0 : r.GetBrowserID)
+[JS]   - Patched JS:   /*(null === (r = null === (o = null == i ? void 0 : i.SteamClient) || void 0 === o ? void 0 : o.Browser) || void 0 === r ? void 0 : r.GetBrowserID)*/ TFP.Compat.SteamClient_HasGetBrowserID(i.SteamClient)
+[JS] > Detection 'ShimSteamClientBrowserGetBrowserId' matched >> Line 52797, char 182 >> Node: 
+[JS]   - Original JS:  i.SteamClient.Browser.GetBrowserID()
+[JS]   - Patched JS:   /*i.SteamClient.Browser.GetBrowserID()*/ TFP.Compat.SteamClient_Browser_GetBrowserID(i.SteamClient)
+[JS] > Detection 'ShimSteamClientBrowserGetBrowserId' matched >> Line 52924, char 9 >> Node: 
+[JS]   - Original JS:  s.SteamClient.Browser.GetBrowserID()
+[JS]   - Patched JS:   /*s.SteamClient.Browser.GetBrowserID()*/ TFP.Compat.SteamClient_Browser_GetBrowserID(s.SteamClient)
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 54135, char 13 >> Node: 
+[JS]   - Original JS:  n.p + "images/webui/8669e97b288da32670e77181618c3dfb.png"
+[JS]   - Patched JS:   /*n.p + "images/webui/8669e97b288da32670e77181618c3dfb.png"*/ TFP.Resources.SelectCdnResourceUrl(n.p, "images/webui/8669e97b288da32670e77181618c3dfb.png", "Root_Public", "JsImages")
+[JS] > Detection 'RewriteSteamClientWindowNewGetterPromises' matched >> Line 56319, char 9 >> Node: 
+[JS]   - Original JS:  e.SteamClient.Window.IsWindowMaximized().then((e) => {
+    n(e);
+})
+[JS]   - Patched JS:   /*e.SteamClient.Window.IsWindowMaximized().then((e) => {
+    n(e);
+})*/ e.SteamClient.Window.IsWindowMaximized((e) => {
+    n(e);
+})
+[JS] > Detection 'AddHtmlWebuiConfigOnLoadHook' matched >> Line 57037, char 21 >> Node: 
+[JS]   - Original JS:  {
+    const t = {}, n = d("config", e);
+    n && (delete n.SESSIONID, Object.assign(r.De, n), (t.config = !0));
+    const i = d("userinfo", e);
+    i && (Object.assign(r.L7, i), (t.userConfig = !0), r.L7.is_support && _() && (r.L7.is_support = !1));
+    const o = d("broadcast", e);
+    o && (Object.assign(r.dk, o), (t.broadcastConfig = !0));
+    const s = d("community", e);
+    s && (Object.assign(r.JA, s), (t.communityConfig = !0));
+    const l = d("event", e);
+    return l && (Object.assign(r.Wj, l), (t.eventConfig = !0)), t;
+}
+[JS]   - Patched JS:   {
+    const t = {}, n = d("config", e);
+    n && (delete n.SESSIONID, Object.assign(r.De, n), (t.config = !0));
+    TFP.Hooks.OnWebuiConfigLoaded(r.De);
+    const i = d("userinfo", e);
+    i && (Object.assign(r.L7, i), (t.userConfig = !0), r.L7.is_support && _() && (r.L7.is_support = !1));
+    const o = d("broadcast", e);
+    o && (Object.assign(r.dk, o), (t.broadcastConfig = !0));
+    const s = d("community", e);
+    s && (Object.assign(r.JA, s), (t.communityConfig = !0));
+    const l = d("event", e);
+    return l && (Object.assign(r.Wj, l), (t.eventConfig = !0)), t;
+}
+[JS] > Detection 'DisableContenthashGetParamOnFetches' matched >> Line 58081, char 15 >> Node: 
+[JS]   - Original JS:  ".js?contenthash="
+[JS]   - Patched JS:   /*".js?contenthash="*/ ".js?_contenthash_="
+[JS] > Detection 'DisableContenthashGetParamOnFetches' matched >> Line 58150, char 73 >> Node: 
+[JS]   - Original JS:  ".css?contenthash="
+[JS]   - Patched JS:   /*".css?contenthash="*/ ".css?_contenthash_="
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 58209, char 11 >> Node: 
+[JS]   - Original JS:  s.p + i
+[JS]   - Patched JS:   /*s.p + i*/ TFP.Resources.SelectCdnResourceUrl(s.p, i, "Root_Public", "JsCss")
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 58270, char 13 >> Node: 
+[JS]   - Original JS:  s.p + s.u(t)
+[JS]   - Patched JS:   /*s.p + s.u(t)*/ TFP.Resources.SelectCdnResourceUrl_JsLoaderDirect(s.p, s.u(t), "Root_Public", "CoreJs")
+[JS] Total visited ast nodes: 600781
+[JS] Total applied patches: 52
+[JS] Applied patches:
+[JS]   -  'RewriteCdnAssetUrlStringBuild' (config: System.Dynamic.ExpandoObject ) applied 23 time(s)
+[JS]   -  'ShimSettingsStoreIsSteamInTournamentMode' (config: System.Dynamic.ExpandoObject ) applied 7 time(s)
+[JS]   -  'ShimSteamClientIsSteamInTournamentMode' (config: System.Dynamic.ExpandoObject ) applied 1 time(s)
+[JS]   -  'DisableMiniprofileBrokenBlurHandler' applied 1 time(s)
+[JS]   -  'ShimSteamClientBrowserGetBrowserId' (config: System.Dynamic.ExpandoObject ) applied 4 time(s)
+[JS]   -  'FixBlackFrameBug' applied 1 time(s)
+[JS]   -  'DisableBrokenXssAttackValveReliance' applied 1 time(s)
+[JS]   -  'DisableLate2023ChatCensorshipFeatureAddition' applied 2 time(s)
+[JS]   -  'ShimSteamClientOpenVrSoia' (config: System.Dynamic.ExpandoObject ) applied 1 time(s)
+[JS]   -  'ShimSteamClientBrowserGetBrowserIdCheck' (config: System.Dynamic.ExpandoObject ) applied 1 time(s)
+[JS]   -  'AddHtmlWebuiConfigOnLoadHook' (config: System.Dynamic.ExpandoObject ) applied 1 time(s)
+[JS]   -  'DisableContenthashGetParamOnFetches' applied 2 time(s)
+[JS]   -  'RewriteSteamClientWindowNewGetterPromises' applied 3 time(s)
+[JS]   -  'RewriteEarly2024NewWindowGettersUsage' (config: System.Dynamic.ExpandoObject ) applied 4 time(s)
+
+Reformatting rewritten js with prettier.io... OK
+
+Writing to disk... OK
+
+---------- |  Cleaning Snapshot  | ----------
+Getting CLSTAMP from friends.js... OK
+- CLSTMAP = 8825046
+Using snapshot manifest for CLSTAMP 8657129 thru 8825046+ (exact range match for remote friends.js)
+
+Deleting undeclared files
+- Deleting 'index.000-original.html'... OK
+- Deleting 'index.001-urlfix.html'... OK
+- Deleting 'public/javascript/webui/friends.000-original.js'... OK
+- Deleting 'public/javascript/webui/friends.001-demin.js'... OK
+- Deleting 'public/javascript/webui/friends.002-patch.js'... OK
+- Deleting 'public/shared/css/motiva_sans.000-original.css'... OK
+- Deleting 'public/shared/css/motiva_sans.001-urlfix.css'... OK
+
+Snapshot Maker :: Finished at 4/19/2024 7:45:50 PM

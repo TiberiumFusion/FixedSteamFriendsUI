@@ -1,0 +1,161 @@
+Snapshot Maker (v1.1.0.0) :: Started at 4/18/2024 10:28:12 PM
+Args: /stages:sa
+
+---------- |  Capturing Snapshot  | ----------
+Initializing CurlHttp... OK
+Creating output directory structure... OK
+Fetching root html... OK
+Parsing root html... OK
+- 4 <link>s
+- 6 <script>s
+Downloading & inspecting friends.js
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/friends.js?v=PHwEl8PJ31p9&amp;l=english&amp;_cdn=cloudflare"... OK (HTTP: 200)
+friends.js CLSTMAP: 8825046
+Selecting snapshot manifest... OK
+Using snapshot manifest for CLSTAMP 8657129 thru 8811541+  <- tenative range match for remote friends.js
+Processing <link>s in root html
+- Downloading "https://steam-chat.com/favicon.ico"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/shared/css/motiva_sans.css?v=GfSjbGKcNYaQ&amp;l=english&amp;_cdn=cloudflare"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/shared/css/shared_global.css?v=2VoZa2M8Wh3k&amp;l=english&amp;_cdn=cloudflare"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/css/webui/friends.css?v=q0FImNQEoPvt&amp;l=english&amp;_cdn=cloudflare"... OK (HTTP: 200)
+Processing @font-faces in the root html's stylesheets
+- Downloading "https://community.cloudflare.steamstatic.com/public/shared/fonts/MotivaSans-Regular.ttf?v=4.015"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/shared/fonts/MotivaSans-Light.ttf?v=4.015"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/shared/fonts/MotivaSans-Thin.ttf?v=4.015"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/shared/fonts/MotivaSans-Medium.ttf?v=4.015"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/shared/fonts/MotivaSans-Bold.ttf?v=4.015"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/shared/fonts/MotivaSans-RegularItalic.ttf?v=4.015"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/shared/fonts/MotivaSans-LightItalic.ttf?v=4.015"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/shared/fonts/MotivaSans-BoldItalic.ttf?v=4.015"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/shared/fonts/MotivaSans-Black.ttf?v=4.015"... OK (HTTP: 200)
+Processing <script>s in root html
+- VALVE_PUBLIC_PATH = https://community.cloudflare.steamstatic.com/public/
+- Valve CDN Root URL: https://community.cloudflare.steamstatic.com/
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/libraries.js?v=aTttbvayhKGx&amp;l=english&amp;_cdn=cloudflare"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/libraries_cm.js?v=M1k_gadcU7yl&amp;l=english&amp;_cdn=cloudflare"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/steammessages.js?v=EqunyzaRBqo5&amp;l=english&amp;_cdn=cloudflare"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/friends.js?v=PHwEl8PJ31p9&amp;l=english&amp;_cdn=cloudflare"... OK (HTTP: 200)
+Fetching any remaining known JS from indirect JS references
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/broadcastapp.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/navevents.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/noisegate-audio-worklet.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/2388.js"... OK (HTTP: 200)
+Fetching known localized strings json.js files
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/shared_arabic-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/shared_brazilian-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/shared_bulgarian-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/shared_czech-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/shared_danish-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/shared_dutch-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/shared_english-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/shared_finnish-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/shared_french-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/shared_german-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/shared_greek-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/shared_hungarian-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/shared_italian-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/shared_japanese-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/shared_koreana-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/shared_latam-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/shared_norwegian-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/shared_polish-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/shared_portuguese-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/shared_romanian-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/shared_russian-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/shared_sc_schinese-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/shared_schinese-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/shared_spanish-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/shared_swedish-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/shared_tchinese-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/shared_thai-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/shared_turkish-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/shared_ukrainian-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/shared_vietnamese-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/friendsui_arabic-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/friendsui_brazilian-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/friendsui_bulgarian-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/friendsui_czech-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/friendsui_danish-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/friendsui_dutch-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/friendsui_english-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/friendsui_finnish-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/friendsui_french-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/friendsui_german-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/friendsui_greek-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/friendsui_hungarian-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/friendsui_italian-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/friendsui_japanese-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/friendsui_koreana-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/friendsui_latam-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/friendsui_norwegian-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/friendsui_polish-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/friendsui_portuguese-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/friendsui_romanian-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/friendsui_russian-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/friendsui_sc_schinese-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/friendsui_schinese-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/friendsui_spanish-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/friendsui_swedish-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/friendsui_tchinese-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/friendsui_thai-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/friendsui_turkish-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/friendsui_ukrainian-json.js"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/javascript/webui/friendsui_vietnamese-json.js"... OK (HTTP: 200)
+Fetching any remaining known CSS
+- Downloading "https://community.cloudflare.steamstatic.com/public/css/webui/broadcastapp.css"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/css/webui/2388.css"... OK (HTTP: 200)
+Fetching known images from indirect JS references
+- Downloading "https://community.cloudflare.steamstatic.com/public/images/webui/8669e97b288da32670e77181618c3dfb.png"... OK (HTTP: 200)
+Fetching known audio from indirect JS references
+- Downloading "https://community.cloudflare.steamstatic.com/public/sounds/webui/steam_at_mention.m4a"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/sounds/webui/steam_chatroom_notification.m4a"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/sounds/webui/steam_phonecall.m4a"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/sounds/webui/steam_rpt_join.m4a"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/sounds/webui/steam_rpt_leave.m4a"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/sounds/webui/steam_ui_ptt_short_01_quiet.m4a"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/sounds/webui/steam_ui_ptt_short_02_quiet.m4a"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/sounds/webui/steam_voice_channel_enter.m4a"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/sounds/webui/steam_voice_channel_exit.m4a"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/sounds/webui/ui_steam_message_old_smooth.m4a"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/sounds/webui/ui_steam_smoother_friend_join.m4a"... OK (HTTP: 200)
+- Downloading "https://community.cloudflare.steamstatic.com/public/sounds/webui/ui_steam_smoother_friend_online.m4a"... OK (HTTP: 200)
+
+Failed downloads: 0
+
+Checking downloaded resources against expected resource list
+0 missing files
+0 extra files
+
+---------- |  Amending Snapshot  | ----------
+Preparing to modify URLs
+Fixing URLs in "index.html"
+- favicon.ico
+- public/shared/css/motiva_sans.css
+- public/shared/css/shared_global.css
+- public/css/webui/friends.css
+- public/javascript/webui/libraries.js
+- public/javascript/webui/libraries_cm.js
+- public/javascript/webui/steammessages.js
+- public/javascript/webui/friends.js
+Saving changes... OK
+Fixing URLs in "public/shared/css/motiva_sans.css"...
+- public/shared/fonts/MotivaSans-Black.ttf
+- public/shared/fonts/MotivaSans-BoldItalic.ttf
+- public/shared/fonts/MotivaSans-LightItalic.ttf
+- public/shared/fonts/MotivaSans-RegularItalic.ttf
+- public/shared/fonts/MotivaSans-Bold.ttf
+- public/shared/fonts/MotivaSans-Medium.ttf
+- public/shared/fonts/MotivaSans-Thin.ttf
+- public/shared/fonts/MotivaSans-Light.ttf
+- public/shared/fonts/MotivaSans-Regular.ttf
+Saving changes... OK
+
+Preparing to de-minify javascript
+Initializing CefJsHost
+- Creating cef instance... OK
+- Binding apis
+  - JsDeMinifier... OK
+  - ValveFriendsJsRewriter... OK
+De-minifying "public/javascript/webui/friends.js"... OK
+
+Snapshot Maker :: Finished at 4/18/2024 10:28:34 PM
