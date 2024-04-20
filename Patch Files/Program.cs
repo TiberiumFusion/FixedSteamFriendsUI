@@ -298,6 +298,9 @@ namespace TiberiumFusion.FixedSteamFriendsUI.PatchFilesPackager
 
                 try
                 {
+                    if (File.Exists(packagePath))
+                        File.Delete(packagePath);
+
                     ZipFile.CreateFromDirectory(buildWorkingDirPath, packagePath, CompressionLevel.Optimal, false);
                 }
                 catch (Exception e)
