@@ -200,6 +200,17 @@
 		}	
 	}
 
+	///// Version of the above for the specific call site at the Valve .js loader
+	// This call site requires special logic to determine whether resourceCategory is Js or JsonJs
+	// It is far more maintainable to put that logic here, rather than use TsJsRewriter to create and patch in the needed logic at the call site
+	Resources.SelectCdnResourceUrl_JsLoaderDirect = function(remoteRootPath, resourcePath, remoteRootPathType, dummyResourceCategory, forceHost = null)
+	{
+		let resourceCategory = "CoreJs";
+		if (remoteRootPath.indexOf("-json.js") != -1) {
+			resourceCategory = "JsonJs"; }
+
+		return Resources.SelectCdnResourceUrl(remoteRootPath, resourcePath, remoteRootPathType, resourceCategory, forceHost);
+    }
+
 
 })();
-

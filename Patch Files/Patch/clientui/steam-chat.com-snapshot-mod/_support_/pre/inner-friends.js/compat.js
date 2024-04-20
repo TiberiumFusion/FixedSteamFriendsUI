@@ -71,16 +71,89 @@
     // Concurrent with the June 2023 pure-cef/pure-shit downgrade of the Steam client, Valve introduced something called "Tournament Mode". The steam client injects an interface to this component into SharedJsContext.
     // Later, on Sept 21 2023, Valve downgraded steam-chat.com with code that assumes it is always running in SharedJsContext and thus has the tournament mode interface available. Valve also fucked up writing the code that uses the tournament mode interface, by calling it on the wrong objects where it does not exist, causing the fatal error that broke steam chat for all vgui-clients on that day.
 
-    // The 1.x.x versions of this patch were based on a prior version of steam-chat.com (8200419, ca late July 2023), before steam-chat.com knew about tournament mode, and so they sidestepped the issue
-    // Patch version 2.0.0 is based on steam-chat.com 8601984 (Dec 22 2023), where tournament mode exists and Valve tries to use it (incorrectly). So we have to introduce a shim for those calls to work around the issue.
+    // The 1.x versions of this patch were based on a prior version of steam-chat.com (8200419, ca late July 2023), before steam-chat.com knew about tournament mode, and so they sidestepped the issue
+    // Patch versions 2.x are based on steam-chat.com versions 8601984 (Dec 22 2023) and later, where tournament mode exists and Valve tries to use it (sometimes incorrectly, as noted earlier). So we have to introduce a shim for those calls to work around the issue.
 
-    Compat.IsSteamInTournamentMode = function()
+    //
+    // SettingsStore.IsSteamInTournamentMode
+    //
+
+    Compat.SettingsStore_IsSteamInTournamentMode = function(settingsStore, tournamentModePropertyName)
     {
-        return false;
+        // If IsSteamInTournamentMode exists, we will access it and return its value
+        // If it doesn't exist, we will return false
+
+        // There are discrepancies (i.e. fuckups) in Valve's code for using IsSteamInTournamentMode
+        // - Usually, it's like this:        this.m_FriendsUIApp.SettingsStore.IsSteamInTournamentMode()  (8825046: line 11939)
+        // - But sometimes, it's like this:  this.m_FriendsUIApp.SettingsStore.IsSteamInTournamentMode    (8825046: line 12001)
+
+        // IsSteamInTournamentMode is probably a function, and Valve is probably just being extremely rich and retarded and unwilling to test their code like usual
+        // But just in case IsSteamInTournamentMode randomly switches between being a field and a method, we will check the type of the property and try handling it accordingly
 
         // Afaik this "tournament mode" does not exist in the May 2023 and earlier clients, and it is never loaded in the June/July/August 2023 clients in vgui mode
-        // So we are simply returning false here for now, but this could change if have to reconcile supporting more versions of the client for this patch
+        // So our fallback is simply returning false
+        let result = false;
+
+        try
+        {
+            if (tournamentModePropertyName in settingsStore)
+            {
+                let member = settingsStore[tournamentModePropertyName];
+                if (typeof member == "function")
+                {
+                    result = member.apply(settingsStore); // Valve js suggests this has zero parameters;
+                }
+                else
+                {
+                    result = member; // as a field (possibly wrong)
+                }
+            }
+        }
+        catch (e)
+        {
+            console.warn(`An unhandled exception occurred in the real attempt path of shim Compat.SettingsStore_IsSteamInTournamentMode. Default fallback value (${result}) will be used. Details:`, e);
+        }
+        
+        return result;
     }
+
+
+    //
+    // SteamClient.System.IsSteamInTournamentMode
+    //
+
+    Compat.SteamClient_System_IsSteamInTournamentMode = function(steamClient, subinterfaceName, tournamentModePropertyName)
+    {
+        // SteamClient.System.IsSteamInTournamentMode is different from SettingsStore.IsSteamInTournamentMode
+        // - The settings store version is a normal function (or field)
+        // - The SteamClient version is an async fucked version that returns a promise
+        // That means we have to return a promise from here, unlike the other shim which gets to return a normal value
+
+        // Default fallback value
+        let result = Promise.resolve(false);
+
+        try
+        {
+            let subinterface = null;
+            if (subinterfaceName in steamClient) // e.g. SteamClient.System
+            {
+                // SteamClient.System subinterface does not exist in FriendsUI. It only exists in the sharedjscontext from hell.
+                subinterface = steamClient[subinterfaceName];
+                if (tournamentModePropertyName in subinterface)
+                {
+                    member = subinterface[tournamentModePropertyName]; // e.g. SteamClient.System.IsSteamInTournamentMode
+                    result = member(); // returns a promise
+                }
+            }
+        }
+        catch (e)
+        {
+            console.warn(`An unhandled exception occurred in the real attempt path of shim Compat.SteamClient_System_IsSteamInTournamentMode. Default fallback value (${result}) will be used. Details:`, e);
+        }
+
+        return result;
+    }
+
 
 
     // ____________________________________________________________________________________________________
