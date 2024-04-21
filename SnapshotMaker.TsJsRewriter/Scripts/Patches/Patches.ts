@@ -161,6 +161,7 @@ namespace SnapshotMakerTsJsRewriter.Patches
             new Definitions.DisableContenthashGetParamOnFetchesCPDF(),
             new Definitions.RewriteSteamClientWindowNewGetterPromisesCPDF(),
             new Definitions.RewriteEarly2024NewWindowGettersUsageCPDF(),
+            new Definitions.FixBrokenInviteListAutoCloseOnDoneCPDF(),
         ];
 
         for (let factory of factories)
