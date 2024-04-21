@@ -2,7 +2,7 @@
 
 	"Version": 1,
 
-	"TargetCLSTAMP": 8825046,
+	"TargetCLSTAMP": 8791341,
 
 
 
@@ -209,6 +209,10 @@
 						},
 					]
 				}
+			},
+
+			{
+				"IdName": "FixBrokenInviteListAutoCloseOnDone",
 			},
 
 		]
