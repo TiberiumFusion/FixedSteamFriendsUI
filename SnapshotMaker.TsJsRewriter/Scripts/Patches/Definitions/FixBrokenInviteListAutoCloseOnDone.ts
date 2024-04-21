@@ -1,11 +1,11 @@
 ﻿// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-//    Fix the friend invitations list not closing & returning to the main friends list after accepting or ignoring all incoming invitations
+//    Fix the friend invitations list having blank items for requests received before the invitations list was opened for the first time
 /*
 
     ----- Target -----
     
-    1.  (8601984: line 26141 :: in the render() method directly below a componentDidUpdate() and SignIn() method)
+    1.  (8825046: line 26141 :: in the render() method directly below a componentDidUpdate() method and a SignIn() method)
         render() {
 			let e = this.props.friends.self,
 				t = this.GetNormalizedSearchString(),
@@ -88,7 +88,13 @@
     To prevent users from incorrectly attributing this Valve fuck up to being the fault of FixedSteamFriendsUI, I have spent 5 hours diagnosing and fixing Valve's retard code. Fuck you Valve.
 
     
+    Related: see FixBrokenInviteListInviteItems.
+
+    
     ----- Range -----
+    
+    Unneeded: 8782155 and earlier.
+              - Everything worked before Valve fucked it up in this update
 
     Since: 8791341.
 
@@ -163,86 +169,50 @@ namespace SnapshotMakerTsJsRewriter.Patches.Definitions
                             if (tnode.parent != null && tnode.parent.kind == ts.SyntaxKind.MethodDeclaration) // e.g.  render()
                             {
                                 let method = tnode.parent as ts.MethodDeclaration;
-
-                                // There are over 300 render() methods in friends.js
-
-                                if (method.body.statements.length > 0)
+                                if (method.name.kind == ts.SyntaxKind.Identifier && (method.name as ts.Identifier).escapedText == "render")
                                 {
-                                    let statement0 = method.body.statements[0];
-                                    if (statement0.kind == ts.SyntaxKind.VariableStatement) // e.g.  let e = this.props.friends.self ...
+                                    // There are over 300 render() methods in friends.js
+
+                                    if (method.body.statements.length > 0)
                                     {
-                                        let varDecList = (statement0 as ts.VariableStatement).declarationList;
-
-                                        let matchedVarDecA = false;
-                                        let matchedVarDecB = false;
-                                        if (varDecList.declarations.length >= 2)
+                                        let statement0 = method.body.statements[0];
+                                        if (statement0.kind == ts.SyntaxKind.VariableStatement) // e.g.  let e = this.props.friends.self ...
                                         {
-                                            for (let varDec of varDecList.declarations)
+                                            let varDecList = (statement0 as ts.VariableStatement).declarationList;
+
+                                            let matchedVarDecA = false;
+                                            let matchedVarDecB = false;
+                                            if (varDecList.declarations.length >= 2)
                                             {
-                                                if (varDec.initializer != null)
+                                                for (let varDec of varDecList.declarations)
                                                 {
-                                                    // Validate declaration:  e = this.props.friends.self
-                                                    if (varDec.initializer.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  this.props.friends.self
+                                                    if (varDec.initializer != null)
                                                     {
-                                                        let initializer = varDec.initializer as ts.PropertyAccessExpression;
-                                                        if (initializer.name.kind == ts.SyntaxKind.Identifier && (initializer.name as ts.Identifier).escapedText == "self")
+                                                        // Validate declaration:  e = this.props.friends.self
+                                                        if (varDec.initializer.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  this.props.friends.self
                                                         {
-                                                            let initializerJs = JsEmitPrinter.printNode(ts.EmitHint.Unspecified, initializer, sourceFile);
-                                                            if (initializerJs.endsWith(".props.friends.self"))
+                                                            let initializer = varDec.initializer as ts.PropertyAccessExpression;
+                                                            if (initializer.name.kind == ts.SyntaxKind.Identifier && (initializer.name as ts.Identifier).escapedText == "self")
                                                             {
-                                                                // There only 2 render() methods with their first statement as a var declaration list and  let e = this.props.friends.self  as one of those vars
-                                                                matchedVarDecA = true;
-                                                            }
-                                                        }
-                                                    }
-                                                    // Validate declaration:  t = this.GetNormalizedSearchString()
-                                                    else if (varDec.initializer.kind == ts.SyntaxKind.CallExpression) // e.g.  this.GetNormalizedSearchString()
-                                                    {
-                                                        let initializer = varDec.initializer as ts.CallExpression;
-                                                        if (initializer.expression.kind == ts.SyntaxKind.PropertyAccessExpression)
-                                                        {
-                                                            let thingToCall = initializer.expression as ts.PropertyAccessExpression;
-                                                            if (thingToCall.name.kind == ts.SyntaxKind.Identifier && (thingToCall.name as ts.Identifier).escapedText == "GetNormalizedSearchString")
-                                                            {
-                                                                // The other render() method doesn't have this var dec
-                                                                matchedVarDecB = true;
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-
-
-                                        if (matchedVarDecA && matchedVarDecB)
-                                        {
-                                            // The patch code needs to access d.Ul.FriendStore, so we need to find a property access node for that
-                                            // There is one we can use from later in the method body:  const v = d.Ul.FriendStore.BIsOfflineMode(),
-                                            let friendStoreAccess = null;
-
-                                            for (let statement of tnode.statements)
-                                            {
-                                                if (statement.kind == ts.SyntaxKind.VariableStatement) // e.g.  const v = d.Ul.FriendStore.BIsOfflineMode(), S = a
-                                                {
-                                                    for (let varDec of (statement as ts.VariableStatement).declarationList.declarations)
-                                                    {
-                                                        if (varDec.initializer != null && varDec.initializer.kind == ts.SyntaxKind.CallExpression) // e.g.  d.Ul.FriendStore.BIsOfflineMode()
-                                                        {
-                                                            let call = varDec.initializer as ts.CallExpression;
-                                                            if (call.expression.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  d.Ul.FriendStore.BIsOfflineMode
-                                                            {
-                                                                let propertyAccess1 = call.expression as ts.PropertyAccessExpression;
-                                                                if (propertyAccess1.name.kind == ts.SyntaxKind.Identifier && (propertyAccess1.name as ts.Identifier).escapedText == "BIsOfflineMode")
+                                                                let initializerJs = JsEmitPrinter.printNode(ts.EmitHint.Unspecified, initializer, sourceFile);
+                                                                if (initializerJs.endsWith(".props.friends.self"))
                                                                 {
-                                                                    if (propertyAccess1.expression.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  d.Ul.FriendStore
-                                                                    {
-                                                                        let propertyAccess2 = propertyAccess1.expression as ts.PropertyAccessExpression;
-                                                                        if (propertyAccess2.name.kind == ts.SyntaxKind.Identifier && (propertyAccess2.name as ts.Identifier).escapedText == "FriendStore")
-                                                                        {
-                                                                            friendStoreAccess = propertyAccess2;
-                                                                            break;
-                                                                        }
-                                                                    }
+                                                                    // There only 2 render() methods with their first statement as a var declaration list and  let e = this.props.friends.self  as one of those vars
+                                                                    matchedVarDecA = true;
+                                                                }
+                                                            }
+                                                        }
+                                                        // Validate declaration:  t = this.GetNormalizedSearchString()
+                                                        else if (varDec.initializer.kind == ts.SyntaxKind.CallExpression) // e.g.  this.GetNormalizedSearchString()
+                                                        {
+                                                            let initializer = varDec.initializer as ts.CallExpression;
+                                                            if (initializer.expression.kind == ts.SyntaxKind.PropertyAccessExpression)
+                                                            {
+                                                                let thingToCall = initializer.expression as ts.PropertyAccessExpression;
+                                                                if (thingToCall.name.kind == ts.SyntaxKind.Identifier && (thingToCall.name as ts.Identifier).escapedText == "GetNormalizedSearchString")
+                                                                {
+                                                                    // The other render() method doesn't have this var dec
+                                                                    matchedVarDecB = true;
                                                                 }
                                                             }
                                                         }
@@ -251,12 +221,50 @@ namespace SnapshotMakerTsJsRewriter.Patches.Definitions
                                             }
 
 
-                                            if (friendStoreAccess != null)
+                                            if (matchedVarDecA && matchedVarDecB)
                                             {
-                                                return new DetectionInfo(true, {
-                                                    "TypedNode": tnode,
-                                                    "FriendStoreAccess": friendStoreAccess,
-                                                })
+                                                // The patch code needs to access d.Ul.FriendStore, so we need to find a property access node for that
+                                                // There is one we can use from later in the method body:  const v = d.Ul.FriendStore.BIsOfflineMode(),
+                                                let friendStoreAccess = null;
+
+                                                for (let statement of tnode.statements)
+                                                {
+                                                    if (statement.kind == ts.SyntaxKind.VariableStatement) // e.g.  const v = d.Ul.FriendStore.BIsOfflineMode(), S = a
+                                                    {
+                                                        for (let varDec of (statement as ts.VariableStatement).declarationList.declarations)
+                                                        {
+                                                            if (varDec.initializer != null && varDec.initializer.kind == ts.SyntaxKind.CallExpression) // e.g.  d.Ul.FriendStore.BIsOfflineMode()
+                                                            {
+                                                                let call = varDec.initializer as ts.CallExpression;
+                                                                if (call.expression.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  d.Ul.FriendStore.BIsOfflineMode
+                                                                {
+                                                                    let propertyAccess1 = call.expression as ts.PropertyAccessExpression;
+                                                                    if (propertyAccess1.name.kind == ts.SyntaxKind.Identifier && (propertyAccess1.name as ts.Identifier).escapedText == "BIsOfflineMode")
+                                                                    {
+                                                                        if (propertyAccess1.expression.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  d.Ul.FriendStore
+                                                                        {
+                                                                            let propertyAccess2 = propertyAccess1.expression as ts.PropertyAccessExpression;
+                                                                            if (propertyAccess2.name.kind == ts.SyntaxKind.Identifier && (propertyAccess2.name as ts.Identifier).escapedText == "FriendStore")
+                                                                            {
+                                                                                friendStoreAccess = propertyAccess2;
+                                                                                break;
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+
+
+                                                if (friendStoreAccess != null)
+                                                {
+                                                    return new DetectionInfo(true, {
+                                                        "TypedNode": tnode,
+                                                        "FriendStoreAccess": friendStoreAccess,
+                                                    })
+                                                }
                                             }
                                         }
                                     }
