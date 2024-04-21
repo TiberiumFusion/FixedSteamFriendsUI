@@ -140,7 +140,7 @@ namespace SnapshotMakerTsJsRewriter.Patches.Definitions
 							zzz2 = ${friendStoreAccessJs}.ClanStore.clan_invites.length > 0,
 							zzz3 = ${friendStoreAccessJs}.FriendGroupStore.outgoing_invites_group.member_count > 0,
 							zzz4 = ${friendStoreAccessJs}.FriendGroupStore.incoming_invites_group.member_count + ${friendStoreAccessJs}.ClanStore.clan_invites.length;
-                    `; // local names that unlikely to collide
+                    `; // local names that are unlikely to collide
 
                     let snippetSourceFile = ts.createSourceFile("snippet.js", snippetJs, ts.ScriptTarget.ES2015, /*setParentNodes*/ false, ts.ScriptKind.JS)
                     // Bizzarely, if setParentNodes=true, typescript fucks up and emits "> {" instead of "> 0" for zzz3, but only in printer.PrintFile, never in printer.PrintNode. Evidently it doesn't care to reevaluate parent nodes when transferring a node from one source file to another, which appear to use a simple incrementing integer as a unique identity only in the context of their origin source file. Which ends up pointing to garbage in other files.
@@ -219,7 +219,6 @@ namespace SnapshotMakerTsJsRewriter.Patches.Definitions
                                                     }
                                                 }
                                             }
-
 
                                             if (matchedVarDecA && matchedVarDecB)
                                             {

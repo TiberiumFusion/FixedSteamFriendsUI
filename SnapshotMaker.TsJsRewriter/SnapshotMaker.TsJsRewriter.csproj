@@ -92,6 +92,7 @@
     <TypeScriptCompile Include="Scripts\Patches\Definitions\DisableLate2023ChatCensorshipFeatureAddition.ts" />
     <TypeScriptCompile Include="Scripts\Patches\Definitions\DisableBrokenXssAttackValveReliance.ts" />
     <TypeScriptCompile Include="Scripts\Patches\Definitions\DisableContenthashGetParamOnFetches.ts" />
+    <TypeScriptCompile Include="Scripts\Patches\Definitions\FixBrokenInviteListInviteItems.ts" />
     <TypeScriptCompile Include="Scripts\Patches\Definitions\FixBrokenInviteListAutoCloseOnDone.ts" />
     <TypeScriptCompile Include="Scripts\Patches\Definitions\FixBrokenIsMaximizedCopypasta.ts" />
     <TypeScriptCompile Include="Scripts\Patches\Definitions\FixBlackFrameBug.ts" />

@@ -305,6 +305,7 @@ var SnapshotMakerTsJsRewriter;
                 new Patches.Definitions.RewriteSteamClientWindowNewGetterPromisesCPDF(),
                 new Patches.Definitions.RewriteEarly2024NewWindowGettersUsageCPDF(),
                 new Patches.Definitions.FixBrokenInviteListAutoCloseOnDoneCPDF(),
+                new Patches.Definitions.FixBrokenInviteListInviteItemsCPDF(),
             ];
             for (let factory of factories)
                 RegisterPatchDefinitionFactoryInstance(factory);
@@ -726,7 +727,160 @@ var SnapshotMakerTsJsRewriter;
 
     ----- Target -----
     
-    1.  (8601984: line 26141 :: in the render() method directly below a componentDidUpdate() and SignIn() method)
+    1.  (8825046: line 26825 :: in the render() method directly below a componentDidUpdate() method and a ToggleOfflineSortMethod() method)
+        render() {
+            var e, t, n, i, r, a, l;
+            let m = this.props.searchString && this.props.searchString.length > 0,
+                u = m,
+            ...
+      =>
+        render() {
+            let localThis = this;
+            setTimeout(function() { localThis.forceUpdate(); }, 1);
+            var e, t, n, i, r, a, l;
+            let m = this.props.searchString && this.props.searchString.length > 0,
+                u = m,
+            ...
+
+    
+    ----- Notes -----
+    
+    See notes in FixBrokenInviteListAutoCloseOnDone first.
+    Valve broke multiple things in the friend invitations list with their 8791341 update. This is another one of their fuckups in the same vein.
+
+    Because Valve no longer invokes the 10-method deep react getter methods for parts of FriendStore, their lack of properly signalling to redraw the associated visuals means some are no longer being redrawn at all.
+    One of the affected things are the items in the friends requests/invitations list.
+
+    When steam-chat.com launches, it finds all invitations sent before it was launched. It then dislays them in the invitiations list if the user clicks on the waving avatar icon.
+    In 8782155 and earlier, this worked.
+
+    8791341 broke this. Now these invitiation items are never redrawn from the initial empty state and thus appear invisible - until the user clicks on something which triggers a property access which triggers a refresh and thus redraw of the affected items.
+
+    Unlike FixBrokenInviteListAutoCloseOnDone, the fix for this is not obvious. It's not clear which piece of altered/removed Valve bastardized js is the key to the puzzle.
+    So I've come up with my own simply fix for now.
+
+    react provides some "forceUpdate" method, which causes the object to tag itself for redrawing. If we call this at some point after the user opens the invitations list, it will force the invisible items to redraw themselves and become visible.
+
+    The top of the target site render() method is a serviceable choice. This render() method is called upon the user clicking the waving avatar icon to open the invitations list.
+
+    However, care must be taken NEVER to call forceUpdate() within a call stack that originated from a react update, or else react shits the bed and goes into an infinite loop.
+    As such, we set an ugly timeout and call forceUpdate() in there.
+    And so the next iteration of the react message loop causes a redraw of the invitations list, making the invisible items become visible again.
+
+    Related: see FixBrokenInviteListAutoCloseOnDone.
+
+    
+    ----- Range -----
+
+    Unneeded: 8782155 and earlier.
+              - Everything worked before Valve fucked it up in this update
+
+    Since: 8791341.
+
+    Until: At least 8825046.
+
+*/
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// <reference path="../Patches.ts" />
+// Required ^ hack to make TS realize that ConfiguredPatchDefinitionFactory is defined in a different file; otherwise, it complains "'xyz' is used before its declaration" (see: https://stackoverflow.com/a/48189989/2489580)
+var SnapshotMakerTsJsRewriter;
+(function (SnapshotMakerTsJsRewriter) {
+    var Patches;
+    (function (Patches) {
+        var Definitions;
+        (function (Definitions) {
+            class FixBrokenInviteListInviteItemsCPDF extends Patches.ConfiguredPatchDefinitionFactory {
+                constructor() {
+                    super(...arguments);
+                    this.PatchIdName = "FixBrokenInviteListInviteItems";
+                }
+                CreatePatchDefinition() {
+                    return new Patches.PatchDefinition(this.PatchIdName, 
+                    // ____________________________________________________________________________________________________
+                    //
+                    //     Patch
+                    // ____________________________________________________________________________________________________
+                    //
+                    (context, sourceFile, node, detectionInfoData) => {
+                        let tnode = detectionInfoData.TypedNode; // body of the render() method
+                        // Insert required statements at the very start of the method
+                        let snippetJs = `
+						let localThis = this;
+						setTimeout(function() { localThis.forceUpdate(); }, 1);
+                    `; // local names that are unlikely to collide
+                        let snippetSourceFile = ts.createSourceFile("snippet.js", snippetJs, ts.ScriptTarget.ES2015, /*setParentNodes*/ false, ts.ScriptKind.JS);
+                        // Keep setParentNodes=false to avoid garbage in emit from printer.PrintFile()
+                        let newStatements = snippetSourceFile.statements.concat(tnode.statements);
+                        return context.factory.updateBlock(tnode, newStatements);
+                    }, 
+                    // ____________________________________________________________________________________________________
+                    //
+                    //     Detections
+                    // ____________________________________________________________________________________________________
+                    //
+                    [
+                        (context, sourceFile, node) => {
+                            if (node.kind == ts.SyntaxKind.Block) // e.g. body of  render()
+                             {
+                                let tnode = node;
+                                if (tnode.parent != null && tnode.parent.kind == ts.SyntaxKind.MethodDeclaration) // e.g.  render()
+                                 {
+                                    let method = tnode.parent;
+                                    if (method.name.kind == ts.SyntaxKind.Identifier && method.name.escapedText == "render") {
+                                        // There are over 300 render() methods in friends.js
+                                        if (method.body.statements.length >= 2) {
+                                            let statement1 = method.body.statements[1];
+                                            if (statement1.kind == ts.SyntaxKind.VariableStatement) {
+                                                /* e.g.
+                                                    let m = this.props.searchString && this.props.searchString.length > 0,
+                                                        u = m,
+                                                        p = this.IsCollapsed() && !m && !this.state.friendDrag,
+                                                        _ = [],
+                                                        g = this.IsInviteGroup(),
+                                                        C = this.props.group.m_eDisplayType == c.h1.eOfflineOnly,
+                                                        f = !1;
+                                                */
+                                                let varDecList = statement1.declarationList;
+                                                let matchedVarDec = false;
+                                                if (varDecList.declarations.length >= 2) {
+                                                    for (let varDec of varDecList.declarations) {
+                                                        if (varDec.initializer != null) {
+                                                            // Validate declaration:  p = this.IsCollapsed() && !m && !this.state.friendDrag,
+                                                            // The  this.IsCollapsed  call and  this.state.friendDrag  access in a var dec is unique to this render() method among all other render() methods
+                                                            if (varDec.initializer.kind == ts.SyntaxKind.BinaryExpression) // e.g.  this.IsCollapsed() && !m && !this.state.friendDrag
+                                                             {
+                                                                let initializer = varDec.initializer;
+                                                                let initializerJs = SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, initializer, sourceFile);
+                                                                if (initializerJs.includes(".IsCollapsed()") && initializerJs.includes(".state.friendDrag")) {
+                                                                    return new Patches.DetectionInfo(true, {
+                                                                        "TypedNode": tnode,
+                                                                    });
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]);
+                }
+            }
+            Definitions.FixBrokenInviteListInviteItemsCPDF = FixBrokenInviteListInviteItemsCPDF;
+        })(Definitions = Patches.Definitions || (Patches.Definitions = {}));
+    })(Patches = SnapshotMakerTsJsRewriter.Patches || (SnapshotMakerTsJsRewriter.Patches = {}));
+})(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//    Fix the friend invitations list having blank items for requests received before the invitations list was opened for the first time
+/*
+
+    ----- Target -----
+    
+    1.  (8825046: line 26141 :: in the render() method directly below a componentDidUpdate() method and a SignIn() method)
         render() {
             let e = this.props.friends.self,
                 t = this.GetNormalizedSearchString(),
@@ -809,7 +963,13 @@ var SnapshotMakerTsJsRewriter;
     To prevent users from incorrectly attributing this Valve fuck up to being the fault of FixedSteamFriendsUI, I have spent 5 hours diagnosing and fixing Valve's retard code. Fuck you Valve.
 
     
+    Related: see FixBrokenInviteListInviteItems.
+
+    
     ----- Range -----
+    
+    Unneeded: 8782155 and earlier.
+              - Everything worked before Valve fucked it up in this update
 
     Since: 8791341.
 
@@ -848,7 +1008,7 @@ var SnapshotMakerTsJsRewriter;
 							zzz2 = ${friendStoreAccessJs}.ClanStore.clan_invites.length > 0,
 							zzz3 = ${friendStoreAccessJs}.FriendGroupStore.outgoing_invites_group.member_count > 0,
 							zzz4 = ${friendStoreAccessJs}.FriendGroupStore.incoming_invites_group.member_count + ${friendStoreAccessJs}.ClanStore.clan_invites.length;
-                    `; // local names that unlikely to collide
+                    `; // local names that are unlikely to collide
                         let snippetSourceFile = ts.createSourceFile("snippet.js", snippetJs, ts.ScriptTarget.ES2015, /*setParentNodes*/ false, ts.ScriptKind.JS);
                         // Bizzarely, if setParentNodes=true, typescript fucks up and emits "> {" instead of "> 0" for zzz3, but only in printer.PrintFile, never in printer.PrintNode. Evidently it doesn't care to reevaluate parent nodes when transferring a node from one source file to another, which appear to use a simple incrementing integer as a unique identity only in the context of their origin source file. Which ends up pointing to garbage in other files.
                         let patchNode = snippetSourceFile.statements[0]; // Extract the node we want from the implicit statement wrapper it's inside of
@@ -868,65 +1028,67 @@ var SnapshotMakerTsJsRewriter;
                                 if (tnode.parent != null && tnode.parent.kind == ts.SyntaxKind.MethodDeclaration) // e.g.  render()
                                  {
                                     let method = tnode.parent;
-                                    // There are over 300 render() methods in friends.js
-                                    if (method.body.statements.length > 0) {
-                                        let statement0 = method.body.statements[0];
-                                        if (statement0.kind == ts.SyntaxKind.VariableStatement) // e.g.  let e = this.props.friends.self ...
-                                         {
-                                            let varDecList = statement0.declarationList;
-                                            let matchedVarDecA = false;
-                                            let matchedVarDecB = false;
-                                            if (varDecList.declarations.length >= 2) {
-                                                for (let varDec of varDecList.declarations) {
-                                                    if (varDec.initializer != null) {
-                                                        // Validate declaration:  e = this.props.friends.self
-                                                        if (varDec.initializer.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  this.props.friends.self
-                                                         {
-                                                            let initializer = varDec.initializer;
-                                                            if (initializer.name.kind == ts.SyntaxKind.Identifier && initializer.name.escapedText == "self") {
-                                                                let initializerJs = SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, initializer, sourceFile);
-                                                                if (initializerJs.endsWith(".props.friends.self")) {
-                                                                    // There only 2 render() methods with their first statement as a var declaration list and  let e = this.props.friends.self  as one of those vars
-                                                                    matchedVarDecA = true;
+                                    if (method.name.kind == ts.SyntaxKind.Identifier && method.name.escapedText == "render") {
+                                        // There are over 300 render() methods in friends.js
+                                        if (method.body.statements.length > 0) {
+                                            let statement0 = method.body.statements[0];
+                                            if (statement0.kind == ts.SyntaxKind.VariableStatement) // e.g.  let e = this.props.friends.self ...
+                                             {
+                                                let varDecList = statement0.declarationList;
+                                                let matchedVarDecA = false;
+                                                let matchedVarDecB = false;
+                                                if (varDecList.declarations.length >= 2) {
+                                                    for (let varDec of varDecList.declarations) {
+                                                        if (varDec.initializer != null) {
+                                                            // Validate declaration:  e = this.props.friends.self
+                                                            if (varDec.initializer.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  this.props.friends.self
+                                                             {
+                                                                let initializer = varDec.initializer;
+                                                                if (initializer.name.kind == ts.SyntaxKind.Identifier && initializer.name.escapedText == "self") {
+                                                                    let initializerJs = SnapshotMakerTsJsRewriter.JsEmitPrinter.printNode(ts.EmitHint.Unspecified, initializer, sourceFile);
+                                                                    if (initializerJs.endsWith(".props.friends.self")) {
+                                                                        // There only 2 render() methods with their first statement as a var declaration list and  let e = this.props.friends.self  as one of those vars
+                                                                        matchedVarDecA = true;
+                                                                    }
                                                                 }
                                                             }
-                                                        }
-                                                        // Validate declaration:  t = this.GetNormalizedSearchString()
-                                                        else if (varDec.initializer.kind == ts.SyntaxKind.CallExpression) // e.g.  this.GetNormalizedSearchString()
-                                                         {
-                                                            let initializer = varDec.initializer;
-                                                            if (initializer.expression.kind == ts.SyntaxKind.PropertyAccessExpression) {
-                                                                let thingToCall = initializer.expression;
-                                                                if (thingToCall.name.kind == ts.SyntaxKind.Identifier && thingToCall.name.escapedText == "GetNormalizedSearchString") {
-                                                                    // The other render() method doesn't have this var dec
-                                                                    matchedVarDecB = true;
+                                                            // Validate declaration:  t = this.GetNormalizedSearchString()
+                                                            else if (varDec.initializer.kind == ts.SyntaxKind.CallExpression) // e.g.  this.GetNormalizedSearchString()
+                                                             {
+                                                                let initializer = varDec.initializer;
+                                                                if (initializer.expression.kind == ts.SyntaxKind.PropertyAccessExpression) {
+                                                                    let thingToCall = initializer.expression;
+                                                                    if (thingToCall.name.kind == ts.SyntaxKind.Identifier && thingToCall.name.escapedText == "GetNormalizedSearchString") {
+                                                                        // The other render() method doesn't have this var dec
+                                                                        matchedVarDecB = true;
+                                                                    }
                                                                 }
                                                             }
                                                         }
                                                     }
                                                 }
-                                            }
-                                            if (matchedVarDecA && matchedVarDecB) {
-                                                // The patch code needs to access d.Ul.FriendStore, so we need to find a property access node for that
-                                                // There is one we can use from later in the method body:  const v = d.Ul.FriendStore.BIsOfflineMode(),
-                                                let friendStoreAccess = null;
-                                                for (let statement of tnode.statements) {
-                                                    if (statement.kind == ts.SyntaxKind.VariableStatement) // e.g.  const v = d.Ul.FriendStore.BIsOfflineMode(), S = a
-                                                     {
-                                                        for (let varDec of statement.declarationList.declarations) {
-                                                            if (varDec.initializer != null && varDec.initializer.kind == ts.SyntaxKind.CallExpression) // e.g.  d.Ul.FriendStore.BIsOfflineMode()
-                                                             {
-                                                                let call = varDec.initializer;
-                                                                if (call.expression.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  d.Ul.FriendStore.BIsOfflineMode
+                                                if (matchedVarDecA && matchedVarDecB) {
+                                                    // The patch code needs to access d.Ul.FriendStore, so we need to find a property access node for that
+                                                    // There is one we can use from later in the method body:  const v = d.Ul.FriendStore.BIsOfflineMode(),
+                                                    let friendStoreAccess = null;
+                                                    for (let statement of tnode.statements) {
+                                                        if (statement.kind == ts.SyntaxKind.VariableStatement) // e.g.  const v = d.Ul.FriendStore.BIsOfflineMode(), S = a
+                                                         {
+                                                            for (let varDec of statement.declarationList.declarations) {
+                                                                if (varDec.initializer != null && varDec.initializer.kind == ts.SyntaxKind.CallExpression) // e.g.  d.Ul.FriendStore.BIsOfflineMode()
                                                                  {
-                                                                    let propertyAccess1 = call.expression;
-                                                                    if (propertyAccess1.name.kind == ts.SyntaxKind.Identifier && propertyAccess1.name.escapedText == "BIsOfflineMode") {
-                                                                        if (propertyAccess1.expression.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  d.Ul.FriendStore
-                                                                         {
-                                                                            let propertyAccess2 = propertyAccess1.expression;
-                                                                            if (propertyAccess2.name.kind == ts.SyntaxKind.Identifier && propertyAccess2.name.escapedText == "FriendStore") {
-                                                                                friendStoreAccess = propertyAccess2;
-                                                                                break;
+                                                                    let call = varDec.initializer;
+                                                                    if (call.expression.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  d.Ul.FriendStore.BIsOfflineMode
+                                                                     {
+                                                                        let propertyAccess1 = call.expression;
+                                                                        if (propertyAccess1.name.kind == ts.SyntaxKind.Identifier && propertyAccess1.name.escapedText == "BIsOfflineMode") {
+                                                                            if (propertyAccess1.expression.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  d.Ul.FriendStore
+                                                                             {
+                                                                                let propertyAccess2 = propertyAccess1.expression;
+                                                                                if (propertyAccess2.name.kind == ts.SyntaxKind.Identifier && propertyAccess2.name.escapedText == "FriendStore") {
+                                                                                    friendStoreAccess = propertyAccess2;
+                                                                                    break;
+                                                                                }
                                                                             }
                                                                         }
                                                                     }
@@ -934,12 +1096,12 @@ var SnapshotMakerTsJsRewriter;
                                                             }
                                                         }
                                                     }
-                                                }
-                                                if (friendStoreAccess != null) {
-                                                    return new Patches.DetectionInfo(true, {
-                                                        "TypedNode": tnode,
-                                                        "FriendStoreAccess": friendStoreAccess,
-                                                    });
+                                                    if (friendStoreAccess != null) {
+                                                        return new Patches.DetectionInfo(true, {
+                                                            "TypedNode": tnode,
+                                                            "FriendStoreAccess": friendStoreAccess,
+                                                        });
+                                                    }
                                                 }
                                             }
                                         }
