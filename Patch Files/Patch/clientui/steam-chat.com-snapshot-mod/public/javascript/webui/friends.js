@@ -26271,6 +26271,12 @@ var CLSTAMP = "8825046";
 						}
 					}
 					render() {
+						/**** (c) Valve Corporation. Use is governed by the terms of the Steam Subscriber Agreement http://store.steampowered.com/subscriber_agreement/.
+						 ****/
+						let zzz1 = d.Ul.FriendStore.FriendGroupStore.incoming_invites_group.member_count > 0,
+							zzz2 = d.Ul.FriendStore.ClanStore.clan_invites.length > 0,
+							zzz3 = d.Ul.FriendStore.FriendGroupStore.outgoing_invites_group.member_count > 0,
+							zzz4 = d.Ul.FriendStore.FriendGroupStore.incoming_invites_group.member_count + d.Ul.FriendStore.ClanStore.clan_invites.length;
 						let e = this.props.friends.self,
 							t = this.GetNormalizedSearchString(),
 							n = this.state.bFriendTabSearch,
@@ -26838,6 +26844,12 @@ var CLSTAMP = "8825046";
 						return (this.m_FriendRenderContext && this.m_FriendRenderContext.friendGroup == this.props.group) || (this.m_FriendRenderContext = { friendGroup: this.props.group, chatContext: "friendslist" }), this.m_FriendRenderContext;
 					}
 					render() {
+						/**** (c) Valve Corporation. Use is governed by the terms of the Steam Subscriber Agreement http://store.steampowered.com/subscriber_agreement/.
+						 ****/
+						let localThis = this;
+						setTimeout(function () {
+							localThis.forceUpdate();
+						}, 1);
 						var e, t, n, i, r, a, l;
 						let m = this.props.searchString && this.props.searchString.length > 0,
 							u = m,
