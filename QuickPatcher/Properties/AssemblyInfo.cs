@@ -60,4 +60,4 @@ using System.Windows;
 [assembly: AssemblyVersion("1.2.0.2")] // QP
 [assembly: AssemblyFileVersion("1.2.0.2")] // QP
 
-[assembly: AssemblyInformationalVersion("2.0.2.0")] // embedded patch files
+[assembly: AssemblyInformationalVersion("3.0.0.0")] // embedded patch files
