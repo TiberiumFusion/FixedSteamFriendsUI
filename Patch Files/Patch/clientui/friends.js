@@ -6,6 +6,8 @@ const PATCH_ENABLE = true; // Set to false to quickly bypass the entire patch an
 
 const RETRY_CONNECTION_BUTTON_STRONGER_RELOAD = true; // When true, clicking the blue Retry Connection button will reload the entire FriendsUI. When false, it will send a meager reload message to the inner document js (default Valve behavior).
 
+const INNER_LOAD_FAIL_AUTO_RETRY_COUNT = 3; // Number of times to automatically refresh the page if a load failure of the inner frame is detected
+
 
 // ____________________________________________________________________________________________________
 //
@@ -66,7 +68,7 @@ if (PATCH_ENABLE)
 // ____________________________________________________________________________________________________
 //
  
-var IframeErrorInducedReloadCountMax = 3;
+var IframeErrorInducedReloadCountMax = INNER_LOAD_FAIL_AUTO_RETRY_COUNT;
 var IframeErrorInducedReloadCount = 0;
 
 let ieirCount = Cookies.get("IframeErrorInducedReloadCount");
@@ -57462,7 +57464,7 @@ function Init() {
             if (!IsChatJavascriptIntialized)
             {
                 console.log("[!!!] An unhandled exception occurred while the inner document was loading [!!!]");
-                if (IframeErrorInducedReloadCount < IframeErrorInducedReloadCountMax)
+                if (IframeErrorInducedReloadCount < IframeErrorInducedReloadCountMax && IframeErrorInducedReloadCountMax > 0)
                 {
                     let retryCount = IframeErrorInducedReloadCount + 1;
                     console.log(`Reloading outer document (attempt ${retryCount}/${IframeErrorInducedReloadCountMax})`);
@@ -57486,7 +57488,7 @@ function Init() {
                 }
                 else
                 {
-                    console.log("Maximum number of consecutive automatic outer document reloads reached");
+                    console.log("Maximum number of consecutive automatic outer document reloads reached (" + IframeErrorInducedReloadCountMax + ")");
                     if (RETRY_CONNECTION_BUTTON_STRONGER_RELOAD) {
                         console.log("Use 'Retry Connection' button to manually reload"); }
                 }
