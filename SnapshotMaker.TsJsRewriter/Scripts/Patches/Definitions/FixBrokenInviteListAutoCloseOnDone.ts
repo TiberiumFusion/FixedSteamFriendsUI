@@ -1,6 +1,6 @@
 ﻿// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-//    Fix the friend invitations list having blank items for requests received before the invitations list was opened for the first time
+//    Fix the friend invitations list not closing & returning to the main friends list after accepting or ignoring all incoming invitations
 /*
 
     ----- Target -----
