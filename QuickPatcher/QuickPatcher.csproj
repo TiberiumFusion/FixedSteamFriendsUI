@@ -157,7 +157,7 @@
     </None>
     <None Include="Resources\PatchPayloads\PatchPayload_v1.2.0-{68c67e12-e61e-4148-a5af-91b0e2c223b7}.zip" />
     <None Include="Resources\PatchPayloads\PatchPayload_v2.0.2-{5973889e-ce35-4632-b864-260b436efbd3}.zip" />
-    <None Include="Resources\PatchPayloads\PatchPayload_v3.0.0-{7e2daa54-0b1d-41b8-855c-486c298f36cf}.zip" />
+    <None Include="Resources\PatchPayloads\PatchPayload_v3.0.1-{a44f8991-3c90-4b8a-b0ec-34c067094988}.zip" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\OpenFolder_16x.png" />
