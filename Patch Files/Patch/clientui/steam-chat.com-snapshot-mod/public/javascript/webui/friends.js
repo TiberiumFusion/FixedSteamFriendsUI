@@ -26846,10 +26846,24 @@ var CLSTAMP = "8825046";
 					render() {
 						/**** (c) Valve Corporation. Use is governed by the terms of the Steam Subscriber Agreement http://store.steampowered.com/subscriber_agreement/.
 						 ****/
-						let localThis = this;
-						setTimeout(function () {
-							localThis.forceUpdate();
-						}, 1);
+						try
+						{
+							if (this.IsInviteGroup())
+							{
+								// Run this every 0.5 seconds as long as the invite list is open
+								let now = Date.now()
+								let forceUpdateInterval = 500;
+								if (this.__TFP_BrokenValveCodeWorkaround_TimeOfLastSetTimeout == null || now > this.__TFP_BrokenValveCodeWorkaround_TimeOfLastSetTimeout + forceUpdateInterval)
+								{
+									this.__TFP_BrokenValveCodeWorkaround_TimeOfLastSetTimeout = now;
+									let localThis = this;
+									setTimeout(function () {
+										localThis.forceUpdate();
+									}, forceUpdateInterval);
+								}
+							}
+						}
+						catch (e) { }
 						var e, t, n, i, r, a, l;
 						let m = this.props.searchString && this.props.searchString.length > 0,
 							u = m,
