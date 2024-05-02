@@ -13,8 +13,24 @@
             ...
       =>
         render() {
-            let localThis = this;
-			setTimeout(function() { localThis.forceUpdate(); }, 1);
+            try
+			{
+				if (this.IsInviteGroup())
+				{
+					// Run this every 0.5 seconds as long as the invite list is open
+					let now = Date.now()
+					let forceUpdateInterval = 500;
+					if (this.__TFP_BrokenValveCodeWorkaround_TimeOfLastSetTimeout == null || now > this.__TFP_BrokenValveCodeWorkaround_TimeOfLastSetTimeout + forceUpdateInterval)
+					{
+						this.__TFP_BrokenValveCodeWorkaround_TimeOfLastSetTimeout = now;
+						let localThis = this;
+						setTimeout(function () {
+							localThis.forceUpdate();
+						}, forceUpdateInterval);
+					}
+				}
+			}
+			catch (e) { }
 			var e, t, n, i, r, a, l;
 			let m = this.props.searchString && this.props.searchString.length > 0,
 				u = m,
@@ -88,9 +104,25 @@ namespace SnapshotMakerTsJsRewriter.Patches.Definitions
                     // Insert required statements at the very start of the method
 
                     let snippetJs = `
-						let localThis = this;
-						setTimeout(function() { localThis.forceUpdate(); }, 1);
-                    `; // local names that are unlikely to collide
+						try
+						{
+							if (this.IsInviteGroup())
+							{
+								// Run this every 0.5 seconds as long as the invite list is open
+								let now = Date.now()
+								let forceUpdateInterval = 500;
+								if (this.__TFP_BrokenValveCodeWorkaround_TimeOfLastSetTimeout == null || now > this.__TFP_BrokenValveCodeWorkaround_TimeOfLastSetTimeout + forceUpdateInterval)
+								{
+									this.__TFP_BrokenValveCodeWorkaround_TimeOfLastSetTimeout = now;
+									let localThis = this;
+									setTimeout(function () {
+										localThis.forceUpdate();
+									}, forceUpdateInterval);
+								}
+							}
+						}
+						catch (e) { }
+                    `;
 
                     let snippetSourceFile = ts.createSourceFile("snippet.js", snippetJs, ts.ScriptTarget.ES2015, /*setParentNodes*/ false, ts.ScriptKind.JS)
                     // Keep setParentNodes=false to avoid garbage in emit from printer.PrintFile()

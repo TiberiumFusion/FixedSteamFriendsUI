@@ -722,7 +722,7 @@ var SnapshotMakerTsJsRewriter;
 })(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-//    Fix the friend invitations list not closing & returning to the main friends list after accepting or ignoring all incoming invitations
+//    Fix the friend invitations list having blank items for requests received before the invitations list was opened for the first time
 /*
 
     ----- Target -----
@@ -735,8 +735,24 @@ var SnapshotMakerTsJsRewriter;
             ...
       =>
         render() {
-            let localThis = this;
-            setTimeout(function() { localThis.forceUpdate(); }, 1);
+            try
+            {
+                if (this.IsInviteGroup())
+                {
+                    // Run this every 0.5 seconds as long as the invite list is open
+                    let now = Date.now()
+                    let forceUpdateInterval = 500;
+                    if (this.__TFP_BrokenValveCodeWorkaround_TimeOfLastSetTimeout == null || now > this.__TFP_BrokenValveCodeWorkaround_TimeOfLastSetTimeout + forceUpdateInterval)
+                    {
+                        this.__TFP_BrokenValveCodeWorkaround_TimeOfLastSetTimeout = now;
+                        let localThis = this;
+                        setTimeout(function () {
+                            localThis.forceUpdate();
+                        }, forceUpdateInterval);
+                    }
+                }
+            }
+            catch (e) { }
             var e, t, n, i, r, a, l;
             let m = this.props.searchString && this.props.searchString.length > 0,
                 u = m,
@@ -805,9 +821,25 @@ var SnapshotMakerTsJsRewriter;
                         let tnode = detectionInfoData.TypedNode; // body of the render() method
                         // Insert required statements at the very start of the method
                         let snippetJs = `
-						let localThis = this;
-						setTimeout(function() { localThis.forceUpdate(); }, 1);
-                    `; // local names that are unlikely to collide
+						try
+						{
+							if (this.IsInviteGroup())
+							{
+								// Run this every 0.5 seconds as long as the invite list is open
+								let now = Date.now()
+								let forceUpdateInterval = 500;
+								if (this.__TFP_BrokenValveCodeWorkaround_TimeOfLastSetTimeout == null || now > this.__TFP_BrokenValveCodeWorkaround_TimeOfLastSetTimeout + forceUpdateInterval)
+								{
+									this.__TFP_BrokenValveCodeWorkaround_TimeOfLastSetTimeout = now;
+									let localThis = this;
+									setTimeout(function () {
+										localThis.forceUpdate();
+									}, forceUpdateInterval);
+								}
+							}
+						}
+						catch (e) { }
+                    `;
                         let snippetSourceFile = ts.createSourceFile("snippet.js", snippetJs, ts.ScriptTarget.ES2015, /*setParentNodes*/ false, ts.ScriptKind.JS);
                         // Keep setParentNodes=false to avoid garbage in emit from printer.PrintFile()
                         let newStatements = snippetSourceFile.statements.concat(tnode.statements);
@@ -875,7 +907,7 @@ var SnapshotMakerTsJsRewriter;
 })(SnapshotMakerTsJsRewriter || (SnapshotMakerTsJsRewriter = {}));
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-//    Fix the friend invitations list having blank items for requests received before the invitations list was opened for the first time
+//    Fix the friend invitations list not closing & returning to the main friends list after accepting or ignoring all incoming invitations
 /*
 
     ----- Target -----
