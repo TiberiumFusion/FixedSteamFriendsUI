@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TiberiumFusion.FixedSteamFriendsUI.QuickPatcher"
         mc:Ignorable="d"
-        Title="Performing a forced in-place Steam client update" Width="660" Height="740" WindowStyle="ToolWindow" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
+        Title="Performing a forced in-place Steam client update" Width="660" Height="800" WindowStyle="ToolWindow" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
     <DockPanel>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="8,6">
@@ -173,13 +173,23 @@
                 
                 <ContentControl Style="{StaticResource StepItem}" Tag="Step 10:">
                     <TextBlock>
-                        Open explorer and browse to the Steam program files. This is the folder containing Steam.exe and is typically: <Run FontFamily="Segoe UI Mono" FontSize="11">C:\Program Files (x86)\Steam</Run>
+                        Open a command prompt right with administrator privileges.
+                        <LineBreak/>To do this, open the start menu, search for cmd.exe, then right-click it and choose "Run as administrator".
                     </TextBlock>
                 </ContentControl>
                 
                 <ContentControl Style="{StaticResource StepItem}" Tag="Step 11:">
                     <TextBlock>
-                        Shift + Right click anywhere in the empty space within the folder, then choose <Run FontStyle="Italic">Open command window here</Run>. Alternatively, open the command prompt elsewhere, then <Run FontFamily="Segoe UI Mono">cd</Run> to the Steam install folder.
+                        In the command prompt, <Run FontFamily="Segoe UI Mono" FontSize="11">cd</Run> to the Steam install directory.
+                        <LineBreak/>
+                        Steam is typically installed at <Run  FontFamily="Segoe UI Mono" FontSize="11">cd C:\Program Files (x86)\Steam</Run>, so use this command:
+                        <LineBreak/>
+                        <ContentControl Style="{StaticResource CommandCopypasta}" Margin="0,4,0,0">
+                            <ContentControl.Tag>
+                                cd "C:\Program Files (x86)\Steam"
+                            </ContentControl.Tag>
+                        </ContentControl>
+                        <LineBreak/>Copy it to the clipboard, then right click anywhere in the command prompt, choose Paste, and press Enter.
                     </TextBlock>
                 </ContentControl>
                 
