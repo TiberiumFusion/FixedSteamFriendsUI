@@ -177,7 +177,8 @@
 			}
 			else {
 				throw new Error("Invalid value for param remoteRootPathType", remoteRootPathType); }
-		
+
+			let localAssetExists = true;
 			if (this.LocalAssetFallbackToRemote) // verify that the local asset can be retrieved; if not, use remote asset instead
 			{
 				let xhr = new XMLHttpRequest();
@@ -185,19 +186,24 @@
 				xhr.send();
 				if (xhr.status < 200 || xhr.status >= 300)
 				{
+					localAssetExists = false;
 					resourceUrl = remoteRootPath + resourcePath;
 					console.log("- Local asset not found (" + xhr.status + "); using fallback to remote path instead: " + resourceUrl);
 				}
 			}
-		
-			console.log("- Local path: " + resourceUrl);
+
+			if (localAssetExists) {
+				console.log("- Local path: " + resourceUrl); }
+			else {
+				console.log("- Expected local path: " + resourceUrl); }
+
 			return resourceUrl;
 		}
 		else
 		{
 			console.log("Use REMOTE asset: ", remoteRootPath, resourcePath, this.CdnResourceCategory[resourceCategory]);
 			return remoteRootPath + resourcePath;
-		}	
+		}
 	}
 
 	///// Version of the above for the specific call site at the Valve .js loader
