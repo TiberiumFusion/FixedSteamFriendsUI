@@ -124,6 +124,54 @@
                 "SNR": "2_chat_clientui_"
             }
          */
+        // And here's a more authentic sample, from a circa 2023-06-05 version of the root html document, retrieved by the Steam client itself, in period, as designed, recovered from the client's CEF http cache
+        /*
+            {
+                "EUNIVERSE": 1,
+                "WEB_UNIVERSE": "public",
+                "LANGUAGE": "english",
+                "COUNTRY": "US",
+                "MEDIA_CDN_COMMUNITY_URL": "https:\/\/cdn.cloudflare.steamstatic.com\/steamcommunity\/public\/",
+                "MEDIA_CDN_URL": "https:\/\/cdn.cloudflare.steamstatic.com\/",
+                "COMMUNITY_CDN_URL": "https:\/\/community.cloudflare.steamstatic.com\/",
+                "COMMUNITY_CDN_ASSET_URL": "https:\/\/cdn.cloudflare.steamstatic.com\/steamcommunity\/public\/assets\/",
+                "STORE_CDN_URL": "https:\/\/store.cloudflare.steamstatic.com\/",
+                "PUBLIC_SHARED_URL": "https:\/\/community.cloudflare.steamstatic.com\/public\/shared\/",
+                "COMMUNITY_BASE_URL": "https:\/\/steamcommunity.com\/",
+                "CHAT_BASE_URL": "https:\/\/steam-chat.com\/",
+                "STORE_BASE_URL": "https:\/\/store.steampowered.com\/",
+                "STORE_CHECKOUT_BASE_URL": "https:\/\/store.steampowered.com\/",
+                "IMG_URL": "https:\/\/community.cloudflare.steamstatic.com\/public\/images\/",
+                "STEAMTV_BASE_URL": "https:\/\/steam.tv\/",
+                "HELP_BASE_URL": "https:\/\/help.steampowered.com\/",
+                "PARTNER_BASE_URL": "https:\/\/partner.steamgames.com\/",
+                "STATS_BASE_URL": "https:\/\/partner.steampowered.com\/",
+                "INTERNAL_STATS_BASE_URL": "https:\/\/steamstats.valve.org\/",
+                "IN_CLIENT": true,
+                "USE_POPUPS": true,
+                "STORE_ICON_BASE_URL": "https:\/\/cdn.cloudflare.steamstatic.com\/steam\/apps\/",
+                "WEBAPI_BASE_URL": "https:\/\/api.steampowered.com\/",
+                "TOKEN_URL": "https:\/\/steam-chat.com\/chat\/clientjstoken",
+                "BUILD_TIMESTAMP": 1685979070,
+                "PAGE_TIMESTAMP": 1685992982,
+                "IN_TENFOOT": false,
+                "IN_GAMEPADUI": false,
+                "IN_CHROMEOS": false,
+                "IN_MOBILE_WEBVIEW": false,
+                "PLATFORM": "windows",
+                "BASE_URL_STORE_CDN_ASSETS": "https:\/\/cdn.cloudflare.steamstatic.com\/store\/",
+                "EREALM": 1,
+                "LOGIN_BASE_URL": "https:\/\/login.steampowered.com\/",
+                "AVATAR_BASE_URL": "https:\/\/avatars.cloudflare.steamstatic.com\/",
+                "FROM_WEB": true,
+                "WEBSITE_ID": "Community",
+                "BASE_URL_SHARED_CDN": "https:\/\/shared.cloudflare.steamstatic.com\/",
+                "CLAN_CDN_ASSET_URL": "https:\/\/clan.cloudflare.steamstatic.com\/",
+                "SNR": "2_chat_clientui_"
+            }
+        */
+        // There are very few differences, only: STORE_CHECKOUT_BASE_URL, BUILD_TIMESTAMP, PAGE_TIMESTAMP, and PLATFORM.
+        // The lack of change in important-sounding fields (like IN_CLIENT = true in both cases), and the according lack of behavior change in the snapshot versus "authentic" steam-chat.com, is notable.
 
         // Presumably, all of these fields are assigned by Valve's unknown PHP code that generates the https://steam-chat.com/chat/clientui/index.html file
         // And thus, presumably, all are tailored to the conditions of the web browser which made the request to that URL
