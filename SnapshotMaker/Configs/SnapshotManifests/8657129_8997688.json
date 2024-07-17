@@ -3,8 +3,8 @@
     "Version": 1,
 
     "MinCLSTAMP": 8657129, // ca 2024-01-26
-    "MaxCLSTAMP": 8825046, // ca 2024-04-18
-    "UnboundedMaxCLSTAMP": true,
+    "MaxCLSTAMP": 8997688, // ca 2024-06-25
+    "UnboundedMaxCLSTAMP": false,
 
     "ResourcesByCategory":
     {
@@ -109,7 +109,7 @@
 
             "public/css/webui/broadcastapp.css", // In friends.js; Ctrl+F for ".css?contenthash="
 
-            "public/css/webui/2388.css",
+            "public/css/webui/2388.css", // Accompanying nop css for mysterious nop js chunk that gets loaded
 
             // Items without comments are directly referenced in the href="" attribute of the root html's <link> tags
         ],

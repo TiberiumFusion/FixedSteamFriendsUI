@@ -119,9 +119,11 @@
     <None Include="app.manifest" />
     <None Include="Configs\PatcherConfigs\8601984.json" />
     <None Include="Configs\PatcherConfigs\8791341.json" />
+    <None Include="Configs\SnapshotManifests\9043750+.json" />
+    <None Include="Configs\SnapshotManifests\9004798.json" />
     <None Include="Directory.Build.props" />
     <None Include="packages.config" />
-    <None Include="Configs\SnapshotManifests\8657129_8825046+.json" />
+    <None Include="Configs\SnapshotManifests\8657129_8997688.json" />
     <None Include="Configs\SnapshotManifests\8622903_8636951.json" />
     <None Include="Configs\SnapshotManifests\8200419_8601984.json" />
   </ItemGroup>
