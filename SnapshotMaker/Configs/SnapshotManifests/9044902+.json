@@ -2,8 +2,8 @@
 
     "Version": 1,
 
-    "MinCLSTAMP": 9043750, // ca 2024-07-15
-    "MaxCLSTAMP": 9043750,
+    "MinCLSTAMP": 9044902, // ca 2024-07-22
+    "MaxCLSTAMP": 9044902,
     "UnboundedMaxCLSTAMP": true,
 
     "ResourcesByCategory":
@@ -28,11 +28,14 @@
             "public/javascript/webui/gamerecording.js", // new
             "public/javascript/webui/noisegate-audio-worklet.js", // In friends.js nearly verbatim
 
-            //"public/javascript/webui/2388.js", // removed
-            "public/javascript/webui/589.js", // new, hideous ascii svg repo (unnamed js chunk loaded in friends.js; in the  "javascript/webui/" + ({ ...  block)
-            "public/javascript/webui/2748.js", // new, functional js for unknown purpose (ditto)
+            //"public/javascript/webui/589.js", // removed
+            //"public/javascript/webui/2748.js", // removed
             "public/javascript/webui/3159.js", // new, empty useless nop stub like 461 was (ditto)
-            "public/javascript/webui/5222.js", // new, appears related to new gamerecording.js chunk (ditto)
+            //"public/javascript/webui/5222.js", // removed
+
+            "public/javascript/webui/2476.js", // new, appears to be renamed 5222.js
+            "public/javascript/webui/6050.js", // new, appears to be renamed 2748.js
+            "public/javascript/webui/6431.js" // new, appears to be renamed 589.js
 
             // Items without comments are directly referenced in the src="" attribute of the root html's <script> tags
         ],
@@ -112,9 +115,8 @@
             "public/css/webui/broadcastapp.css", // In friends.js; Ctrl+F for ".css?contenthash="
             "public/css/webui/gamerecording.css", // Ditto
 
-            //"public/css/webui/2388.css", // removed
-            "public/css/webui/351.css", // new, 485 chars (accompanying css for unnamed js chunks)
-            "public/css/webui/3159.css", // new, 55 chars
+            "public/css/webui/351.css", // 485 chars (accompanying css for unnamed js chunks)
+            "public/css/webui/3159.css", // 55 chars
 
             // Items without comments are directly referenced in the href="" attribute of the root html's <link> tags
         ],
