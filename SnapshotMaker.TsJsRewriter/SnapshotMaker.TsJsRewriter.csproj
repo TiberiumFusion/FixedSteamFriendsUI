@@ -99,6 +99,7 @@
     <TypeScriptCompile Include="Scripts\Patches\Definitions\DisableMiniprofileBrokenBlurHandler.ts" />
     <TypeScriptCompile Include="Scripts\Patches\Definitions\RewriteCdnAssetUrlStringBuild.ts" />
     <TypeScriptCompile Include="Scripts\Patches\Definitions\RewriteEarly2024NewWindowGettersUsage.ts" />
+    <TypeScriptCompile Include="Scripts\Patches\Definitions\RewriteScRpBCanCreateInviteForGameCall.ts" />
     <TypeScriptCompile Include="Scripts\Patches\Definitions\RewriteSteamClientWindowNewGetterPromises.ts" />
     <TypeScriptCompile Include="Scripts\Patches\Definitions\ShimSteamClientBrowserGetBrowserId.ts" />
     <TypeScriptCompile Include="Scripts\Patches\Definitions\ShimSteamClientBrowserGetBrowserIdCheck.ts" />

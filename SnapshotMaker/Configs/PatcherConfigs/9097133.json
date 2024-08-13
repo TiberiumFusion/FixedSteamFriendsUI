@@ -219,6 +219,10 @@
 				"IdName": "FixBrokenInviteListInviteItems",
 			},
 
+			{
+				"IdName": "RewriteScRpBCanCreateInviteForGameCall",
+			},
+
 		]
 
 	}

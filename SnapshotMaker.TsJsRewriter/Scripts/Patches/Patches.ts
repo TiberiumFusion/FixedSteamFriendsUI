@@ -163,6 +163,7 @@ namespace SnapshotMakerTsJsRewriter.Patches
             new Definitions.RewriteEarly2024NewWindowGettersUsageCPDF(),
             new Definitions.FixBrokenInviteListAutoCloseOnDoneCPDF(),
             new Definitions.FixBrokenInviteListInviteItemsCPDF(),
+            new Definitions.RewriteScRpBCanCreateInviteForGameCallCPDF(),
         ];
 
         for (let factory of factories)
