@@ -5,18 +5,28 @@
 
     ----- Target -----
 
-    1.  (null === (r = null === (o = null == i ? void 0 : i.SteamClient) || void 0 === o ? void 0 : o.Browser) || void 0 === r ? void 0 : r.GetBrowserID)
+    1.  (8601984: line 53439)
+        (null === (r = null === (o = null == i ? void 0 : i.SteamClient) || void 0 === o ? void 0 : o.Browser) || void 0 === r ? void 0 : r.GetBrowserID)
       =>
         TFP.Compat.SteamClient_HasGetBrowserID(i.SteamClient)
 
+    2.  (9097133: line 53757)
+        i?.SteamClient?.Browser?.GetBrowserID
+      =>
+        TFP.Compat.SteamClient_HasGetBrowserID(i.SteamClient)
     
+
     ----- Notes -----
     
-    This dereference chain existence check pattern appears in multiple locations in Valve's bastardized js. It is most likely the result of Valve's minifier, though the original code could be just as rancid since this is Valve after all.
+    Target Site #1
+        Prior to mid 2024, Valve translated their ?. syntax to the hideous deference chain as seen in 8601984. This pattern is prevalent in many locations in their bastardized js.be just as rancid since this is Valve after all.
 
-    Dissecting and patching the individual property access expressions, to patch individually, is an enormous amount of work. We are not doing that.
-    Instead, we are going to identify and replace the entire thing. The replacement is a shim method which will conduct the same check, using sane javascript instead.
+        Dissecting and patching the individual property access expressions, to patch individually, is an enormous amount of work. We are not doing that.
+        Instead, we are going to identify and replace the entire thing. The replacement is a shim method which will conduct the same check, using sane javascript instead.
 
+    Target Site #2
+        Circa mid 2024, Valve stopped translating ?. and now keeps it as-is in their production files.
+    
     This patch is required by the Dec 2022 client and others for which GetBrowserID exists on SteamClient.Window, not on SteamClient.Browser. Without this patch, steam-chat.com logic which guards the use GetBrowserID() behind this existence check will fail to use GetBrowserID(), breaking certain things.
 
 */
@@ -79,6 +89,10 @@ namespace SnapshotMakerTsJsRewriter.Patches.Definitions
                 //
 
                 [
+                    //
+                    // Target site 1
+                    //
+                    
                     (context: ts.TransformationContext, sourceFile: ts.SourceFile, node: ts.Node) =>
                     {
                         if (node.kind == ts.SyntaxKind.ParenthesizedExpression) // e.g.  (null === (r = null === (o = null == i ? void 0 : i.SteamClient) || void 0 === o ? void 0 : o.Browser) || void 0 === r ? void 0 : r.GetBrowserID)
@@ -184,6 +198,7 @@ namespace SnapshotMakerTsJsRewriter.Patches.Definitions
                                                                     {
                                                                         // Highly likely match
                                                                         return new DetectionInfo(true, {
+                                                                            "Location": 1,
                                                                             "TypedNode": tnode,
                                                                             "SteamClientPropertyAccess": steamClientPropertyAccess,
                                                                         });
@@ -199,7 +214,57 @@ namespace SnapshotMakerTsJsRewriter.Patches.Definitions
                                 }
                             }
                         }
-                    }
+                    },
+                    
+                    //
+                    // Target site 2
+                    //
+
+                    (context: ts.TransformationContext, sourceFile: ts.SourceFile, node: ts.Node) =>
+                    {
+                        if (node.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  i?.SteamClient?.Browser?.GetBrowserID
+                        {
+                            let tnode = node as ts.PropertyAccessExpression;
+
+                            if (tnode.name.kind == ts.SyntaxKind.Identifier) // e.g.  GetBrowserID
+                            {
+                                let memberToCallName = tnode.name as ts.Identifier;
+                                if (memberToCallName.escapedText == "GetBrowserID")
+                                {
+                                    if (tnode.expression.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  i?.SteamClient?.Browser
+                                    {
+                                        let browserAccess = tnode.expression as ts.PropertyAccessExpression;
+                                        if (browserAccess.name.kind == ts.SyntaxKind.Identifier && (browserAccess.name as ts.Identifier).escapedText == "Browser")
+                                        {
+                                            if (browserAccess.expression.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  i?.SteamClient
+                                            {
+                                                let steamClientAccess = browserAccess.expression as ts.PropertyAccessExpression;
+                                                if (steamClientAccess.name.kind == ts.SyntaxKind.Identifier && (steamClientAccess.name as ts.Identifier).escapedText == "SteamClient")
+                                                {
+                                                    // i[?].SteamClient[?].Browser[?].GetBrowserID  is now confirmed, but this will collide with normal calls to it unless we also verify that this property access expression is part of a conditional and not being called
+
+                                                    if (tnode.parent.kind == ts.SyntaxKind.BinaryExpression) // e.g.  d.TS.IN_CLIENT && i?.SteamClient?.Browser?.GetBrowserID
+                                                    {
+                                                        let binary = tnode.parent as ts.BinaryExpression;
+                                                        if (binary.right == tnode && binary.operatorToken.kind == ts.SyntaxKind.AmpersandAmpersandToken)
+                                                        {
+                                                            // Highly likely match, shouldn't collide with callexpressions
+                                                            return new DetectionInfo(true, {
+                                                                "Location": 1,
+                                                                "TypedNode": tnode,
+                                                                "SteamClientPropertyAccess": steamClientAccess,
+                                                            });
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    
                 ],
 
             );
