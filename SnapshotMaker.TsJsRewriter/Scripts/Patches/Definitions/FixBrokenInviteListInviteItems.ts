@@ -35,6 +35,9 @@
 			let m = this.props.searchString && this.props.searchString.length > 0,
 				u = m,
             ...
+    
+    2.  (9097133: line 27125 :: same relative location)
+        Site and patch is the same as Target #1 except Valve removed the  var e, t, n, i, r, a, l;  line
 
     
     ----- Notes -----
@@ -71,7 +74,7 @@
 
     Since: 8791341.
 
-    Until: At least 8825046.
+    Until: At least 9097133.
 
 */
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -154,38 +157,45 @@ namespace SnapshotMakerTsJsRewriter.Patches.Definitions
 
                                     if (method.body.statements.length >= 2)
                                     {
-                                        let statement1 = method.body.statements[1];
-                                        if (statement1.kind == ts.SyntaxKind.VariableStatement)
-                                        {
-                                            /* e.g.
-                                                let m = this.props.searchString && this.props.searchString.length > 0,
-							                        u = m,
-							                        p = this.IsCollapsed() && !m && !this.state.friendDrag,
-							                        _ = [],
-							                        g = this.IsInviteGroup(),
-							                        C = this.props.group.m_eDisplayType == c.h1.eOfflineOnly,
-							                        f = !1;
-                                            */
-                                            let varDecList = (statement1 as ts.VariableStatement).declarationList;
+                                        // Look for the local inits that start with  let m = this.props.searchString
+                                        // In 8825046, this is line 1 and follows a var declaration line
+                                        // In 9097133, this is line 0 because the var declaration line has been deleted
 
-                                            let matchedVarDec = false;
-                                            if (varDecList.declarations.length >= 2)
+                                        let checkStatements = method.body.statements.slice(0, 2);
+                                        for (let statement of checkStatements)
+                                        {
+                                            if (statement.kind == ts.SyntaxKind.VariableStatement)
                                             {
-                                                for (let varDec of varDecList.declarations)
+                                                /* e.g.
+                                                    let m = this.props.searchString && this.props.searchString.length > 0,
+							                            u = m,
+							                            p = this.IsCollapsed() && !m && !this.state.friendDrag,
+							                            _ = [],
+							                            g = this.IsInviteGroup(),
+							                            C = this.props.group.m_eDisplayType == c.h1.eOfflineOnly,
+							                            f = !1;
+                                                */
+                                                let varDecList = (statement as ts.VariableStatement).declarationList;
+
+                                                let matchedVarDec = false;
+                                                if (varDecList.declarations.length >= 2)
                                                 {
-                                                    if (varDec.initializer != null)
+                                                    for (let varDec of varDecList.declarations)
                                                     {
-                                                        // Validate declaration:  p = this.IsCollapsed() && !m && !this.state.friendDrag,
-                                                        // The  this.IsCollapsed  call and  this.state.friendDrag  access in a var dec is unique to this render() method among all other render() methods
-                                                        if (varDec.initializer.kind == ts.SyntaxKind.BinaryExpression) // e.g.  this.IsCollapsed() && !m && !this.state.friendDrag
+                                                        if (varDec.initializer != null)
                                                         {
-                                                            let initializer = varDec.initializer as ts.BinaryExpression;
-                                                            let initializerJs = JsEmitPrinter.printNode(ts.EmitHint.Unspecified, initializer, sourceFile);
-                                                            if (initializerJs.includes(".IsCollapsed()") && initializerJs.includes(".state.friendDrag"))
+                                                            // Validate declaration:  p = this.IsCollapsed() && !m && !this.state.friendDrag,
+                                                            // The  this.IsCollapsed  call and  this.state.friendDrag  access in a var dec is unique to this render() method among all other render() methods
+                                                            if (varDec.initializer.kind == ts.SyntaxKind.BinaryExpression) // e.g.  this.IsCollapsed() && !m && !this.state.friendDrag
                                                             {
-                                                                return new DetectionInfo(true, {
-                                                                    "TypedNode": tnode,
-                                                                });
+                                                                let initializer = varDec.initializer as ts.BinaryExpression;
+                                                                let initializerJs = JsEmitPrinter.printNode(ts.EmitHint.Unspecified, initializer, sourceFile);
+                                                                if (initializerJs.includes(".IsCollapsed()") && initializerJs.includes(".state.friendDrag"))
+                                                                {
+                                                                    return new DetectionInfo(true, {
+                                                                        "TypedNode": tnode,
+                                                                    });
+                                                                }
                                                             }
                                                         }
                                                     }
