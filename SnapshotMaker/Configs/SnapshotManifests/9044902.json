@@ -4,7 +4,7 @@
 
     "MinCLSTAMP": 9044902, // ca 2024-07-22
     "MaxCLSTAMP": 9044902,
-    "UnboundedMaxCLSTAMP": true,
+    "UnboundedMaxCLSTAMP": false,
 
     "ResourcesByCategory":
     {

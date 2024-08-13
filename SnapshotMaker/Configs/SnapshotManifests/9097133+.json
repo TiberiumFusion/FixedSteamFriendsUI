@@ -1,0 +1,160 @@
+{
+
+    "Version": 1,
+
+    "MinCLSTAMP": 9097133, // ca 2024-08-08
+    "MaxCLSTAMP": 9097133,
+    "UnboundedMaxCLSTAMP": true,
+
+    "ResourcesByCategory":
+    {
+        // Items in this dictionary must be keyed by the name of a member from enum TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.ResourceCategory
+
+        "Html":
+        [
+            "index.html",
+            "favicon.ico",
+        ],
+
+        "Js":
+        [
+            "public/javascript/webui/friends.js",
+            "public/javascript/webui/libraries.js",
+            "public/javascript/webui/libraries_cm.js",
+            "public/javascript/webui/steammessages.js",
+
+            "public/javascript/webui/broadcastapp.js", // In friends.js; in the  "javascript/webui/" + ({ ...  block
+            //"public/javascript/webui/navevents.js", // removed
+            "public/javascript/webui/gamerecording.js", // in javascript/webui/ block
+            "public/javascript/webui/noisegate-audio-worklet.js", // In friends.js nearly verbatim
+
+            "public/javascript/webui/3159.js", // empty useless nop stub like 461 was (ditto)
+
+            //"public/javascript/webui/2476.js", // removed
+            //"public/javascript/webui/6050.js", // removed
+            //"public/javascript/webui/6431.js", // removed
+
+            "public/javascript/webui/2240.js", // new, appears to be renamed 2476.js / 5222.js (short timeline thing)
+            "public/javascript/webui/2246.js", // new, appears to be renamed 6050.js / 2748.js (long timeline thing)
+            "public/javascript/webui/7931.js", // new*, appears to be renamed 6431.js / 589.js (svg things)
+
+            // Items without comments are directly referenced in the src="" attribute of the root html's <script> tags
+        ],
+
+        "JsonJs":
+        [
+            "public/javascript/webui/shared_arabic-json.js",
+            "public/javascript/webui/shared_brazilian-json.js",
+            "public/javascript/webui/shared_bulgarian-json.js",
+            "public/javascript/webui/shared_czech-json.js",
+            "public/javascript/webui/shared_danish-json.js",
+            "public/javascript/webui/shared_dutch-json.js",
+            "public/javascript/webui/shared_english-json.js",
+            "public/javascript/webui/shared_finnish-json.js",
+            "public/javascript/webui/shared_french-json.js",
+            "public/javascript/webui/shared_german-json.js",
+            "public/javascript/webui/shared_greek-json.js",
+            "public/javascript/webui/shared_hungarian-json.js",
+            "public/javascript/webui/shared_italian-json.js",
+            "public/javascript/webui/shared_japanese-json.js",
+            "public/javascript/webui/shared_koreana-json.js", // sometimes "korean" instead in other places, but not on steam-chat.com
+            "public/javascript/webui/shared_latam-json.js",
+            "public/javascript/webui/shared_norwegian-json.js",
+            "public/javascript/webui/shared_polish-json.js",
+            "public/javascript/webui/shared_portuguese-json.js",
+            "public/javascript/webui/shared_romanian-json.js",
+            "public/javascript/webui/shared_russian-json.js",
+            "public/javascript/webui/shared_sc_schinese-json.js",
+            "public/javascript/webui/shared_schinese-json.js",
+            "public/javascript/webui/shared_spanish-json.js",
+            "public/javascript/webui/shared_swedish-json.js",
+            "public/javascript/webui/shared_tchinese-json.js",
+            "public/javascript/webui/shared_thai-json.js",
+            "public/javascript/webui/shared_turkish-json.js",
+            "public/javascript/webui/shared_ukrainian-json.js",
+            "public/javascript/webui/shared_vietnamese-json.js",
+
+            "public/javascript/webui/friendsui_arabic-json.js",
+            "public/javascript/webui/friendsui_brazilian-json.js",
+            "public/javascript/webui/friendsui_bulgarian-json.js",
+            "public/javascript/webui/friendsui_czech-json.js",
+            "public/javascript/webui/friendsui_danish-json.js",
+            "public/javascript/webui/friendsui_dutch-json.js",
+            "public/javascript/webui/friendsui_english-json.js",
+            "public/javascript/webui/friendsui_finnish-json.js",
+            "public/javascript/webui/friendsui_french-json.js",
+            "public/javascript/webui/friendsui_german-json.js",
+            "public/javascript/webui/friendsui_greek-json.js",
+            "public/javascript/webui/friendsui_hungarian-json.js",
+            "public/javascript/webui/friendsui_italian-json.js",
+            "public/javascript/webui/friendsui_japanese-json.js",
+            "public/javascript/webui/friendsui_koreana-json.js", // aka "korean"
+            "public/javascript/webui/friendsui_latam-json.js",
+            "public/javascript/webui/friendsui_norwegian-json.js",
+            "public/javascript/webui/friendsui_polish-json.js",
+            "public/javascript/webui/friendsui_portuguese-json.js",
+            "public/javascript/webui/friendsui_romanian-json.js",
+            "public/javascript/webui/friendsui_russian-json.js",
+            "public/javascript/webui/friendsui_sc_schinese-json.js",
+            "public/javascript/webui/friendsui_schinese-json.js",
+            "public/javascript/webui/friendsui_spanish-json.js",
+            "public/javascript/webui/friendsui_swedish-json.js",
+            "public/javascript/webui/friendsui_tchinese-json.js",
+            "public/javascript/webui/friendsui_thai-json.js",
+            "public/javascript/webui/friendsui_turkish-json.js",
+            "public/javascript/webui/friendsui_ukrainian-json.js",
+            "public/javascript/webui/friendsui_vietnamese-json.js",
+        ],
+
+        "Css":
+        [
+            "public/shared/css/motiva_sans.css",
+            "public/shared/css/shared_global.css",
+
+            "public/css/webui/friends.css",
+
+            "public/css/webui/broadcastapp.css", // In friends.js; Ctrl+F for ".css?contenthash="
+            "public/css/webui/gamerecording.css", // Ditto
+
+            "public/css/webui/351.css", // 485 chars (accompanying css for unnamed js chunks)
+            "public/css/webui/3159.css", // 55 chars
+
+            // Items without comments are directly referenced in the href="" attribute of the root html's <link> tags
+        ],
+
+        "CssFonts":
+        [
+            "public/shared/fonts/MotivaSans-Black.ttf",
+            "public/shared/fonts/MotivaSans-Bold.ttf",
+            "public/shared/fonts/MotivaSans-BoldItalic.ttf",
+            "public/shared/fonts/MotivaSans-Light.ttf",
+            "public/shared/fonts/MotivaSans-LightItalic.ttf",
+            "public/shared/fonts/MotivaSans-Medium.ttf",
+            "public/shared/fonts/MotivaSans-Regular.ttf",
+            "public/shared/fonts/MotivaSans-RegularItalic.ttf",
+            "public/shared/fonts/MotivaSans-Thin.ttf",
+        ],
+
+        "JsAudio":
+        [
+            "public/sounds/webui/steam_at_mention.m4a", // All of these are in friends.js verbatim
+            "public/sounds/webui/steam_chatroom_notification.m4a", // And some are duplicated several times
+            "public/sounds/webui/steam_phonecall.m4a",
+            "public/sounds/webui/steam_rpt_join.m4a",
+            "public/sounds/webui/steam_rpt_leave.m4a",
+            "public/sounds/webui/steam_ui_ptt_short_01_quiet.m4a",
+            "public/sounds/webui/steam_ui_ptt_short_02_quiet.m4a",
+            "public/sounds/webui/steam_voice_channel_enter.m4a",
+            "public/sounds/webui/steam_voice_channel_exit.m4a",
+            "public/sounds/webui/ui_steam_message_old_smooth.m4a",
+            "public/sounds/webui/ui_steam_smoother_friend_join.m4a",
+            "public/sounds/webui/ui_steam_smoother_friend_online.m4a",
+        ],
+
+        "JsImages":
+        [
+            "public/images/webui/8669e97b288da32670e77181618c3dfb.png", // In friends.js nearly verbatim
+        ],
+    }
+
+}
