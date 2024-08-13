@@ -1,6 +1,6 @@
 ﻿namespace SnapshotMakerTsJsRewriter
 {
-    export const Version: string = "1.0.0.0";
+    export const Version: string = "1.1.0.0";
 
 
     // ____________________________________________________________________________________________________

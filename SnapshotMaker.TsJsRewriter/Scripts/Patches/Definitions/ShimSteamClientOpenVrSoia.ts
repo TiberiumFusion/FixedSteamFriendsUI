@@ -15,6 +15,11 @@
       =>
         (null === (r = null === (o = null === (i = e.ownerDocument.defaultView) || void 0 === i ? void 0 : i.SteamClient) || void 0 === o ? void 0 : o.OpenVR) || void 0 === r || TFP.Compat.SteamClient_OpenVR_SetOverlayInteractionAffordance(i.SteamClient, t, s))
 
+    3.  (9097133: line 48039)
+        r != o && e.ownerDocument.defaultView?.SteamClient?.OpenVR?.SetOverlayInteractionAffordance(t, r);
+      =>
+        r != o && TFP.Compat.SteamClient_OpenVR_SetOverlayInteractionAffordance(e.ownerDocument.defaultView?.SteamClient, t, r);
+
     
     ----- Notes -----
     
@@ -29,8 +34,9 @@
 
     Since: Sometime between 8390683 and 8601984.
 
-    Until: At least 8811541.
+    Until: At least 9097133.
             - Circa 8811541, Valve added a guard to accessing the OpenVR subinterface, and only for OpenVR. Zero guard for SetOverlayInteractionAffordance. This changed the call site from Target #1 to Target #2.
+            - Circa 9097133, Valve stopped translating their ?. into rancid syntax and now simply keep the almost-as-rancid ?. operator. Still zero guard for SetOverlayInteractionAffordance. Call site is now changed to Target #3.
 
 */
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -63,12 +69,13 @@ namespace SnapshotMakerTsJsRewriter.Patches.Definitions
 
                 (context: ts.TransformationContext, sourceFile: ts.SourceFile, node: ts.Node, detectionInfoData: any) =>
                 {
-                    // Common patch logic valid for both target sites
+                    // Common patch logic valid for all target sites
 
                     let tnode: ts.CallExpression = detectionInfoData.TypedNode;
                     // e.g.
                     // - Site 1:  o.OpenVR.SetOverlayInteractionAffordance(t, s)
                     // - Site 2:  r.SetOverlayInteractionAffordance(t, l)
+                    // - Site 3:  e.ownerDocument.defaultView?.SteamClient?.OpenVR?.SetOverlayInteractionAffordance(t, r)
 
                     // Replace the call to the original method with a call to the shim function that receives the original arguments as well
                     let newArgs = tnode.arguments.slice();
@@ -231,7 +238,37 @@ namespace SnapshotMakerTsJsRewriter.Patches.Definitions
                                 }
                             }
                         }
-                    }
+                    },
+                    
+                    //
+                    // Target site 3
+                    //
+                    
+                    (context: ts.TransformationContext, sourceFile: ts.SourceFile, node: ts.Node) =>
+                    {
+                        if (node.kind == ts.SyntaxKind.CallExpression) // e.g.  e.ownerDocument.defaultView?.SteamClient?.OpenVR?.SetOverlayInteractionAffordance(t, r)
+                        {
+                            let tnode = node as ts.CallExpression;
+                            // This is a chain of PropertyAccessExpressions, each nested in the reverse order of how it's typed in the js
+
+                            if (tnode.expression.kind == ts.SyntaxKind.PropertyAccessExpression) // e.g.  e.ownerDocument.defaultView?.SteamClient?.OpenVR?.SetOverlayInteractionAffordance
+                            {
+                                let memberToCall = tnode.expression as ts.PropertyAccessExpression;
+                                let memberToCallJs = JsEmitPrinter.printNode(ts.EmitHint.Unspecified, memberToCall, sourceFile);
+                                if (memberToCallJs.endsWith(".OpenVR?.SetOverlayInteractionAffordance"))
+                                {
+                                    // Highly likely match
+                                    let steamClientPropertyAccess = (memberToCall.expression as ts.PropertyAccessExpression).expression;
+                                    return new DetectionInfo(true, {
+                                        "Location": 3,
+                                        "TypedNode": tnode,
+                                        "SteamClientPropertyAccess": steamClientPropertyAccess,
+                                    });
+                                }
+							}
+                        }
+                    },
+
                 ],
 
             );

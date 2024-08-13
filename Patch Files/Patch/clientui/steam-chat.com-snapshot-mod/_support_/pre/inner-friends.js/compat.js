@@ -172,7 +172,7 @@
 
     Compat.SteamClient_OpenVR_SetOverlayInteractionAffordance = function(steamClient, unknown1, unknown2)
     {
-        if ("SetOverlayInteractionAffordance" in steamClient.OpenVR)
+        if (steamClient != null && "OpenVR" in steamClient && "SetOverlayInteractionAffordance" in steamClient.OpenVR)
         {
             return steamClient.OpenVR.SetOverlayInteractionAffordance(unknown1, unknown2); // usage in valve javascript suggests this returns a bool
         }
