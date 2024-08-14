@@ -143,7 +143,28 @@
 	// - resourceCategory: The CdnResourceCategory to which this resource belongs
 	// - (optional) forceHost: If specified, the resource's category's UseLocalAssetCopies config is ignored, and the returned resource url will always point to the host specified by forceHost (a member of CdnResourceLocation)
 	Resources.SelectCdnResourceUrl = function(remoteRootPath, resourcePath, remoteRootPathType, resourceCategory, forceHost = null)
-	{
+	{        
+		// Ensure remoteRootPath is actually remote
+		// Some url string builds in the inner friends.js use window.location instead of VALVE_PUBLIC_PATH to start the url
+		// - noisegate-audio-worklet.js is a notable example of this, where remoteRootPath will actually be "https://steamloopback.host/steam-chat.com-snapshot-mod-%7Bguid%7D/public/javascript/webui/../../" instead of a valve server
+        // We need to detect this and derive the real remote url from these paths, in order for the remote fallback to work when the local resource is missing
+		let localUrlStart = "https://steamloopback.host/steam-chat.com-snapshot-mod-";
+		if (remoteRootPath.startsWith(localUrlStart))
+		{
+			let pathStart = remoteRootPath.indexOf("/public/", localUrlStart);
+			if (pathStart != -1)
+			{
+				pathStart += "/public/".length;
+				remoteRootPath =
+					window.VALVE_PUBLIC_PATH +			// e.g.  "https:\/\/community.akamai.steamstatic.com\/public\/"
+					remoteRootPath.substr(pathStart)	// e.g.  "javascript/webui/../../"
+            }
+        }
+
+		//
+		// Determine if we are going to retrieve this resource from the local snapshot or remote server
+		//
+
 		let local = false;
 		if (forceHost == this.CdnResourceLocation.Local || this.CdnResourceLocation[forceHost] == this.CdnResourceLocation.Local)
 		{
@@ -161,9 +182,13 @@
 
 			local = this.UseLocalAssetCopies[resCat];
 		}
-	
+
 		if (local)
 		{
+			//
+			// Determine local resource path
+			//
+
 			let resourceUrl = null;
 			if (remoteRootPathType == this.CdnResourceRootPathType.Root || this.CdnResourceRootPathType[remoteRootPathType] == this.CdnResourceRootPathType.Root)
 			{
@@ -178,6 +203,10 @@
 			else {
 				throw new Error("Invalid value for param remoteRootPathType", remoteRootPathType); }
 
+			//
+			// Check existence of local resource
+			//
+
 			let localAssetExists = true;
 			if (this.LocalAssetFallbackToRemote) // verify that the local asset can be retrieved; if not, use remote asset instead
 			{
@@ -187,6 +216,8 @@
 				if (xhr.status < 200 || xhr.status >= 300)
 				{
 					localAssetExists = false;
+
+					// Fall back to remote path
 					resourceUrl = remoteRootPath + resourcePath;
 					console.log("- Local asset not found (" + xhr.status + "); using fallback to remote path instead: " + resourceUrl);
 				}
@@ -197,12 +228,12 @@
 			else {
 				console.log("- Expected local path: " + resourceUrl); }
 
-			return resourceUrl;
+			return resourceUrl; // final url
 		}
 		else
 		{
 			console.log("Use REMOTE asset: ", remoteRootPath, resourcePath, this.CdnResourceCategory[resourceCategory]);
-			return remoteRootPath + resourcePath;
+			return remoteRootPath + resourcePath; // final url
 		}
 	}
 
