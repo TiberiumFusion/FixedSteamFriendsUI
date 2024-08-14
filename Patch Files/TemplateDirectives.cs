@@ -23,6 +23,9 @@ namespace TiberiumFusion.FixedSteamFriendsUI.PatchFilesPackager
         [XmlElement]
         public string ReleaseDateFriendly { get; set; }
 
+        [XmlElement]
+        public long ValveCLSTAMP { get; set; }
+
 
         public static TemplateDirectives FromStream(Stream stream)
         {

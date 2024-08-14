@@ -25,7 +25,7 @@ var TfusionPatchMetadataJsonRaw = `{
 		"VersionGuid": "<<![VersionGuid]>>",
 		"ReleaseDate": "<<![ReleaseDate]>>",
 		"ReleaseDateFriendly": "<<![ReleaseDateFriendly]>>",
-		"CoreBase": "8825046",
+		"CoreBase": "<<![ValveCLSTAMP]>>",
 		"PayloadName": "steam-chat.com-snapshot-mod-<<![VersionGuid]>>",
 		"PayloadRootIndexFilename": "index.html"
 	}
