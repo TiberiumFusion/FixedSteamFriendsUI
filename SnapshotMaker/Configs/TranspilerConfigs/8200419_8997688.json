@@ -1,0 +1,31 @@
+{
+
+	"Version": 1,
+
+    "MinCLSTAMP": 8200419, // ca late july 2023
+    "MaxCLSTAMP": 8997688, // ca 2024-06-25
+    "UnboundedMaxCLSTAMP": false,
+
+
+    
+    // ____________________________________________________________________________________________________
+	// 
+	//     Transpile targets
+	// ____________________________________________________________________________________________________
+	//
+
+	"Targets": [], // Afaik nothing needs transpilation in 8997688 and older; all files are compliant with M86
+
+
+
+	// ____________________________________________________________________________________________________
+	// 
+	//     Babel transpile configuration
+	// ____________________________________________________________________________________________________
+	//
+
+	// Passed to JsTranspiler to control the transpilation result
+
+	"BabelConfig": {},
+
+}

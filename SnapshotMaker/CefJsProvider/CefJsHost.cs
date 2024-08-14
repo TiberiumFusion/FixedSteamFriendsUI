@@ -30,16 +30,19 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.CefJsProvider
         private List<Api> Apis;
         public JsDeMinifier ApiJsDeMinifier { get; private set; }
         public ValveFriendsJsRewriter ApiValveFriendsJsRewriter { get; private set; }
+        public JsTranspiler ApiJsTranspiler { get; private set; }
 
         public CefJsHost()
         {
             ApiJsDeMinifier = new JsDeMinifier();
             ApiValveFriendsJsRewriter = new ValveFriendsJsRewriter();
+            ApiJsTranspiler = new JsTranspiler();
 
             Apis = new List<Api>()
             {
                 ApiJsDeMinifier,
                 ApiValveFriendsJsRewriter,
+                ApiJsTranspiler,
             };
         }
 

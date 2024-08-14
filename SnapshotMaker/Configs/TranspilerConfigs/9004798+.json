@@ -1,0 +1,56 @@
+{
+
+	"Version": 1,
+
+    "MinCLSTAMP": 9004798, // ca 2024-07-02
+    "MaxCLSTAMP": 9097133, // ca 2024-08-13
+    "UnboundedMaxCLSTAMP": true,
+
+
+    // ____________________________________________________________________________________________________
+	// 
+	//     Transpile targets
+	// ____________________________________________________________________________________________________
+	//
+
+	"Targets":
+	[
+        "public/javascript/webui/friends.js",
+	],
+
+
+
+	// ____________________________________________________________________________________________________
+	// 
+	//     Babel transpile configuration
+	// ____________________________________________________________________________________________________
+	//
+
+	// Passed to JsTranspiler to control the transpilation result
+
+	"BabelConfig":
+	{
+		// Transpilation options
+		"presets":
+		[ // which live in this ugly unintuitive structure
+			[
+				"env", // Poorly named collection of required default options. When missing, zero transpilation occurs.
+				{ // Presumably overrides fields in "env"
+					"targets": // Amorphous runtime scenarios whose capabilities (or lack thereof) will control how much downlevel transpilation is required
+					{
+						"chrome": "86", // Version of CEF in the final vgui clients
+					},
+					"bugfixes": true, // Must be true. When false, Babel needlessly transpiles compatible code that has no problems. For example, if bugfixes = false, ?. syntax gets transpiled despite our M86 target.
+					"modules": false, // Removes obnoxious counterproductive forced "use strict" addition as well as expectation of ES6 module system being present
+				}
+			]
+		],
+
+		// Output js generation
+		"compact": false, // Prevent obnoxious "The code generator has deoptimised the styling of <...> as it exceeds the max of 500KB" console warning prints; also has side effect of preventing babel from adding extra whitespace
+		"retainLines": true, // Make babel try to keep line numbers in the output file closer to the original source file
+		"minified": false,
+		"comments": true, // Keep comments
+	}
+
+}

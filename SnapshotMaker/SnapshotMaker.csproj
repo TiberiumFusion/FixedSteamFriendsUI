@@ -94,6 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CefJsProvider\Api.cs" />
+    <Compile Include="CefJsProvider\Apis\JsTranspiler.cs" />
     <Compile Include="CefJsProvider\Apis\ValveFriendsJsRewriter.cs" />
     <Compile Include="CefJsProvider\Apis\JsDeMinifier.cs" />
     <Compile Include="CefJsProvider\CefJsHost.cs" />
@@ -105,6 +106,8 @@
     <Compile Include="Procedures\AmendSnapshot\Fixer.cs" />
     <Compile Include="Procedures\CaptureSnapshot\Scraper.cs" />
     <Compile Include="Procedures\CleanSnapshot\Cleaner.cs" />
+    <Compile Include="Procedures\ConformSnapshot\Conformer.cs" />
+    <Compile Include="Procedures\ConformSnapshot\TranspilerConfig.cs" />
     <Compile Include="Procedures\PatchSnapshot\Patcher.cs" />
     <Compile Include="Procedures\PatchSnapshot\PatcherConfig.cs" />
     <Compile Include="Procedures\Utils.cs" />
@@ -124,6 +127,8 @@
     <None Include="Configs\SnapshotManifests\9044902.json" />
     <None Include="Configs\SnapshotManifests\9043750.json" />
     <None Include="Configs\SnapshotManifests\9004798.json" />
+    <None Include="Configs\TranspilerConfigs\8200419_8997688.json" />
+    <None Include="Configs\TranspilerConfigs\9004798+.json" />
     <None Include="Directory.Build.props" />
     <None Include="packages.config" />
     <None Include="Configs\SnapshotManifests\8657129_8997688.json" />
@@ -135,7 +140,9 @@
       <Link>CefJsProviderWebFiles\lib\TsJsRewriter\combined.js</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="CefJsProviderWebFiles\Api\JsTranspiler.js" />
     <Content Include="CefJsProviderWebFiles\Api\ValveFriendsJsRewriter.js" />
+    <Content Include="CefJsProviderWebFiles\lib\babel-standalone%407.25.3\babel.min.js" />
     <Content Include="CefJsProviderWebFiles\lib\prettier%403.2.5\plugins\babel.js" />
     <Content Include="CefJsProviderWebFiles\lib\prettier%403.2.5\plugins\estree.js" />
     <Content Include="CefJsProviderWebFiles\lib\prettier%403.2.5\standalone.js" />

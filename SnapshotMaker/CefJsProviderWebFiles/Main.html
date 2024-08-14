@@ -12,15 +12,19 @@
         <script src="lib/typescript@4.9.5/typescript.js"></script>
         <!-- and Snapshotmaker.TsJsRewriter -->
         <script src="lib/TsJsRewriter/combined.js"></script>
+
+        <!-- babel -->
+        <script src="lib/babel-standalone@7.25.3/babel.min.js"></script>
     </head>
     
     <body>
         <script type="text/javascript" src="Api/JsDeMinifier.js"></script>
         <script type="text/javascript" src="Api/ValveFriendsJsRewriter.js"></script>
+        <script type="text/javascript" src="Api/JsTranspiler.js"></script>
         <!--
             Notes:
             - CefSharp sends all JS console.* traces to the C# Console
-            - This is helpful for debugging but it can ruin formatting of the C#-side traces, so want to avoid printing anything unnecessary from JS
+            - This is helpful for debugging but it can ruin formatting of the C#-side traces, so we want to avoid printing anything unnecessary from JS
         -->
     </body>
     

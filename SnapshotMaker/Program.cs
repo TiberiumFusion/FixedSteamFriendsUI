@@ -10,6 +10,7 @@ using CefSharp;
 using Newtonsoft.Json;
 using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.CefJsProvider;
 using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.CleanSnapshot;
+using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.ConformSnapshot;
 using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.PatchSnapshot;
 using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot;
 using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.AmendSnapshot;
@@ -67,15 +68,17 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
             bool StageScrape = cmdArgs.Stages.Contains("s");
             bool StageAmend = cmdArgs.Stages.Contains("a");
             bool StagePatch = cmdArgs.Stages.Contains("p");
+            bool StageConform = cmdArgs.Stages.Contains("f");
             bool StageClean = cmdArgs.Stages.Contains("c");
 
-            bool anyStageEnabled = StageScrape || StageAmend || StagePatch || StageClean;
+            bool anyStageEnabled = StageScrape || StageAmend || StagePatch || StageConform || StageClean;
             if (anyStageEnabled)
             {
                 Log("Enabled stages: ");
                 if (StageScrape) Log("S");
                 if (StageAmend) Log("A");
                 if (StagePatch) Log("P");
+                if (StageConform) Log("F");
                 if (StageClean) Log("C");
                 LogLine("\n");
             }
@@ -100,6 +103,14 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
             {
                 LogLine("[!!!] Zero patcher config files found in default config folder! [!!!]");
                 LogLine("Program cannot continue. The Patcher stage requires at least one patcher config.");
+                return RESULT_ERROR;
+            }
+
+            Config.LoadTranspilerConfigsFrom(Path.Combine(defaultConfigDir, "TranspilerConfigs"), true, CatchUnhandledExceptions);
+            if (Config.TranspilerConfigs.Count == 0 && StageConform)
+            {
+                LogLine("[!!!] Zero transpiler config files found in default config folder! [!!!]");
+                LogLine("Program cannot continue. The Conform stage requires at least one transpiler config.");
                 return RESULT_ERROR;
             }
 
@@ -218,6 +229,32 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
                 {
                     LogERROR(onlyIfOpenLine: true);
                     LogLine("[!!!] An unhandled exception occurred during the patch operation [!!!]");
+                    LogLine(e.ToString());
+                    return RESULT_ERROR;
+                }
+            }
+
+
+            // --------------------------------------------------
+            //   Conform snapshot
+            // --------------------------------------------------
+
+            if (StageConform)
+            {
+                // Make the snapshot work in our target steam clients
+                // Notably and solely, for now, this means transpiling select javascript from CLSTAMP 9004798+ to something that M86 supports
+
+                LogLine("\n---------- |  Conforming Snapshot  | ----------");
+
+                try
+                {
+                    Conformer conformer = new Conformer();
+                    conformer.ConformSteamchatDotComSnapshot(outputPath);
+                }
+                catch (Exception e) when (CatchUnhandledExceptions)
+                {
+                    LogERROR(onlyIfOpenLine: true);
+                    LogLine("[!!!] An unhandled exception occurred during the conform operation [!!!]");
                     LogLine(e.ToString());
                     return RESULT_ERROR;
                 }

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot;
 using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.PatchSnapshot;
+using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.ConformSnapshot;
 
 namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
 {
@@ -206,6 +207,68 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
             }
 
             return curMatch;
+        }
+
+
+
+        // ____________________________________________________________________________________________________
+        // 
+        //     Transpiler Configurations
+        // ____________________________________________________________________________________________________
+        //
+
+        /// <summary>
+        /// All <see cref="TranspilerConfig"/>s loaded by <see cref="LoadPatcherConfigsFrom"/>.
+        /// </summary>
+        public static List<TranspilerConfig> TranspilerConfigs { get; private set; } = new List<TranspilerConfig>();
+
+        /// <summary>
+        /// Load and deserialize all .json files in <paramref name="directoryPath"/> into <see cref="TranspilerConfig"/> objects and add them to <see cref="TranspilerConfigs"/>.
+        /// </summary>
+        /// <param name="directoryPath">Path to the folder to search within for .json files.</param>
+        /// <param name="deep">Search subfolders of <paramref name="directoryPath"/> for more files.</param>
+        /// <param name="ignoreExceptions">Ignore exceptions on nonexistent paths and continue loading the remaining paths.</param>
+        public static void LoadTranspilerConfigsFrom(string directoryPath, bool deep = true, bool ignoreExceptions = false)
+        {
+            TranspilerConfigs.AddRange(LoadJsonConfigsFromDirectory<TranspilerConfig>(directoryPath, deep, ignoreExceptions));
+        }
+
+
+        /// <summary>
+        /// Gets a loaded <see cref="TranspilerConfig"/> which most closely matches the supplied <paramref name="clstamp"/>.
+        /// </summary>
+        /// <param name="clstamp">The CLSTAMP to query by, as a number.</param>
+        /// <returns>The matched <see cref="TranspilerConfig"/></returns>
+        public static TranspilerConfig GetClosestTranspilerConfigForClstamp(long clstamp, out TranspilerConfigMatchType matchType)
+        {
+            // Like snapshot manifests, each transpiler config specifies itself to be valid for a CLSTAMP range
+            // A match here is defined as a TranspilerConfig whose CLSTAMP range includes the provided clstamp parameter
+
+            // If we have a perfect match, use that
+            // Otherwise, use to the newest manifest that is also closest to the provided CLSTAMP
+            // Lastly, fall back to the latest manifest if all manifests are older than the provided clstamp
+
+            foreach (TranspilerConfig config in TranspilerConfigs.OrderByDescending(a => a.MinCLSTAMP))
+            {
+                if (clstamp >= config.MinCLSTAMP && clstamp <= config.MaxCLSTAMP)
+                {
+                    matchType = TranspilerConfigMatchType.ExactKnown;
+                    return config;
+                }
+                else if (clstamp >= config.MinCLSTAMP && config.UnboundedMaxCLSTAMP)
+                {
+                    matchType = TranspilerConfigMatchType.ExactTentative;
+                    return config;
+                }
+                else if (clstamp >= config.MinCLSTAMP)
+                {
+                    matchType = TranspilerConfigMatchType.ClosestNewer;
+                    return config;
+                }
+            }
+
+            matchType = TranspilerConfigMatchType.NewestKnown;
+            return TranspilerConfigs.Last();
         }
 
     }
