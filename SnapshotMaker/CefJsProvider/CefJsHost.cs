@@ -62,10 +62,11 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.CefJsProvider
         /// Instantiates a cef instance, then initializes and binds all apis to that cef instance.
         /// </summary>
         /// <param name="onlyIfUnintialized">Abort if we are already initialized.</param>
-        public void Initialize(bool onlyIfUnintialized = true)
+        /// <returns>Returns false if <paramref name="onlyIfUnintialized"/> == true and we are already initialized. Returns true if we did initialize.</returns>
+        public bool Initialize(bool onlyIfUnintialized = true)
         {
             if (onlyIfUnintialized && IsInitialized)
-                return;
+                return false;
 
 
             if (Trace)
@@ -147,6 +148,8 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.CefJsProvider
 
 
             IsInitialized = true;
+
+            return true;
         }
 
     }

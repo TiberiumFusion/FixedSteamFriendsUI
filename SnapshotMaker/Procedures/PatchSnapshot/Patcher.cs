@@ -82,7 +82,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.PatchSnaps
 
             if (EnabledTasks[Task.RewriteInnerFriendsJs])
             {
-                LogLine("\nPreparing to rewrite inner friends.js javascript");
+                LogLine("Preparing to rewrite inner friends.js javascript");
 
 
                 //

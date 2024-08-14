@@ -80,7 +80,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.ConformSna
 
             if (EnabledTasks[Task.TranspileInnerFriendsJs])
             {
-                LogLine("\nPreparing to transpile javascript files");
+                LogLine("Preparing to transpile javascript files");
 
 
                 //
@@ -163,13 +163,18 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.ConformSna
                 //
 
                 CefJsHost cefJsHost = Program.SharedCefJsHost;
-                cefJsHost.Initialize(); // will silently abort if already initialized
+                bool alreadyInitialized = cefJsHost.Initialize(); // will silently abort if already initialized
+
+                if (alreadyInitialized) // avoid double newlines in log
+                    LogLine("");
 
 
                 // Process each file in turn
+                bool firstTarget = true;
                 foreach (string targetJsPath in transpilerConfig.Targets)
                 {
-                    LogLine("");
+                    if (!firstTarget)
+                        LogLine("");
 
                     //
                     // Validate and read in file
@@ -267,6 +272,9 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.ConformSna
                         LogLine(e.ToString());
                         goto TaskEnd;
                     }
+
+
+                    firstTarget = false;
                 }
 
 
