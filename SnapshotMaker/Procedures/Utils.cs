@@ -27,48 +27,66 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures
             //   var CLSTAMP="8804332";(()=>{var e,t,n,i,o,r={3119:(e,t,n)=>{var ...
             // The string "CLSTAMP" also only appears once in the entire file, at this location
 
-            scrapedClstamp = -1;
+            // The alterations we perform on this file (amending, patching, conforming) can alter the syntax and location of the CLSTAMP declaration line
+            // Notably, babel transpilation will prepend a variety of things to the file, which pushes the CLSTAMP declaration line down quite a bit
+            // And patching might produce minor variations in the whitespace in this area
+
+            scrapedClstamp = -1; // Note: Valve has been observed to fuck up and release production code with  var CLSTAMP = 0; , so it may even be possible for the var dec CLSTAMP to be other bogus values like -1
             errorMessage = "";
 
             // To avoid running a regex on a 3MB string, we'll first do a dumber scrape of the expected var CLSTAMP declaration
-
-            int varDecStart = javascript.IndexOf("var");
-            if (varDecStart == -1)
-            {
-                errorMessage = "Failed to find first var declaration statement";
-                return false;
-            }
-
-            int varDecEnd = javascript.IndexOf(';', varDecStart);
-            if (varDecEnd == -1)
-            {
-                errorMessage = "Failed to find end of first var declaration statement";
-                return false;
-            }
-
-            string varDec = javascript.Substring(varDecStart, varDecEnd - varDecStart);
-
-            // Then we can run a simpler regex on this much smaller string to handle formatting and whitespace variations
-
             Regex regex = new Regex("CLSTAMP\\s*=\\s*\"\\d+\"", RegexOptions.CultureInvariant);
-            Match match = regex.Match(varDec);
-            if (match == null)
+
+            // To account for babel prepends, we'll check all var declarations within the first 10000 characters. If the size of the babel prepends grows, this threshold will need to be increased.
+            int pos = 0;
+            int searchLimitChars = 10000;
+            bool found = false;
+            while (pos < searchLimitChars)
             {
-                errorMessage = "First var declaration did not match CLSTAMP pattern";
+                int varDecStart = javascript.IndexOf("var", pos);
+                if (varDecStart == -1)
+                {
+                    errorMessage = "Failed to find first var declaration statement. No declarations in first " + searchLimitChars + " characters.";
+                    return false;
+                }
+
+                int varDecEnd = javascript.IndexOf(';', varDecStart);
+                if (varDecEnd == -1)
+                {
+                    errorMessage = "Failed to find end of var declaration statement for position " + pos;
+                    return false;
+                }
+
+                pos = varDecEnd;
+
+                string varDec = javascript.Substring(varDecStart, varDecEnd - varDecStart);
+
+                // Now we can run our simple regex on this much smaller string to handle formatting and whitespace variations
+                Match match = regex.Match(varDec);
+                if (!match.Success)
+                    continue; // try the next var declaration
+
+                string[] cuts = varDec.Split('=');
+                string clstampValue = cuts[1].Trim();
+
+                long clStampLong;
+                if (!long.TryParse(clstampValue.Trim('"'), out clStampLong))
+                {
+                    errorMessage = "Failed to parse value of CLSTAMP declaration into a long";
+                    return false;
+                }
+
+                scrapedClstamp = clStampLong;
+                found = true;
+                break;
+            }
+
+            if (!found)
+            {
+                errorMessage = "CLSTAMP var declaration not found in first " + searchLimitChars + " characters";
                 return false;
             }
 
-            string[] cuts = varDec.Split('=');
-            string clstampValue = cuts[1].Trim();
-
-            long clStampLong;
-            if (!long.TryParse(clstampValue.Trim('"'), out clStampLong))
-            {
-                errorMessage = "Failed to parse value of CLSTAMP declaration into a long";
-                return false;
-            }
-
-            scrapedClstamp = clStampLong;
             return true;
         }
     }
