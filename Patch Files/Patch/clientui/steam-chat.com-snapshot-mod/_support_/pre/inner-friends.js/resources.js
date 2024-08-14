@@ -192,12 +192,12 @@
 			let resourceUrl = null;
 			if (remoteRootPathType == this.CdnResourceRootPathType.Root || this.CdnResourceRootPathType[remoteRootPathType] == this.CdnResourceRootPathType.Root)
 			{
-				console.log("Use LOCAL (root) asset: ", remoteRootPath, resourcePath, this.CdnResourceCategory[resourceCategory]);
+				console.log("Use LOCAL (root) asset for: ", remoteRootPath, resourcePath, "", resourceCategory);
 				resourceUrl = this.LOCAL_ROOT + resourcePath;
 			}
 			else if (remoteRootPathType == this.CdnResourceRootPathType.Root_Public || this.CdnResourceRootPathType[remoteRootPathType] == this.CdnResourceRootPathType.Root_Public)
 			{
-				console.log("Use LOCAL (root/public) asset: ", remoteRootPath, resourcePath, this.CdnResourceCategory[resourceCategory]);
+				console.log("Use LOCAL (root/public) asset for: ", remoteRootPath, resourcePath, "", resourceCategory);
 				resourceUrl = this.LOCAL_VALVE_PUBLIC_PATH + resourcePath;
 			}
 			else {
@@ -232,7 +232,7 @@
 		}
 		else
 		{
-			console.log("Use REMOTE asset: ", remoteRootPath, resourcePath, this.CdnResourceCategory[resourceCategory]);
+			console.log("Use REMOTE asset for: ", remoteRootPath, resourcePath, "", resourceCategory);
 			return remoteRootPath + resourcePath; // final url
 		}
 	}
