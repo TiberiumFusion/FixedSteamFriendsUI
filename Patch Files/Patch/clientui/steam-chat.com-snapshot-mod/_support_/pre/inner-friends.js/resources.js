@@ -21,7 +21,7 @@
 	// --------------------------------------------------
 
 	// Root url for remote resources
-	Resources.VALVE_PUBLIC_PATH = "https://community.cloudflare.steamstatic.com/public/"; // Valve defines this in an inline <script> in the root html document. We can redfine it here if needed.
+	// Use window.VALVE_PUBLIC_PATH, which is defined in the root html
 
 	// Root urls for local resources
 	Resources.LOCAL_ROOT = UrlVars.get("PayloadRootUrl") // the local directory that contains the index.html file which has the <script>s that include friends.js and co
