@@ -19,7 +19,7 @@
         - I've never that message box before. Presumably it is also used for invalid calls to other parts of the SteamClient interface.
     - This is the first clear-cut case of Valve invaliding their SteamClient API by breaking the signature & intent of an interop method.
 
-    9097133 always passed a constant `true` to the new second parameter, which renders it meaningless and does not provide any clues to its purpose.
+    9097133 always passes a constant `true` to the new second parameter, which renders it meaningless and does not provide any clues to its purpose.
 
     Rewriting these calls to omit the superfluous parameter works fine, so that's what we're doing here.
 

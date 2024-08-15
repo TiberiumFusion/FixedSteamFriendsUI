@@ -19,9 +19,9 @@
     ----- Notes -----
     
     Target Site #1
-        Prior to mid 2024, Valve translated their ?. syntax to the hideous deference chain as seen in 8601984. This pattern is prevalent in many locations in their bastardized js.be just as rancid since this is Valve after all.
+        Prior to mid 2024, Valve translated their ?. syntax to the hideous deference chain as seen in 8601984. This pattern is prevalent in many locations in their bastardized js
 
-        Dissecting and patching the individual property access expressions, to patch individually, is an enormous amount of work. We are not doing that.
+        Dissecting and patching the individual property access expressions is an enormous amount of work. We are not doing that.
         Instead, we are going to identify and replace the entire thing. The replacement is a shim method which will conduct the same check, using sane javascript instead.
 
     Target Site #2
