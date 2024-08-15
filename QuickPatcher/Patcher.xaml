@@ -402,10 +402,11 @@
                                     <ContentControl Style="{StaticResource ErrorBoxWithIcon}">
                                         <StackPanel>
                                             <TextBlock FontFamily="Segoe UI Semibold">Patch cannot be uninstalled while Steam is running. Close Steam first.</TextBlock>
-                                            <TextBlock Margin="0,2,0,0" FontStyle="Italic" Cursor="Hand">
-                                                <Hyperlink RequestNavigate="ShowMessageBoxRunningSteamProcesses" NavigateUri="">
+                                            <TextBlock Margin="0,2,0,0" FontStyle="Italic">
+                                                <Hyperlink RequestNavigate="ShowMessageBoxRunningSteamProcesses" NavigateUri="" Cursor="Hand">
                                                     List of running Steam processes
                                                 </Hyperlink>
+                                                (<Run Text="{Binding Source={StaticResource PatcherState}, Path=SteamState.RunningSteamProcessesCount, Mode=OneWay}" />)
                                             </TextBlock>
                                         </StackPanel>
                                     </ContentControl>
@@ -555,10 +556,11 @@
                                 <ContentControl Style="{StaticResource ErrorBoxWithIcon}">
                                     <StackPanel>
                                         <TextBlock FontFamily="Segoe UI Semibold">Patch cannot be installed while Steam is running. Close Steam first.</TextBlock>
-                                        <TextBlock Margin="0,2,0,0" FontStyle="Italic" Cursor="Hand">
-                                            <Hyperlink RequestNavigate="ShowMessageBoxRunningSteamProcesses" NavigateUri="">
+                                        <TextBlock Margin="0,2,0,0" FontStyle="Italic">
+                                            <Hyperlink RequestNavigate="ShowMessageBoxRunningSteamProcesses" NavigateUri="" Cursor="Hand">
                                                 List of running Steam processes
                                             </Hyperlink>
+                                            (<Run Text="{Binding Source={StaticResource PatcherState}, Path=SteamState.RunningSteamProcessesCount, Mode=OneWay}" />)
                                         </TextBlock>
                                     </StackPanel>
                                 </ContentControl>

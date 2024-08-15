@@ -166,6 +166,17 @@ namespace TiberiumFusion.FixedSteamFriendsUI.QuickPatcher
 
         public List<Tuple<int, string>> RunningSteamProcessesInfo { get; private set; } // <pid, image name>
 
+        public int RunningSteamProcessesCount
+        {
+            get
+            {
+                if (RunningSteamProcessesInfo == null)
+                    return 0;
+                else
+                    return RunningSteamProcessesInfo.Count;
+            }
+        }
+
 
 
         // ____________________________________________________________________________________________________
@@ -494,6 +505,9 @@ namespace TiberiumFusion.FixedSteamFriendsUI.QuickPatcher
                 });
                 
                 IsSteamRunning = isSteamRunning;
+
+                OnPropertyChanged("RunningSteamProcessesInfo");
+                OnPropertyChanged("RunningSteamProcessesCount");
 
                 NotifyLiveRefresh();
 
