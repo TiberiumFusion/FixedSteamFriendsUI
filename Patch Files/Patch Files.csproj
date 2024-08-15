@@ -113,9 +113,9 @@
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_turkish-json.js" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_ukrainian-json.js" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\friendsui_vietnamese-json.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\gamerecording.js" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\libraries.js" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\libraries_cm.js" />
-    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\navevents.js" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\noisegate-audio-worklet.js" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_arabic-json.js" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\javascript\webui\shared_brazilian-json.js" />
