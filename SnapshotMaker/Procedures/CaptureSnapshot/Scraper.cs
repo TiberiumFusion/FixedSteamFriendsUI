@@ -11,6 +11,7 @@ using CurlThin.Native;
 using CurlThin.SafeHandles;
 using HtmlAgilityPack;
 using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures;
+using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.CaptureSnapshot;
 using static TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Helpers;
 using static TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Helpers.HtmlAgilityPack;
 
@@ -273,6 +274,8 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.C
 
             // The centerpiece of this whole affair. We need to scrape data from it and of course include it in the snapshot.
 
+            string friendsJsContents = null;
+
             long friendsJsClstamp = -1;
             bool gotFriendsJsClstamp = false;
 
@@ -303,7 +306,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.C
             {
                 // Fetch from the url
                 string headScriptFriendsJsSrc = headScriptFriendsJs.GetAttributeValue("src", "");
-                string jsRaw = (string)DownloadValveResource(headScriptFriendsJsSrc, ResourceByteFormat.StringUtf8, outputDirPath: null, log: false);
+                friendsJsContents = (string)DownloadValveResource(headScriptFriendsJsSrc, ResourceByteFormat.StringUtf8, outputDirPath: null, log: false);
 
 
                 //
@@ -312,7 +315,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.C
 
                 Log("Scraping CLSTAMP from friends.js...");
 
-                gotFriendsJsClstamp = Utils.TryScrapeClstampFieldFromFriendsJsJavascript(jsRaw, out friendsJsClstamp, out string errorMessage);
+                gotFriendsJsClstamp = Utils.TryScrapeClstampFieldFromFriendsJsJavascript(friendsJsContents, out friendsJsClstamp, out string errorMessage);
                 if (gotFriendsJsClstamp)
                 {
                     LogOK();
@@ -367,6 +370,10 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.C
             }
 
             // Now that we have a manifest, we can start scraping everything starting from the root of the HTML
+
+            // But first, clone the manifest, so that we can modify it
+            // - The "get unnamed unstable js chunks stage" needs to do this, in order for the post-scrape report on missing & extra files to be correct
+            manifest = manifest.Clone();
 
 
 
@@ -528,6 +535,67 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.C
                 // These are not json files. Instead, each is an obnoxious js wrapper around a json string, in part due to the nasty module framework Valve is using and in part due to Valve's decision to (mis)use said nasty framework.
                 foreach (string res in manifest.ResourcesByCategory[ResourceCategory.JsonJs])
                     DownloadValveResource(valveCdnRootUrl + res, ResourceByteFormat.StringUtf8, outputDir);
+            }
+
+
+            //
+            // Unstable unnamed js chunk files
+            //
+
+            // One of the js loaders in friends.js is of specific interest due to the critical nature of the files it loads
+            // It's the one that concats "javascript/webui/" with various items from the dictionary with these kind of items: 2256: "shared_english-json", 7653: "broadcastapp",
+
+            // There are two dictionaries in this area.
+            // 1. The first one maps chunk IDs to more meaningful names, which happen to be the actual names of the .js files on Valve's server.
+            //   - Most of these are localization -json.js files
+            // 2. The second dictionary maps each chunk ID to the `contenthash` GET param that is needlessly appended to each URL
+            // The number of items in the two dictionaries is NOT the same. Dictionary #2 has MORE items in it, i.e. js chunk files that do NOT have meaningful names.
+            // These nameless chunks are important, however, and are loaded and used by other (unknown) parts of friends.js. As such, they must be in the snapshot.
+            // Comparing the keys in both dictionaries reveals which chunk IDs lack names and thus their file name for retrieval is their chunk id from Valve remote (i.e. "3159.js" instead of "broadcastapp.js")
+
+            // The chunks with names are easier to deal with, since their names are semi-constant and thus can be manually entered into a SnapshotManifest and used successfully with future releases of steam-chat.com
+            // The unnamed chunks are a problem. Their chunk IDs are unstable and needlessly change every single time Valve builds their website.
+
+            // Previously, all manual labor was required to compare the dictionaries and update the changed chunk IDs for each unnamed chunk in each new SnapshotManifest required by each new steam-chat.com release
+            // This step now automates part of the process, by discerning the unnamed chunks and fetching them automatically. Manual review is still required to reveal the contents and function of each unnamed chunk.
+
+            if (ResourceTypesToDownload[ResourceCategory.Js])
+            {
+                LogLine("Finding unnamed unstable js chunk IDs");
+
+                List<int> unnamedUnstableChunkIds = null;
+                try
+                {
+                    unnamedUnstableChunkIds = Routines.FindUnnamedJsChunkIds(friendsJsContents, unstableOnly: true); // Quick and dirty with no guards
+                }
+                catch (Exception e)
+                {
+                    LogLine("[!] Unexpected failure while parsing js for chunk IDs [!]");
+                    LogLine(e.ToString());
+                    // Continue anyways; manual review will be needed to check if this is a problem and then collect these js files if they are needed
+                }
+
+                if (unnamedUnstableChunkIds != null && unnamedUnstableChunkIds.Count > 0)
+                {
+                    foreach (int chunkID in unnamedUnstableChunkIds)
+                        LogLine("- Chunk ID: " + chunkID);
+
+                    LogLine("Fetching js chunks:");
+
+                    List<string> manifestJsFiles = manifest.ResourcesByCategory[ResourceCategory.Js];
+
+                    foreach (int chunkID in unnamedUnstableChunkIds)
+                    {
+                        string webpath = string.Format("public/javascript/webui/{0}.js", chunkID);
+
+                        // Add to snapshot manifest
+                        if (!manifestJsFiles.Contains(webpath))
+                            manifestJsFiles.Add(webpath);
+
+                        // Download it
+                        DownloadValveResource(valveCdnRootUrl + webpath, ResourceByteFormat.StringUtf8, outputDir);
+                    }
+                }
             }
 
 

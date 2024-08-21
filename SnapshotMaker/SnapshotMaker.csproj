@@ -104,6 +104,7 @@
     <Compile Include="CurlHttp.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="Procedures\AmendSnapshot\Fixer.cs" />
+    <Compile Include="Procedures\CaptureSnapshot\Routines\FindUnnamedJsChunkIds.cs" />
     <Compile Include="Procedures\CaptureSnapshot\Scraper.cs" />
     <Compile Include="Procedures\CleanSnapshot\Cleaner.cs" />
     <Compile Include="Procedures\ConformSnapshot\Conformer.cs" />
@@ -123,7 +124,8 @@
     <None Include="Configs\PatcherConfigs\8601984.json" />
     <None Include="Configs\PatcherConfigs\9097133.json" />
     <None Include="Configs\PatcherConfigs\8791341.json" />
-    <None Include="Configs\SnapshotManifests\9097133+.json" />
+    <None Include="Configs\SnapshotManifests\9126016+.json" />
+    <None Include="Configs\SnapshotManifests\9097133.json" />
     <None Include="Configs\SnapshotManifests\9044902.json" />
     <None Include="Configs\SnapshotManifests\9043750.json" />
     <None Include="Configs\SnapshotManifests\9004798.json" />

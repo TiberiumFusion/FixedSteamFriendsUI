@@ -60,6 +60,22 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot
         }
 
 
+        public SnapshotManifest Clone()
+        {
+            SnapshotManifest clone = new SnapshotManifest();
+
+            clone.Version = this.Version;
+            clone.MinCLSTAMP = this.MinCLSTAMP;
+            clone.MaxCLSTAMP = this.MaxCLSTAMP;
+            clone.UnboundedMaxCLSTAMP = this.UnboundedMaxCLSTAMP;
+
+            foreach (ResourceCategory category in Enum.GetValues(typeof(ResourceCategory)))
+                clone.ResourcesByCategory[category] = new List<string>(this.ResourcesByCategory[category]);
+
+            return clone;
+        }
+
+
         public override string ToString()
         {
             return "{" + string.Format("CLSTAMP range: {0} - {1}{2}",
