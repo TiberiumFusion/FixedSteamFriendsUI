@@ -42,7 +42,7 @@
         // Get input data from C#
         //
 
-        // Input js code string to de-minify
+        // Input js code string to transpile
         let inputJsCodeString = await jib.GetInputJavascript();
 
         // Json configuration for babel

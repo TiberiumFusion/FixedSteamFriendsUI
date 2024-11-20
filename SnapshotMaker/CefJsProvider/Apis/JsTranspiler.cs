@@ -64,7 +64,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.CefJsProvider.Apis
             Jib.InputJavascript = sourceJs;
             Jib.InputBabelConfigJson = JsonConvert.SerializeObject(babelConfigJson);
 
-            // Run pretter.io on the source javascript
+            // Process the source javascript
             Task<JavascriptResponse> scriptTask = CefBrowser.EvaluateScriptAsync(@"JsTranspiler.Transpile();");
             scriptTask.Wait();
             if (!scriptTask.Result.Success)
