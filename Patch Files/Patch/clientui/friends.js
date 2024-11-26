@@ -45,183 +45,52 @@ if (PATCH_ENABLE)
 
 // ____________________________________________________________________________________________________
 //
-//     Helpers
+//     JS loader
 // ____________________________________________________________________________________________________
 //
 
-// See: https://stackoverflow.com/a/23809123/2489580
-function TfusionPatch_Helper_GetNestedProperty(obj, key)
+// For loading and evaluating shared javascript components without needing to modify index.html to load them via <script> elements
+function TfusionPatch_LoadJsOrDie(path)
 {
-    return key.split(".").reduce(
-        function(o, x) {
-            return (typeof o == "undefined" || o === null) ? o : o[x];
-        },
-    obj); // returns null on short-out
-}
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", path, false); // must be synchronous
+    xhr.send();
+                
+    if (xhr.status < 200 || xhr.status >= 300)
+    {
+        console.error("[!!!] Failed to load js file from path: '" + path + "' (full url: '" + xhr.responseURL + "'), http: " + xhr.status + " [!!!]");
+        throw new Error();
+    }
 
-function TfusionPatch_Helper_HasNestedProperty(obj, key)
-{
-    return key.split(".").every(
-        function(x) {
-            if (typeof obj != "object" || obj === null || !(x in obj)) {
-                return false; }
-            obj = obj[x];
-            return true;
-        }
-    );
+    if (xhr == null || typeof xhr.response !== "string" || xhr.length == 0)
+    {
+        console.error("[!!!] Failed to load js file from path: '" + path + "' (full url: '" + xhr.responseURL + "'), file contents are empty or were not retrieved as text");
+        throw new Error();
+    }
+
+    // Hideous javascript kludge to run eval() in the global scope (i.e. on window)
+    // See: https://stackoverflow.com/q/9107240
+    return (1, eval)(xhr.responseText);
 }
 
 
 
 // ____________________________________________________________________________________________________
 //
-//     FixedSteamFriendsUI runtime config
+//     FixedSteamFriendsUI runtime root config
 // ____________________________________________________________________________________________________
 //
 
-// This is a root level, user-adjustable configuration that propogates down as far as it needs to go (from outer frame to the inner frame, from out _support_ js to friends.js and vice versa)
-// Only that which needs to be propagated is propagated. Some deeper levels may have their own configs (i.e. individual _support_ js objects) which do not require any influence from this one
+var TfusionPatch_RootConfig = TfusionPatch_LoadJsOrDie(TfusionPatch_MetadataJson.Level0.PayloadName + "/_support_/shared/rootconfig.js");
 
-// The user can control this configuration via placing and editing named .json files in particular locations
-
-
-//
-// Default config with ALL known values
-//
-
-var TfusionPatch_ConfigDefault =
-{
-    "General":
-    {
-        "EnablePatch": true,
-    },
-
-    "OuterFrame":
-    {
-        "RetryConnectionButtonStrongerReload": true,
-        "InnerLoadFailAutoRetryCount": 3,
-    },
-
-    "InnerFrame":
-    {
-        "ValveCdnOverride": null,
-    },
-};
-
-
-//
-// Final config to use
-//
-
-var TfusionPatch_ConfigFinal = null;
-// This is built in a series of layers like so:
-// 1. Default config
-// 2a. Optional user config at location 0
-// 2b. Optional user config at location 1
-// 2c. etc
-// Successive layers overwrite add key values not seen yet and override key values that are already defined
-
-(function() {
-    
-    try
-    {
-        // Start with copy of default config
-        let assembledConfig = JSON.parse(JSON.stringify(TfusionPatch_ConfigDefault))
-
-        // Load potential user configs
-        function addConfig(path)
-        {
-            // Download it
-            let xhr = new XMLHttpRequest();
-            xhr.open("GET", path, false); // relative paths are relative to "https://steamloopback.host/", and this must be synchronous
-            xhr.send();
-        
-            if (xhr.status < 200 || xhr.status >= 300)
-            {
-                console.log("No user config exists at path: " + path, "(full url: " + xhr.responseURL + ")");
-                return null;
-            }
-
-            if (xhr == null || typeof xhr.response !== "string" || xhr.length == 0)
-            {
-                console.log("Invalid user config (empty file) at path: " + path, "(full url: " + xhr.responseURL + ")");
-                return null;
-            }
-
-            // Parse it
-            let configLayer = null;
-            try
-            {
-                configLayer = JSON.parse(xhr.response);
-            }
-            catch (e2)
-            {
-                console.log("Invalid user config (not valid json) at path: " + path, "(full url: " + xhr.responseURL + ")");
-                console.log("Details: ", e2);
-                return null;
-            }
-
-            // Merge it
-            Object.assign(assembledConfig, configLayer);
-            console.log("Added user config:", configLayer, "from path: " + path, "(full url: " + xhr.responseURL + ")");
-        }
-
-        // Load layers in overwrite order
-        addConfig(TfusionPatch_MetadataJson.Level0.PayloadName + "/FixedSteamFriendsUI_Config.json");
-        addConfig("FixedSteamFriendsUI_Config.json");
-
-        // Done
-        TfusionPatch_ConfigFinal = assembledConfig;
-        console.log("Assembled root configuration:", TfusionPatch_ConfigFinal);
-    }
-    catch (e)
-    {
-	    console.log("[!!!] Unhandled exception while discovering and assembling the FixedSteamFriendsUI root configuration [!!!]");
-        console.log("  Default configuration will be used.");
-        console.log("  Exception details: ", e);
-    }
-    
-})();
-
-
-//
-// Config access interface
-//
-
-function TfusionPatch_ConfigGetProperty(path)
-{
-    let result = null;
-
-    try
-    {
-        if (TfusionPatch_ConfigFinal != null)
-        {
-            result = TfusionPatch_Helper_GetNestedProperty(TfusionPatch_ConfigFinal, path);
-
-            // Resolve ambiguity between 'intentional null' and 'undefined because not defined'
-            if (result == null)
-            {
-                if (TfusionPatch_Helper_HasNestedProperty(TfusionPatch_ConfigFinal, path)) // intentional null
-                    { } // result is unchanged (still null)
-                else {
-                    result = TfusionPatch_Helper_GetNestedProperty(TfusionPatch_ConfigDefault, path); } // Treat undefined properties as passthroughs to the default config's value
-            }
-        }
-        else
-        {
-            result = TfusionPatch_Helper_GetNestedProperty(TfusionPatch_ConfigDefault, path);
-        }
-    }
-    catch (e)
-    {
-        console.log("[!!!] Unhandled exception while accessing FixedSteamFriendsUI root config property path '" + path + "' [!!!]");
-        console.log("  Caller will receive null for config property value!", e);
-        console.log("  Exception details: ", e);
-    }
-    
-    return result;
-}
-
+TfusionPatch_RootConfig.Initialize(
+    "", // Root path suffix (keep as window.location's root, which will be "https://steamloopback.host/")
+    [
+        // List of config file paths to try loading from, specified in overwrite order
+        TfusionPatch_MetadataJson.Level0.PayloadName + "/FixedSteamFriendsUI_Config.json",
+        "FixedSteamFriendsUI_Config.json",
+    ],
+);
 
 
 
