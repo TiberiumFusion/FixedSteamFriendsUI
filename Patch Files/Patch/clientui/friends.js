@@ -17,7 +17,7 @@ const INNER_LOAD_FAIL_AUTO_RETRY_COUNT = 3; // Number of times to automatically 
 
 // First, the raw string, wrapped in a esoteric tag so that programs can scrape this if needed
 //-@[PMJ[
-var TfusionPatchMetadataJsonRaw = `{
+var TfusionPatch_MetadataJsonRaw = `{
 	"ScraperMagic": "{A0806671-AC87-4543-A2B6-51BC55CEE900}",
 	"Level0": {
 		"PatchType": "{62C3D4C0-8A0B-4602-820E-7020B8473037}",
@@ -33,13 +33,182 @@ var TfusionPatchMetadataJsonRaw = `{
 //]]@-
 
 // Live object
-var TfusionPatchMetadataJson = JSON.parse(TfusionPatchMetadataJsonRaw);
+var TfusionPatch_MetadataJson = JSON.parse(TfusionPatch_MetadataJsonRaw);
 
 if (PATCH_ENABLE)
 {
-	console.log("FixedSteamFriendsUI local steam-chat.com snapshot v" + TfusionPatchMetadataJson.Level0.Version + " (released " + TfusionPatchMetadataJson.Level0.ReleaseDateFriendly + ") by TiberiumFusion");
-    console.log("Valve CLSTAMP:", TfusionPatchMetadataJson.Level0.CoreBase, ", Patch metadata:", TfusionPatchMetadataJson);
+	console.log("FixedSteamFriendsUI local steam-chat.com snapshot v" + TfusionPatch_MetadataJson.Level0.Version + " (released " + TfusionPatch_MetadataJson.Level0.ReleaseDateFriendly + ") by TiberiumFusion");
+    console.log("Valve CLSTAMP:", TfusionPatch_MetadataJson.Level0.CoreBase, ", Patch metadata:", TfusionPatch_MetadataJson);
 }
+
+
+
+// ____________________________________________________________________________________________________
+//
+//     Helpers
+// ____________________________________________________________________________________________________
+//
+
+function TfusionPatch_Helper_GetNestedProperty(obj, key)
+{
+    // See: https://stackoverflow.com/a/23809123/2489580
+    return key.split(".").reduce(
+        function(o, x) {
+            return (typeof o == "undefined" || o === null) ? o : o[x];
+        },
+    obj); // returns null on short-out
+}
+
+
+
+// ____________________________________________________________________________________________________
+//
+//     FixedSteamFriendsUI runtime config
+// ____________________________________________________________________________________________________
+//
+
+// This is a root level, user-adjustable configuration that propogates down as far as it needs to go (from outer frame to the inner frame, from out _support_ js to friends.js and vice versa)
+// Only that which needs to be propagated is propagated. Some deeper levels may have their own configs (i.e. individual _support_ js objects) which do not require any influence from this one
+
+// The user can control this configuration via placing and editing named .json files in particular locations
+
+
+//
+// Default config with ALL known values
+//
+
+var TfusionPatch_ConfigDefault =
+{
+    "General":
+    {
+        "EnablePatch": true,
+    },
+
+    "OuterFrame":
+    {
+        "RetryConnectionButtonStrongerReload": true,
+        "InnerLoadFailAutoRetryCount": 3,
+    },
+
+    "InnerFrame":
+    {
+        "ValveCdnOverride": null,
+    },
+};
+
+
+//
+// Final config to use
+//
+
+var TfusionPatch_ConfigFinal = null;
+// This is built in a series of layers like so:
+// 1. Default config
+// 2a. Optional user config at location 0
+// 2b. Optional user config at location 1
+// 2c. etc
+// Successive layers overwrite add key values not seen yet and override key values that are already defined
+
+(function() {
+    
+    try
+    {
+        // Start with copy of default config
+        let assembledConfig = JSON.parse(JSON.stringify(TfusionPatch_ConfigDefault))
+
+        // Load potential user configs
+        function addConfig(path)
+        {
+            // Download it
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", path, false); // relative paths are relative to "https://steamloopback.host/", and this must be synchronous
+            xhr.send();
+        
+            if (xhr.status < 200 || xhr.status >= 300)
+            {
+                console.log("No user config exists at path: " + path, "(full url: " + xhr.responseURL + ")");
+                return null;
+            }
+
+            if (xhr == null || typeof xhr.response !== "string" || xhr.length == 0)
+            {
+                console.log("Invalid user config (empty file) at path: " + path, "(full url: " + xhr.responseURL + ")");
+                return null;
+            }
+
+            // Parse it
+            let configLayer = null;
+            try
+            {
+                configLayer = JSON.parse(xhr.response);
+            }
+            catch (e2)
+            {
+                console.log("Invalid user config (not valid json) at path: " + path, "(full url: " + xhr.responseURL + ")");
+                console.log("Details: ", e2);
+                return null;
+            }
+
+            // Merge it
+            Object.assign(assembledConfig, configLayer);
+            console.log("Added user config:", configLayer, "from path: " + path, "(full url: " + xhr.responseURL + ")");
+        }
+
+        // Load layers in overwrite order
+        addConfig(TfusionPatch_MetadataJson.Level0.PayloadName + "/FixedSteamFriendsUI_Config.json");
+        addConfig("FixedSteamFriendsUI_Config.json");
+
+        // Done
+        TfusionPatch_ConfigFinal = assembledConfig;
+        console.log("Assembled root configuration:", TfusionPatch_ConfigFinal);
+    }
+    catch (e)
+    {
+	    console.log("[!!!] Unhandled exception while discovering and assembling the FixedSteamFriendsUI root configuration [!!!]");
+        console.log("  Default configuration will be used.");
+        console.log("  Exception details: ", e);
+    }
+    
+})();
+
+
+//
+// Config access interface
+//
+
+function TfusionPatch_ConfigGetProperty(path)
+{
+    let result = null;
+
+    try
+    {
+        if (TfusionPatch_ConfigFinal != null)
+        {
+            result = TfusionPatch_Helper_GetNestedProperty(TfusionPatch_ConfigFinal, path);
+
+            // Resolve ambiguity between intentional null and undefined because not defined
+            if (result == null)
+            {
+                // Treat nulls are passthroughs to the default config's value
+                result = TfusionPatch_Helper_GetNestedProperty(TfusionPatch_ConfigDefault, path);
+                // If the default value is intentionally null, result is unchanged
+            }
+        }
+        else
+        {
+            result = TfusionPatch_Helper_GetNestedProperty(TfusionPatch_ConfigDefault, path);
+        }
+    }
+    catch (e)
+    {
+        console.log("[!!!] Unhandled exception while accessing FixedSteamFriendsUI root config property path '" + path + "' [!!!]");
+        console.log("  Caller will receive null for config property value!", e);
+        console.log("  Exception details: ", e);
+    }
+    
+    return result;
+}
+
 
 
 
@@ -57108,9 +57277,9 @@ function StartChat(strFrame) {
             let countryCode = urlParams.get("cc") ?? "US"; // the steam-chat.com snapshots I capture are captured in the US so "US" is what is baked into the hypertext wherever this string is used
             
             // Now we can build the new url
-            let payloadRootUrl = "https://steamloopback.host/" + TfusionPatchMetadataJson.Level0.PayloadName + "/" // must have trailing slash! (for payload's friends.js logic)
+            let payloadRootUrl = "https://steamloopback.host/" + TfusionPatch_MetadataJson.Level0.PayloadName + "/" // must have trailing slash! (for payload's friends.js logic)
 		
-		    let iframeSrc = payloadRootUrl + TfusionPatchMetadataJson.Level0.PayloadRootIndexFilename
+		    let iframeSrc = payloadRootUrl + TfusionPatch_MetadataJson.Level0.PayloadRootIndexFilename
 			    + "?DisplayLanguage=" + encodeURIComponent(displayLanguage)
 			    + "&CountryCode=" + encodeURIComponent(countryCode)
 			    + "&PayloadRootUrl=" + encodeURIComponent(payloadRootUrl);
