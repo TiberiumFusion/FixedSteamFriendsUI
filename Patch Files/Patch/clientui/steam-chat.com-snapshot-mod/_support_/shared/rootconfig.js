@@ -25,10 +25,10 @@
     // Bound by closure and kept out of com to make manipulation more difficult
     const DefaultConfig =
     {
-        "General":
-        {
-            "EnablePatch": true,
-        },
+        "Bypass": false,
+        // When true, the patch code will stop doing patch things as soon as enough of the patch code is initialized for it to become aware of this rootconfig value. When false, everything proceeds as normal (patch remains in effect).
+        // Different name from const PATCH_ENABLE in outer friends.js for the safe of diambiguity
+        // Note that this is an INVERTED switch compared to PATCH_ENABLE!
 
         "OuterFrame":
         {

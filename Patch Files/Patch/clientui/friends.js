@@ -2,7 +2,7 @@
 // Fixed steam-chat.com PWA for FriendsUI in vgui clients
 // By TiberiumFusion
 
-const PATCH_ENABLE = true; // Set to false to quickly bypass the entire patch and run friends in vanilla form
+const PATCH_ENABLE = true; // Set to false to quickly disable the entire patch and run friends in vanilla form
 
 
 
@@ -33,7 +33,30 @@ var TfusionPatch_MetadataJsonRaw = `{
 var TfusionPatch_MetadataJson = JSON.parse(TfusionPatch_MetadataJsonRaw);
 
 
-if (PATCH_ENABLE)
+
+// ____________________________________________________________________________________________________
+//
+//     Helpers
+// ____________________________________________________________________________________________________
+//
+
+function TfusionPatch_IsEnabled()
+{
+    if (!PATCH_ENABLE) {
+        return false; }
+
+    if (TfusionPatch_RootConfig != undefined && TfusionPatch_RootConfig_GetValueOrFallback != undefined) { // TfusionPatch_RootConfig and co are undefined as of this function declaration; they become the first things defined after the js loader
+        return !TfusionPatch_RootConfig_GetValueOrFallback("Bypass", false); } // another means for the user to disable the patch functions (though only after enough patch structure is initialized that we can read our rootconfig) via the optional json user configuration files
+
+    return true;
+}
+
+
+
+// ============================================================  Remaining patch init is subject to no switches disabling the patch  ============================================================
+
+
+if (TfusionPatch_IsEnabled())
 {
     
 	console.log("FixedSteamFriendsUI local steam-chat.com snapshot v" + TfusionPatch_MetadataJson.Level0.Version + " (released " + TfusionPatch_MetadataJson.Level0.ReleaseDateFriendly + ") by TiberiumFusion");
@@ -43377,7 +43400,7 @@ function LoadingState() {
 function RetryState() {
     let fnRetry = () => {
         console.log("OnRetryClick");
-        if (PATCH_ENABLE && TfusionPatch_RootConfig_GetValueOrFallback("OuterFrame.RetryConnectionButtonStrongerReload", true))
+        if (TfusionPatch_IsEnabled() && TfusionPatch_RootConfig_GetValueOrFallback("OuterFrame.RetryConnectionButtonStrongerReload", true))
         {
             Cookies.remove("IframeErrorInducedReloadCount", {path: ""} );
             window.location.reload();
@@ -57161,7 +57184,7 @@ function StartChat(strFrame) {
 
     // Also of note: there is also an injected WebChat.GetWebChatLanguage() method, which presumably (untested) returns strings like "english" or "russian"
 	
-	if (PATCH_ENABLE)
+	if (TfusionPatch_IsEnabled())
 	{
         // First, we need to get the actual url from getwebchat since it conveniently has the `l` and `cc` GET params set on it
         // And I don't know of any other injected method that more cleanly/directly gets the Steam client's chosen display language & country
@@ -57527,7 +57550,7 @@ function Init() {
         let iframe = document.getElementById("tracked_frame_friends_chat");
         iframe.addEventListener("load", function()
         {
-            if (PATCH_ENABLE)
+            if (TfusionPatch_IsEnabled())
             {
                 if (!IsChatJavascriptIntialized)
                 {
