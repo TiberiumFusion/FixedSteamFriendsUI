@@ -13,6 +13,39 @@
 
     // ____________________________________________________________________________________________________
     //
+    //     Static data
+    // ____________________________________________________________________________________________________
+    //
+
+    //
+    // Default config
+    //
+
+    // Contains ALL known values
+    // Bound by closure and kept out of com to make manipulation more difficult
+    const DefaultConfig =
+    {
+        "General":
+        {
+            "EnablePatch": true,
+        },
+
+        "OuterFrame":
+        {
+            "RetryConnectionButtonStrongerReload": true,
+            "InnerLoadFailAutoRetryCount": 3,
+        },
+
+        "InnerFrame":
+        {
+            "ValveCdnOverride": null,
+        },
+    };
+    
+
+
+    // ____________________________________________________________________________________________________
+    //
     //     Helpers
     // ____________________________________________________________________________________________________
     //
@@ -42,39 +75,6 @@
             }
         );
     }
-
-
-
-    // ____________________________________________________________________________________________________
-    //
-    //     Static data
-    // ____________________________________________________________________________________________________
-    //
-
-    //
-    // Default config
-    //
-
-    // Contains ALL known values
-    // Bound by closure and kept out of com to make manipulation more difficult
-    const DefaultConfig =
-    {
-        "General":
-        {
-            "EnablePatch": true,
-        },
-
-        "OuterFrame":
-        {
-            "RetryConnectionButtonStrongerReload": true,
-            "InnerLoadFailAutoRetryCount": 3,
-        },
-
-        "InnerFrame":
-        {
-            "ValveCdnOverride": null,
-        },
-    };
 
 
 
@@ -176,35 +176,48 @@
     // ____________________________________________________________________________________________________
     //
 
-    com.GetConfigProperty = function(path)
+    com.GetConfigProperty = function(path, throwIfUndefined=true, rethrowExceptions=false)
     {
         let result = null;
+        let wasDefined = false;
 
-        try
+        try // protected section here for quick and easy coverage of faults in the config json and its interface
         {
+            // First query the assembled configuration
             if (this.AssembledConfig != null)
             {
-                result = getNestedProperty(this.AssembledConfig, path);
-
-                // Resolve ambiguity between 'intentional null' and 'undefined because not defined'
-                if (result == null)
+                if (hasNestedProperty(this.AssembledConfig, path))
                 {
-                    if (hasNestedProperty(this.AssembledConfig, path)) // intentional null
-                        { } // result is unchanged (still null)
-                    else {
-                        result = getNestedProperty(DefaultConfig, path); } // Treat undefined properties as passthroughs to the default config's value
+                    result = getNestedProperty(this.AssembledConfig, path);
+                    wasDefined = true; // to discern between 'intentional null' and 'undefined because not defined'
                 }
             }
-            else
+
+            // If the assembled config didn't have the property at the specified path, try the default config next
+            if (!wasDefined)
             {
-                result = getNestedProperty(DefaultConfig, path);
+                if (hasNestedProperty(this.AssembledConfig, path))
+                {
+                    result = getNestedProperty(this.AssembledConfig, path);
+                    wasDefined = true;
+                }
             }
         }
         catch (e)
         {
+            if (rethrowExceptions) { // intended for handling by the immediate caller (such as for a fallback value)
+                throw e; }
+            
             console.log("[!!!] Unhandled exception while accessing FixedSteamFriendsUI root config property path '" + path + "' [!!!]");
             console.log("  Caller will receive null for config property value!", e);
             console.log("  Exception details: ", e);
+        }
+
+        // If property value is not defined, this is an error
+        if (!wasDefined)
+        {
+            if (throwIfUndefined) { // intended for handling by the immediate caller (such as for a fallback value)
+                throw new Error("Path '" + path + "' does not exist in any configuration object"); }
         }
     
         return result;
