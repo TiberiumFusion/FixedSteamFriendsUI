@@ -49,6 +49,28 @@
 
     // ____________________________________________________________________________________________________
     //
+    //     Inline libraries
+    // ____________________________________________________________________________________________________
+    //
+
+    // mergician
+    // https://cdn.jsdelivr.net/npm/mergician@1.1.0/dist/mergician.min.js
+    // Because javascript has no ability to actually merge objects and requires a library to do that
+
+    /*!
+     * mergician
+     * v1.1.0
+     * https://jhildenbiddle.github.io/mergician/
+     * (c) 2022-2023 John Hildenbiddle
+     * MIT license
+     */
+    var mergician=(()=>{var V=(r,s)=>()=>(s||r((s={exports:{}}).exports,s),s.exports);var D=V((Q,S)=>{function M(...r){let s={};return r.forEach(e=>{e.forEach(l=>{s[l]=l in s?++s[l]:1})}),s}function U(...r){let s=M(...r);return Object.keys(s).filter(e=>s[e]>1)}function b(...r){return r.reduce((s,e)=>s.filter(Set.prototype.has,new Set(e)))}function x(...r){let s=M(...r);return Object.keys(s).filter(e=>s[e]===1)}function G(...r){let s=M(...r);return Object.keys(s).filter(e=>s[e]<r.length)}function R(r,s=!1){if(s){let e=[];for(let l in r)e.push(l);return e}else return Object.keys(r)}function P(r){return typeof r=="object"&&r!==null&&!Array.isArray(r)}function _(r){if(!P(r))return!1;let s=["writable","enumerable","configurable"].some(a=>a in r),e=["get","set"].some(a=>typeof r[a]=="function"),l=["get","set"].every(a=>a in r),h="value"in r&&s||e&&(l||s);if(h){let a=["configurable","get","set","enumerable","value","writable"];h=Object.keys(r).some(m=>!(m in a))}return h}S.exports={countOccurrences:M,getInMultiple:U,getInAll:b,getNotInMultiple:x,getNotInAll:G,getObjectKeys:R,isObject:P,isPropDescriptor:_}});var H=V((T,F)=>{var{getInMultiple:q,getInAll:L,getNotInMultiple:W,getNotInAll:z,getObjectKeys:B,isObject:I,isPropDescriptor:v}=D(),g={onlyKeys:[],skipKeys:[],onlyCommonKeys:!1,onlyUniversalKeys:!1,skipCommonKeys:!1,skipUniversalKeys:!1,invokeGetters:!1,skipSetters:!1,appendArrays:!1,prependArrays:!1,dedupArrays:!1,sortArrays:!1,hoistProto:!1,filter:Function.prototype,beforeEach:Function.prototype,afterEach:Function.prototype,onCircular:Function.prototype};function C(...r){let s=arguments.length===1?arguments[0]:{},e={...g,...s},l=new Map,h=new Map,a=typeof e.sortArrays=="function"?e.sortArrays:void 0,m=new WeakMap,d=0;function k(c){return B(c,e.hoistProto)}function w(...c){let u;c.length>1&&(e.onlyCommonKeys?u=q(...c.map(n=>k(n))):e.onlyUniversalKeys?u=L(...c.map(n=>k(n))):e.skipCommonKeys?u=W(...c.map(n=>k(n))):e.skipUniversalKeys&&(u=z(...c.map(n=>k(n))))),!u&&e.onlyKeys.length&&(u=e.onlyKeys),u&&u!==e.onlyKeys&&e.onlyKeys.length&&(u=u.filter(n=>e.onlyKeys.includes(n)));let N=c.reduce((n,f)=>{m.set(f,n);let y=u||k(f);e.skipKeys.length&&(y=y.filter(A=>e.skipKeys.indexOf(A)===-1));for(let A=0;A<y.length;A++){let o=y[A],p=n[o],K=!1,t;if(!(o in f))continue;try{t=f[o]}catch(i){console.error(i);continue}let E=Object.getOwnPropertyDescriptor(f,o);if(E&&typeof E.set=="function"&&typeof E.get!="function"){e.skipSetters||(E.configurable=!0,Object.defineProperty(n,o,E));continue}if(e.filter!==g.filter){let i=e.filter({depth:d,key:o,srcObj:f,srcVal:t,targetObj:n,targetVal:p});if(i!==void 0&&!i)continue}if(e.beforeEach!==g.beforeEach){let i=e.beforeEach({depth:d,key:o,srcObj:f,srcVal:t,targetObj:n,targetVal:p});i!==void 0&&(K=!0,t=i)}if(typeof t=="object"&&t!==null&&m.has(f[o])){let i=e.onCircular({depth:d,key:o,srcObj:f,srcVal:f[o],targetObj:n,targetVal:p});if(i===void 0){t=m.get(f[o]),n[o]=t;continue}K=!0,t=i}if(Array.isArray(t)){if(t=[...t],Array.isArray(p)&&(e.appendArrays?t=[...p,...t]:e.prependArrays&&(t=[...t,...p])),e.dedupArrays)if(e.afterEach!==g.afterEach)t=[...new Set(t)];else{let i=l.get(n);i&&!i.includes(o)?i.push(o):l.set(n,[o])}if(e.sortArrays)if(e.afterEach!==g.afterEach)t=t.sort(a);else{let i=h.get(n);i&&!i.includes(o)?i.push(o):h.set(n,[o])}}else I(t)&&(!K||!v(t))&&(d++,I(p)?t=w(p,t):t=w(t),d--);if(e.afterEach!==g.afterEach){let i=e.afterEach({depth:d,key:o,mergeVal:t,srcObj:f,targetObj:n});i!==void 0&&(K=!0,t=i)}if(K)v(t)?(t.configurable=!0,t.enumerable="enumerable"in t?t.enumerable:!0,"value"in t&&!("writable"in t)&&(t.writable=!0),Object.defineProperty(n,o,t)):n[o]=t;else{let i=Object.getOwnPropertyDescriptor(f,o);i&&typeof i.get=="function"&&!e.invokeGetters?(e.skipSetters&&(i.set=void 0),i.configurable=!0,Object.defineProperty(n,o,i)):n[o]=t}}return n},{});for(let[n,f]of l.entries())for(let y of f)n[y]=[...new Set(n[y])];for(let[n,f]of h.entries())for(let y of f)n[y].sort(a);return N}return arguments.length===1?function(...c){return arguments.length===1?C({...e,...c[0]}):w(...c)}:w(...arguments)}F.exports=C});return H();})();
+    //# sourceMappingURL=mergician.min.js.map
+
+
+
+    // ____________________________________________________________________________________________________
+    //
     //     Helpers
     // ____________________________________________________________________________________________________
     //
@@ -66,7 +88,6 @@
             },
         obj); // returns null on short-out
     }
-
     function hasNestedProperty(obj, key)
     {
         return key.split(".").every(
@@ -113,6 +134,7 @@
             //
 
             let assembledConfig = JSON.parse(JSON.stringify(DefaultConfig))
+            console.log("Initial default user config:", assembledConfig);
 
             //
             // Load potential user configs
@@ -151,13 +173,14 @@
                 }
 
                 // Merge it
-                Object.assign(assembledConfig, configLayer);
+                assembledConfig = mergician(assembledConfig, configLayer);
                 console.log("Added user config:", configLayer, "from path: '" + path + "' (full url: '" + xhr.responseURL + "')");
             }
 
             // Load overwrite layers in order
             for (let userConfigPath of userConfigsPaths) {
                 addConfig(userConfigPath); }
+
 
             // Done
             this.AssembledConfig = assembledConfig;
