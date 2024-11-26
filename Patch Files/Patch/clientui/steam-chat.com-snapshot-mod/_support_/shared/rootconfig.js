@@ -33,7 +33,10 @@
         "OuterFrame":
         {
             "RetryConnectionButtonStrongerReload": true,
+            // When true, clicking the blue Retry Connection button will reload the entire FriendsUI. When false, it will send a meager reload message to the inner document js that does almost nothing (default Valve behavior).
+
             "InnerLoadFailAutoRetryCount": 3,
+            // Number of times to automatically refresh the page if a load failure of the inner frame is detected
         },
 
         "InnerFrame":
