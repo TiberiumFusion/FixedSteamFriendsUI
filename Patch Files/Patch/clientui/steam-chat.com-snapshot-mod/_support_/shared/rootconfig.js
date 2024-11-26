@@ -53,6 +53,8 @@
     // ____________________________________________________________________________________________________
     //
 
+    // These are inlined in the component that needs them, much like how the outer friends.js does this, because this is a shared component which can be used by both the outer and inner frames
+
     // mergician
     // https://cdn.jsdelivr.net/npm/mergician@1.1.0/dist/mergician.min.js
     // Because javascript has no ability to actually merge objects and requires a library to do that
