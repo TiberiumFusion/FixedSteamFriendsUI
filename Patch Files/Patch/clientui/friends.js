@@ -92,6 +92,21 @@ TfusionPatch_RootConfig.Initialize(
     ],
 );
 
+function TfusionPatch_RootConfig_GetValueOrFallback(path, fallback=null)
+{
+    // Catch-all within our scope for anything that can go wrong with accessing the root config component
+    try
+    {
+        return TfusionPatch_RootConfig.GetConfigProperty(path, throwIfUndefined=true, rethrowExceptions=true); // throw in all scenarios where we can supply a fallback config value
+    }
+    catch (e)
+    {
+        console.warn("[!] Unable to retrieve config property value for path: '" + path + "'; using fallback value instead: '" + fallback + "' [!]");
+        console.log("  Inner exception details: ", e);
+        return fallback;
+    }
+}
+
 
 
 // ____________________________________________________________________________________________________
@@ -119,7 +134,7 @@ TfusionPatch_RootConfig.Initialize(
 // ____________________________________________________________________________________________________
 //
  
-var IframeErrorInducedReloadCountMax = INNER_LOAD_FAIL_AUTO_RETRY_COUNT;
+var IframeErrorInducedReloadCountMax = TfusionPatch_RootConfig_GetValueOrFallback("OuterFrame.InnerLoadFailAutoRetryCount", 3);
 var IframeErrorInducedReloadCount = 0;
 
 let ieirCount = Cookies.get("IframeErrorInducedReloadCount");
