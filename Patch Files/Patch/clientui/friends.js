@@ -49,14 +49,26 @@ if (PATCH_ENABLE)
 // ____________________________________________________________________________________________________
 //
 
+// See: https://stackoverflow.com/a/23809123/2489580
 function TfusionPatch_Helper_GetNestedProperty(obj, key)
 {
-    // See: https://stackoverflow.com/a/23809123/2489580
     return key.split(".").reduce(
         function(o, x) {
             return (typeof o == "undefined" || o === null) ? o : o[x];
         },
     obj); // returns null on short-out
+}
+
+function TfusionPatch_Helper_HasNestedProperty(obj, key)
+{
+    return key.split(".").every(
+        function(x) {
+            if (typeof obj != "object" || obj === null || !(x in obj)) {
+                return false; }
+            obj = obj[x];
+            return true;
+        }
+    );
 }
 
 
@@ -186,12 +198,13 @@ function TfusionPatch_ConfigGetProperty(path)
         {
             result = TfusionPatch_Helper_GetNestedProperty(TfusionPatch_ConfigFinal, path);
 
-            // Resolve ambiguity between intentional null and undefined because not defined
+            // Resolve ambiguity between 'intentional null' and 'undefined because not defined'
             if (result == null)
             {
-                // Treat nulls are passthroughs to the default config's value
-                result = TfusionPatch_Helper_GetNestedProperty(TfusionPatch_ConfigDefault, path);
-                // If the default value is intentionally null, result is unchanged
+                if (TfusionPatch_Helper_HasNestedProperty(TfusionPatch_ConfigFinal, path)) // intentional null
+                    { } // result is unchanged (still null)
+                else {
+                    result = TfusionPatch_Helper_GetNestedProperty(TfusionPatch_ConfigDefault, path); } // Treat undefined properties as passthroughs to the default config's value
             }
         }
         else
