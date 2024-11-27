@@ -103,14 +103,14 @@ if (TfusionPatch_IsEnabled())
 
     var TfusionPatch_RootConfig = TfusionPatch_LoadJsOrDie(TfusionPatch_MetadataJson.Level0.PayloadName + "/_support_/shared/rootconfig.js");
 
+    console.log("----- BEGIN load FixedSteamFriendsUI rootconfig (outer) -----")
+    
     TfusionPatch_RootConfig.Initialize(
         "", // Root path suffix (keep as window.location's root, which will be "https://steamloopback.host/")
-        [
-            // List of config file paths to try loading from, specified in overwrite order
-            TfusionPatch_MetadataJson.Level0.PayloadName + "/FixedSteamFriendsUI_Config.json",
-            "FixedSteamFriendsUI_Config.json",
-        ],
+        TfusionPatch_RootConfig.GetDefaultLocationsForConfigFiles(TfusionPatch_MetadataJson) // List of config file paths to try loading from, specified in overwrite order
     );
+
+    console.log("-----  END  load FixedSteamFriendsUI rootconfig (outer) -----")
 
     function TfusionPatch_RootConfig_GetValueOrFallback(path, fallback=null)
     {

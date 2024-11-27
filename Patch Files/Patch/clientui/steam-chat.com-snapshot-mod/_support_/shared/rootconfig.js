@@ -78,7 +78,7 @@
     //
 
     //
-    // Arbitrary property access by dereferncing path
+    // Arbitrary property access by a dereferencing path
     //
 
     // See: https://stackoverflow.com/a/23809123/2489580
@@ -123,9 +123,21 @@
 
     // ____________________________________________________________________________________________________
     //
-    //     Initialization
+    //     Main
     // ____________________________________________________________________________________________________
     //
+
+    // Default paths to try to load config files from
+    // The use of the patch metadata to build some paths requires this list to be dynamically created (once TFP.Meta is initialiezd) instead of a constant
+    // patchMetadata must be the parsed "PatchMetadata" json element within the static data
+    com.GetDefaultLocationsForConfigFiles = function(patchMetadata)
+    {
+        return [
+            // These are specified in overwrite order and are collectively relative to any given root path
+            patchMetadata.Level0.PayloadName + "/FixedSteamFriendsUI_Config.json", 
+            "FixedSteamFriendsUI_Config.json",
+        ];
+    }
 
     com.Initialize = function(userConfigsRootPath, userConfigsPaths)
     {
@@ -246,6 +258,7 @@
         {
             if (throwIfUndefined) { // intended for handling by the immediate caller (such as for a fallback value)
                 throw new Error("Path '" + path + "' does not exist in any configuration object"); }
+            // else caller gets null
         }
     
         return result;
