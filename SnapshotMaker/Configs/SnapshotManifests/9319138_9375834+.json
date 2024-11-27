@@ -2,8 +2,8 @@
 
     "Version": 1,
 
-    "MinCLSTAMP": 9126016, // ca 2024-08-20
-    "MaxCLSTAMP": 9126016,
+    "MinCLSTAMP": 9319138, // ca 2024-11-06; unsure if this is the first CLSTAMP for this manifest, due to 7 days of no snapshots taken between 9300009 and 9319138
+    "MaxCLSTAMP": 9375834, // ca 2024-11-27
     "UnboundedMaxCLSTAMP": true,
 
     "ResourcesByCategory":
@@ -28,11 +28,6 @@
             "public/javascript/webui/noisegate-audio-worklet.js", // In friends.js nearly verbatim
 
             "public/javascript/webui/3159.js", // empty useless nop stub like 461 was (ditto)
-
-            //"public/javascript/webui/2240.js", // removed, appears to be renamed 2476.js / 5222.js (short timeline thing)
-            //"public/javascript/webui/2246.js", // removed, appears to be renamed 6050.js / 2748.js (long timeline thing)
-            //"public/javascript/webui/7931.js", // removed, appears to be renamed 6431.js / 589.js (svg things)
-            // Since SnapshotMaker 1.3.0.0, these relevant unnamed unstable js chunk file names are scraped automatically from friends.js at runtime and thus no longer need manual entry here
 
             // Items without comments are directly referenced in the src="" attribute of the root html's <script> tags
         ],
@@ -112,7 +107,7 @@
             "public/css/webui/broadcastapp.css", // In friends.js; Ctrl+F for ".css?contenthash="
             "public/css/webui/gamerecording.css", // Ditto
 
-            "public/css/webui/351.css", // 485 chars (accompanying css for unnamed js chunks)
+            //"public/css/webui/351.css", // removed, was 485 chars (accompanying css for unnamed js chunks)
             "public/css/webui/3159.css", // 55 chars
 
             // Items without comments are directly referenced in the href="" attribute of the root html's <link> tags
