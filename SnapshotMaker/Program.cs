@@ -169,6 +169,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
                 {
                     Scraper scraper = new Scraper();
                     scraper.ResourceTypesToDownload = ResourceTypesToProcess;
+                    scraper.ValveCdn = cmdArgs.ValveCdn;
                     scraper.CaptureSteamchatDotComSnapshot(outputPath);
                 }
                 catch (Exception e) when (CatchUnhandledExceptions)

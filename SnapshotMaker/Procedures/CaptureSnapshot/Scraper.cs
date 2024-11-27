@@ -31,6 +31,15 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.C
         /// </summary>
         public Dictionary<ResourceCategory, bool> ResourceTypesToDownload;
 
+        /// <summary>
+        /// Optional Valve CDN selector. When non-null, this will be added to the root HTML url as the value for the _cdn GET param.
+        /// </summary>
+        /// <remarks>
+        /// The _cdn url var was first observed (by this project) to be new on the Valve network circa 2024-11-27. It is unknown how stable it behavior is and how long Valve will honor it for.
+        /// </remarks>
+        public string ValveCdn;
+
+
         public Scraper()
         {
             // --------------------------------------------------
@@ -182,7 +191,12 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.C
             //   Config
             // --------------------------------------------------
 
+            // Base URL
             string rootHtmlUrl = "https://steam-chat.com/chat/clientui/?l=english&cc=US&build=0&origin=https%3A%2F%2Fsteamloopback.host";
+
+            // Valve CDN specifier
+            if (ValveCdn != null)
+                rootHtmlUrl += "&_cdn=" + ValveCdn;
 
             
 
@@ -221,6 +235,8 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.C
             //
             // Retrieve html document
             //
+
+            LogLine("Using root html URL: " + rootHtmlUrl);
 
             Log("Fetching root html...");
 

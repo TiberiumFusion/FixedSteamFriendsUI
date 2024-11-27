@@ -13,7 +13,9 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
 
         public bool WriteLogFileToSnapshot = true;
 
-        public string Stages = "sa"; // 's' = scrape, 'a' = amend, 'p' = patch, 'c' = clean
+        public string Stages = "sa"; // 's' = scrape, 'a' = amend, 'p' = patch, 'f' = conform, 'c' = clean
+
+        public string ValveCdn = "akamai"; // default Valve CDN (when not requesting a specific one) is likely to broken dogshit, so we want our forced default CDN to be an actually functional one
 
 
         //
@@ -70,6 +72,12 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
                 {
                     Stages = argValue;
                     Debug.WriteLine("Cmd arg '" + a + "'  ->  Stages = " + argValue);
+                }
+
+                else if (tryMatchArgWithValue(a, "/ValveCdn:", out argValue))
+                {
+                    ValveCdn = argValue;
+                    Debug.WriteLine("Cmd arg '" + a + "'  ->  ValveCdn = " + argValue);
                 }
 
                 else
