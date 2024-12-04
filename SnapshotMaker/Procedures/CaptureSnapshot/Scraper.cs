@@ -10,6 +10,7 @@ using CurlThin.Helpers;
 using CurlThin.Native;
 using CurlThin.SafeHandles;
 using HtmlAgilityPack;
+using Newtonsoft.Json;
 using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures;
 using TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.CaptureSnapshot;
 using static TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Helpers;
@@ -723,7 +724,34 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Snapshot.Procedures.C
                     LogLine("- " + resourcePath);
             }
 
+
+
+            // --------------------------------------------------
+            //   Save manifest
+            // --------------------------------------------------
+
+            // Dynamic changes to the manifest (e.g. unstable valve js files) need to be recorded, so that the Cleaner stage works properly
+            // We will write the final manifest we used during this scrape (with any edits it may have from its stock form) to the snapshot directory, for the Cleaner to use later
+
+            Log("\nWriting working manifest to snapshot...");
+
+            // Write deminified js to disk
+            try
+            {
+                string manifestJson = JsonConvert.SerializeObject(manifest, Formatting.Indented);
+                File.WriteAllText(Path.Combine(outputDir.FullName, "WorkingSnapshotManifest.json"), manifestJson, Encoding.UTF8);
+                LogOK();
+            }
+            catch (Exception e)
+            {
+                LogERROR();
+                LogLine("[!!!] An unhandled exception occurred while writing the working snapshot manifest to a file [!!!]");
+                LogLine(e.ToString());
+                // Non-fatal. The snapshot is still functional, but running it through the Cleaner stage may result in necessary files getting removed (if the stock SnapshotManifests/*.json files don't explicitly list any dynamic files that were added to the manifest during the scrap).
+            }
+
+
         }
-        
+
     }
 }

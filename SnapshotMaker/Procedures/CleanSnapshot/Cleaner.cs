@@ -63,30 +63,73 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.CleanSnaps
             // Select a manifest
             //
 
-            SnapshotManifest manifest = Config.SnapshotManifests.OrderByDescending(a => a.MinCLSTAMP).First(); // Fallback: use the most recent manifest if we are unable to select one per friends.js
+            SnapshotManifest manifest = null;
 
-            if (gotClstamp)
+            // If the snapshot includes a working manifest, try to load and use that first
+            string snapshotWorkingManifestRelPath = "WorkingSnapshotManifest.json";
+            string snapshotWorkingManifestFullPath = Path.Combine(snapshotDirectoryPath, snapshotWorkingManifestRelPath);
+            if (File.Exists(snapshotWorkingManifestFullPath))
             {
-                // Pick the manifest which is closest to the CLSTAMP
-                manifest = Config.GetClosestSnapshotManifestForClstamp(clstamp, out SnapshotManifestMatchType clstampMatchType);
+                LogLine("Found working snapshot manifest: " + snapshotWorkingManifestRelPath);
+                Log("Loading manifest file...");
 
-                string matchTypeInfo = "";
-                if (clstampMatchType == SnapshotManifestMatchType.ExactKnown) matchTypeInfo = "exact range match for remote friends.js";
-                else if (clstampMatchType == SnapshotManifestMatchType.ExactTentative) matchTypeInfo = "tenative range match for remote friends.js";
-                else if (clstampMatchType == SnapshotManifestMatchType.ClosestNewer) matchTypeInfo = "closest locally known manifest (newer than remote friends.js!)";
-                else if (clstampMatchType == SnapshotManifestMatchType.NewestKnown) matchTypeInfo = "newest locally known manifest (older than remote friends.js!)";
-                LogLine("Using snapshot manifest for CLSTAMP "
-                    + manifest.MinCLSTAMP + " thru " + manifest.MaxCLSTAMP + (manifest.UnboundedMaxCLSTAMP ? "+" : "")
-                    + " (" + matchTypeInfo + ")"
-                );
+                // Note that currently there is NO VALIDATION of these manifests!
+                try
+                {
+                    manifest = Config.LoadJsonConfigFile<SnapshotManifest>(snapshotWorkingManifestFullPath);
+                    LogOK();
+                }
+                catch (Exception e)
+                {
+                    LogERROR();
+                    LogLine("[!!!] An unhandled exception occurred while loading the manifest file [!!!]");
+                    LogLine(e.ToString());
+                }
+
+                if (manifest == null)
+                    LogLine("Falling back to selecting a stock manifest");
             }
-            else
+
+            // Otherwise use a stock manifest if the working manifest is missing or failed to parse
+            if (manifest == null)
             {
-                // Fallback to default manifest
-                LogLine("Lack of CLSTAMP from friends.js means default fallback manifest will be used: "
-                    + manifest.MinCLSTAMP + " thru " + manifest.MaxCLSTAMP + (manifest.UnboundedMaxCLSTAMP ? "+" : "")
-                );
+                manifest = Config.SnapshotManifests.OrderByDescending(a => a.MinCLSTAMP).First(); // Fallback: use the most recent manifest if we are unable to select one per friends.js
+
+                if (gotClstamp)
+                {
+                    // Pick the manifest which is closest to the CLSTAMP
+                    manifest = Config.GetClosestSnapshotManifestForClstamp(clstamp, out SnapshotManifestMatchType clstampMatchType);
+
+                    string matchTypeInfo = "";
+                    if (clstampMatchType == SnapshotManifestMatchType.ExactKnown) matchTypeInfo = "exact range match for remote friends.js";
+                    else if (clstampMatchType == SnapshotManifestMatchType.ExactTentative) matchTypeInfo = "tenative range match for remote friends.js";
+                    else if (clstampMatchType == SnapshotManifestMatchType.ClosestNewer) matchTypeInfo = "closest locally known manifest (newer than remote friends.js!)";
+                    else if (clstampMatchType == SnapshotManifestMatchType.NewestKnown) matchTypeInfo = "newest locally known manifest (older than remote friends.js!)";
+                    LogLine("Using snapshot manifest for CLSTAMP "
+                        + manifest.MinCLSTAMP + " thru " + manifest.MaxCLSTAMP + (manifest.UnboundedMaxCLSTAMP ? "+" : "")
+                        + " (" + matchTypeInfo + ")"
+                    );
+                }
+                else
+                {
+                    // Fallback to default manifest
+                    LogLine("Lack of CLSTAMP from friends.js means default fallback manifest will be used: "
+                        + manifest.MinCLSTAMP + " thru " + manifest.MaxCLSTAMP + (manifest.UnboundedMaxCLSTAMP ? "+" : "")
+                    );
+                }
             }
+
+
+            //
+            // Keep extra files
+            //
+
+            // In addition to everything declared in the snapshot manifest, also keep some other important files
+            List<string> keepExtraFiles = new List<string>()
+            {
+                // These are all paths relative to the root snapshot directory
+                "WorkingSnapshotManifest.json",
+            };
 
 
             //
@@ -101,11 +144,12 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker.Procedures.CleanSnaps
             DirectoryInfo snapshotDir = new DirectoryInfo(snapshotDirectoryPath);
             foreach (FileInfo file in snapshotDir.GetFiles("*", SearchOption.AllDirectories))
             {
+                // Keep snapshot maker log files
                 if (file.Name.StartsWith("Snapshot Maker Log") && file.Extension == ".txt")
                     continue;
 
                 string relWebPath = file.FullName.Substring(snapshotDir.FullName.Length).TrimStart('\\').Replace('\\', '/');
-                if (!manifest.DeclaresFile(relWebPath))
+                if (!manifest.DeclaresFile(relWebPath) && !keepExtraFiles.Contains(relWebPath))
                 {
                     Log("- Deleting '" + relWebPath + "'...");
 

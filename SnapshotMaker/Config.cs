@@ -43,10 +43,10 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
             DirectoryInfo dir = new DirectoryInfo(directoryPath);
             foreach (FileInfo file in dir.EnumerateFiles("*.json", SearchOption.AllDirectories))
             {
-                string manifestText = null;
+                T config;
                 try
                 {
-                    manifestText = File.ReadAllText(file.FullName, Encoding.UTF8);
+                    config = LoadJsonConfigFile<T>(file.FullName);
                 }
                 catch (Exception e)
                 {
@@ -57,32 +57,20 @@ namespace TiberiumFusion.FixedSteamFriendsUI.SnapshotMaker
                         throw e;
 
                     Console.WriteLine("Skipping file");
+
+                    continue;
                 }
-
-                if (manifestText != null)
-                {
-                    T config = default(T);
-                    try
-                    {
-                        config = JsonConvert.DeserializeObject<T>(manifestText);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Unhandled exception while deserializing file '" + file.FullName + '"');
-                        Console.WriteLine(e);
-
-                        if (!ignoreExceptions)
-                            throw e;
-
-                        Console.WriteLine("Skipping file");
-                    }
-
-                    if (config != null)
-                        configs.Add(config);
-                }
+                
+                configs.Add(config);
             }
 
             return configs;
+        }
+
+        public static T LoadJsonConfigFile<T>(string filePath)
+        {
+            string manifestText = File.ReadAllText(filePath, Encoding.UTF8);
+            return JsonConvert.DeserializeObject<T>(manifestText);
         }
 
 
