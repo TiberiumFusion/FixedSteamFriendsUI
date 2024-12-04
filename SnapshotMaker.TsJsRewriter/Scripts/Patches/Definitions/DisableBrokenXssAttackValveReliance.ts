@@ -33,6 +33,14 @@
 
     We, however, get screwed by it. Because the steam-chat.com snapshot is served from steamloopback.host, this code is *not* an xss attack, and thus it runs, and thus is clobbers the valid data with garbage.
     So we have to disable it.
+    
+
+    ----- Range -----
+
+    Since: Sometime before 8200419.
+
+    Until: Sometime between 9189721 and 9230763.
+            - Since 9230763, the entire offending code block is removed. Removal is likely due to it being superfluous in the pure shit Steam client. Chances are zero that any of the Valve apes recognized it was broken and removed it for that.
 
 */
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

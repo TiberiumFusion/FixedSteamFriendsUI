@@ -122,9 +122,10 @@
     <None Include="App.config" />
     <None Include="app.manifest" />
     <None Include="Configs\PatcherConfigs\8601984.json" />
+    <None Include="Configs\PatcherConfigs\9389211.json" />
     <None Include="Configs\PatcherConfigs\9097133.json" />
     <None Include="Configs\PatcherConfigs\8791341.json" />
-    <None Include="Configs\SnapshotManifests\9319138_9375834+.json" />
+    <None Include="Configs\SnapshotManifests\9319138_9389211+.json" />
     <None Include="Configs\SnapshotManifests\9126016_9300009.json" />
     <None Include="Configs\SnapshotManifests\9097133.json" />
     <None Include="Configs\SnapshotManifests\9044902.json" />

@@ -170,6 +170,8 @@
     // Not present in the injected interface created by friendsui.dll in the May 2023 client. Unknown which client introduces this method.
     // Appears to be related to vr junk and has nothing to do with actual steam chat functionality, so shimming this with a nop is fine
 
+    // Between CLSTAMP 9189721 and 9230763, SetOverlayInteractionAffordance() and anything having to do with "affordance" was removed from Valve's javascript, so this is no longer needed
+
     Compat.SteamClient_OpenVR_SetOverlayInteractionAffordance = function(steamClient, unknown1, unknown2)
     {
         if (steamClient != null && "OpenVR" in steamClient && "SetOverlayInteractionAffordance" in steamClient.OpenVR)

@@ -512,6 +512,14 @@ var SnapshotMakerTsJsRewriter;
 
     We, however, get screwed by it. Because the steam-chat.com snapshot is served from steamloopback.host, this code is *not* an xss attack, and thus it runs, and thus is clobbers the valid data with garbage.
     So we have to disable it.
+    
+
+    ----- Range -----
+
+    Since: Sometime before 8200419.
+
+    Until: Sometime between 9189721 and 9230763.
+            - Since 9230763, the entire offending code block is removed. Removal is likely due to it being superfluous in the pure shit Steam client. Chances are zero that any of the Valve apes recognized it was broken and removed it for that.
 
 */
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2639,9 +2647,10 @@ var SnapshotMakerTsJsRewriter;
 
     Since: Sometime between 8390683 and 8601984.
 
-    Until: At least 9097133.
+    Until: Sometime between 9230763 and 9260922.
             - Circa 8811541, Valve added a guard to accessing the OpenVR subinterface, and only for OpenVR. Zero guard for SetOverlayInteractionAffordance. This changed the call site from Target #1 to Target #2.
             - Circa 9097133, Valve stopped translating their ?. into rancid syntax and now simply keep the almost-as-rancid ?. operator. Still zero guard for SetOverlayInteractionAffordance. Call site is now changed to Target #3.
+            - By 9260922, SetOverlayInteractionAffordance is completely gone. The SteamClient.OpenVR.* interface is still used, but the characters "afforadance" now occur exactly 0 times in friends.js.
 
 */
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

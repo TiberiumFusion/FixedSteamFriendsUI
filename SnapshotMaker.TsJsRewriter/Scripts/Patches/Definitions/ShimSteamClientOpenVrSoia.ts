@@ -34,9 +34,10 @@
 
     Since: Sometime between 8390683 and 8601984.
 
-    Until: At least 9097133.
+    Until: Sometime between 9230763 and 9260922.
             - Circa 8811541, Valve added a guard to accessing the OpenVR subinterface, and only for OpenVR. Zero guard for SetOverlayInteractionAffordance. This changed the call site from Target #1 to Target #2.
             - Circa 9097133, Valve stopped translating their ?. into rancid syntax and now simply keep the almost-as-rancid ?. operator. Still zero guard for SetOverlayInteractionAffordance. Call site is now changed to Target #3.
+            - By 9260922, SetOverlayInteractionAffordance is completely gone. The SteamClient.OpenVR.* interface is still used, but the characters "afforadance" now occur exactly 0 times in friends.js.
 
 */
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
