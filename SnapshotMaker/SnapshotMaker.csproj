@@ -125,7 +125,7 @@
     <None Include="Configs\PatcherConfigs\9386932.json" />
     <None Include="Configs\PatcherConfigs\9097133.json" />
     <None Include="Configs\PatcherConfigs\8791341.json" />
-    <None Include="Configs\SnapshotManifests\9319138_9389539+.json" />
+    <None Include="Configs\SnapshotManifests\9319138_9431461+.json" />
     <None Include="Configs\SnapshotManifests\9126016_9300009.json" />
     <None Include="Configs\SnapshotManifests\9097133.json" />
     <None Include="Configs\SnapshotManifests\9044902.json" />
