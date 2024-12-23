@@ -1,4 +1,4 @@
-Snapshot Maker (v1.1.0.0) :: Started at 8/13/2024 2:35:10 PM
+Snapshot Maker (v1.4.0.0) :: Started at 12/21/2024 2:44:36 PM
 Launch args: (none)
 
 Enabled stages: SA
@@ -6,21 +6,22 @@ Enabled stages: SA
 ---------- |  Capturing Snapshot  | ----------
 Initializing CurlHttp... OK
 Creating output directory structure... OK
+Using root html URL: https://steam-chat.com/chat/clientui/?l=english&cc=US&build=0&origin=https%3A%2F%2Fsteamloopback.host&_cdn=akamai
 Fetching root html... OK
 Parsing root html... OK
 - 4 <link>s
 - 6 <script>s
 Retrieving friends.js
-- Downloading "https://community.akamai.steamstatic.com/public/javascript/webui/friends.js?v=MAnv_K2TuHj_&amp;l=english"... OK (HTTP: 200)
+- Downloading "https://community.akamai.steamstatic.com/public/javascript/webui/friends.js?v=MQP2qHx0xB0K&amp;l=english&amp;_cdn=akamai"... OK (HTTP: 200)
 Scraping CLSTAMP from friends.js... OK
-- CLSTMAP = 9097133
+- CLSTMAP = 9431461
 Selecting snapshot manifest
-- Using snapshot manifest for CLSTAMP 9097133 thru 9097133+ (exact range match for remote friends.js)
+- Using snapshot manifest for CLSTAMP 9319138 thru 9389539+ (tenative range match for remote friends.js)
 Processing <link>s in root html
 - Downloading "https://steam-chat.com/favicon.ico"... OK (HTTP: 200)
-- Downloading "https://community.akamai.steamstatic.com/public/shared/css/motiva_sans.css?v=-DH0xTYpnVe2&amp;l=english"... OK (HTTP: 200)
-- Downloading "https://community.akamai.steamstatic.com/public/shared/css/shared_global.css?v=_D2Bg4UEaFxK&amp;l=english"... OK (HTTP: 200)
-- Downloading "https://community.akamai.steamstatic.com/public/css/webui/friends.css?v=YgO0DGxqVSpU&amp;l=english"... OK (HTTP: 200)
+- Downloading "https://community.akamai.steamstatic.com/public/shared/css/motiva_sans.css?v=G517uopaUy8x&amp;l=english&amp;_cdn=akamai"... OK (HTTP: 200)
+- Downloading "https://community.akamai.steamstatic.com/public/shared/css/shared_global.css?v=7tL7-igk9FpK&amp;l=english&amp;_cdn=akamai"... OK (HTTP: 200)
+- Downloading "https://community.akamai.steamstatic.com/public/css/webui/friends.css?v=Y_sTGIkX-27K&amp;l=english&amp;_cdn=akamai"... OK (HTTP: 200)
 Processing @font-faces in the root html's stylesheets
 - Downloading "https://community.akamai.steamstatic.com/public/shared/fonts/MotivaSans-Regular.ttf?v=4.015"... OK (HTTP: 200)
 - Downloading "https://community.akamai.steamstatic.com/public/shared/fonts/MotivaSans-Light.ttf?v=4.015"... OK (HTTP: 200)
@@ -34,18 +35,15 @@ Processing @font-faces in the root html's stylesheets
 Processing <script>s in root html
 - VALVE_PUBLIC_PATH = https://community.akamai.steamstatic.com/public/
 - Valve CDN Root URL: https://community.akamai.steamstatic.com/
-- Downloading "https://community.akamai.steamstatic.com/public/javascript/webui/libraries.js?v=-0RMwd8EF-qL&amp;l=english"... OK (HTTP: 200)
-- Downloading "https://community.akamai.steamstatic.com/public/javascript/webui/libraries_cm.js?v=8u3it10LwYre&amp;l=english"... OK (HTTP: 200)
-- Downloading "https://community.akamai.steamstatic.com/public/javascript/webui/steammessages.js?v=n6hzl4pfqJqa&amp;l=english"... OK (HTTP: 200)
-- Downloading "https://community.akamai.steamstatic.com/public/javascript/webui/friends.js?v=MAnv_K2TuHj_&amp;l=english"... OK (HTTP: 200)
+- Downloading "https://community.akamai.steamstatic.com/public/javascript/webui/libraries.js?v=Vo9Cs8iDS58F&amp;l=english&amp;_cdn=akamai"... OK (HTTP: 200)
+- Downloading "https://community.akamai.steamstatic.com/public/javascript/webui/libraries_cm.js?v=1ezPWZmfzyBS&amp;l=english&amp;_cdn=akamai"... OK (HTTP: 200)
+- Downloading "https://community.akamai.steamstatic.com/public/javascript/webui/steammessages.js?v=atNtHK9aHaqM&amp;l=english&amp;_cdn=akamai"... OK (HTTP: 200)
+- Downloading "https://community.akamai.steamstatic.com/public/javascript/webui/friends.js?v=MQP2qHx0xB0K&amp;l=english&amp;_cdn=akamai"... OK (HTTP: 200)
 Fetching any remaining known JS from indirect JS references
 - Downloading "https://community.akamai.steamstatic.com/public/javascript/webui/broadcastapp.js"... OK (HTTP: 200)
 - Downloading "https://community.akamai.steamstatic.com/public/javascript/webui/gamerecording.js"... OK (HTTP: 200)
 - Downloading "https://community.akamai.steamstatic.com/public/javascript/webui/noisegate-audio-worklet.js"... OK (HTTP: 200)
 - Downloading "https://community.akamai.steamstatic.com/public/javascript/webui/3159.js"... OK (HTTP: 200)
-- Downloading "https://community.akamai.steamstatic.com/public/javascript/webui/2240.js"... OK (HTTP: 200)
-- Downloading "https://community.akamai.steamstatic.com/public/javascript/webui/2246.js"... OK (HTTP: 200)
-- Downloading "https://community.akamai.steamstatic.com/public/javascript/webui/7931.js"... OK (HTTP: 200)
 Fetching known localized strings json.js files
 - Downloading "https://community.akamai.steamstatic.com/public/javascript/webui/shared_arabic-json.js"... OK (HTTP: 200)
 - Downloading "https://community.akamai.steamstatic.com/public/javascript/webui/shared_brazilian-json.js"... OK (HTTP: 200)
@@ -107,10 +105,15 @@ Fetching known localized strings json.js files
 - Downloading "https://community.akamai.steamstatic.com/public/javascript/webui/friendsui_turkish-json.js"... OK (HTTP: 200)
 - Downloading "https://community.akamai.steamstatic.com/public/javascript/webui/friendsui_ukrainian-json.js"... OK (HTTP: 200)
 - Downloading "https://community.akamai.steamstatic.com/public/javascript/webui/friendsui_vietnamese-json.js"... OK (HTTP: 200)
+Finding unnamed unstable js chunk IDs
+- Chunk ID: 3345
+- Chunk ID: 7777
+Fetching js chunks:
+- Downloading "https://community.akamai.steamstatic.com/public/javascript/webui/3345.js"... OK (HTTP: 200)
+- Downloading "https://community.akamai.steamstatic.com/public/javascript/webui/7777.js"... OK (HTTP: 200)
 Fetching any remaining known CSS
 - Downloading "https://community.akamai.steamstatic.com/public/css/webui/broadcastapp.css"... OK (HTTP: 200)
 - Downloading "https://community.akamai.steamstatic.com/public/css/webui/gamerecording.css"... OK (HTTP: 200)
-- Downloading "https://community.akamai.steamstatic.com/public/css/webui/351.css"... OK (HTTP: 200)
 - Downloading "https://community.akamai.steamstatic.com/public/css/webui/3159.css"... OK (HTTP: 200)
 Fetching known images from indirect JS references
 - Downloading "https://community.akamai.steamstatic.com/public/images/webui/8669e97b288da32670e77181618c3dfb.png"... OK (HTTP: 200)
@@ -133,6 +136,8 @@ Failed downloads: 0
 Checking downloaded resources against expected resource list
 0 missing files
 0 extra files
+
+Writing working manifest to snapshot... OK
 
 ---------- |  Amending Snapshot  | ----------
 Preparing to modify URLs
@@ -164,6 +169,7 @@ Initializing CefJsHost
 - Binding apis
   - JsDeMinifier... OK
   - ValveFriendsJsRewriter... OK
+  - JsTranspiler... OK
 De-minifying "public/javascript/webui/friends.js"... OK
 
-Snapshot Maker :: Finished at 8/13/2024 2:35:39 PM
+Snapshot Maker :: Finished at 12/21/2024 2:45:22 PM
