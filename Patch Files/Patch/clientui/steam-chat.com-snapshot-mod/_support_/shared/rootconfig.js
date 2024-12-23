@@ -38,11 +38,6 @@
             "InnerLoadFailAutoRetryCount": 3,
             // Number of times to automatically refresh the page if a load failure of the inner frame is detected
         },
-
-        "InnerFrame":
-        {
-            "ValveCdnOverride": null,
-        },
     };
     
 
