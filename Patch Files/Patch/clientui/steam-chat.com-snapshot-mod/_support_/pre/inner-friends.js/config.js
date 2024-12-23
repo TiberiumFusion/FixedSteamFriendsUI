@@ -9,7 +9,7 @@
 
     // ____________________________________________________________________________________________________
     //
-    //     Initialization
+    //     Upstream config
     // ____________________________________________________________________________________________________
     //
 
@@ -27,6 +27,52 @@
     
     Config.ForwardCountryCode = UrlVars.get("CountryCode") ?? "US"; // snapshot is captured in US, which means all baked-in cc literals are "US", so "US" is the best choice of fallback
         // When forwarded to webui_config, controls some minor behavior of steam-chat.com. See notes in TFP.Hooks.OnWebuiConfigLoaded().
+
+
+
+    // ____________________________________________________________________________________________________
+    //
+    //     FixedSteamFriendsUI runtime root config
+    // ____________________________________________________________________________________________________
+    //
+
+    // This is the same thing that is first loaded by the outer frame's friend.js
+    // The process and interface we expose are much like the outer frame's and essentially copied directly from there
+
+    //
+    // Load & init the rootconfig component
+    //
+
+    console.log("----- BEGIN load FixedSteamFriendsUI rootconfig (inner) -----")
+
+    let rootConfig = TFP.LoadJs("_support_/shared/rootconfig.js");
+    Config.FsfuiRootConfig = rootConfig;
+
+    rootConfig.Initialize(
+	    "../", // Root path suffix (keep as window.location's root, which will be "https://steamloopback.host/")
+	    rootConfig.GetDefaultLocationsForConfigFiles(TFP.Meta.StaticDataJson5.PatchMetadata) // List of config file paths to try loading from, specified in overwrite order
+    );
+
+    console.log("-----  END  load FixedSteamFriendsUI rootconfig (inner) -----")
+
+    //
+    // Access interface
+    //
+
+    Config.FsfuiRootConfigGetValueOrFallback = function(path, fallback=null)
+    {
+        // Catch-all within our scope for anything that can go wrong with accessing the root config component
+        try
+        {
+            return this.FsfuiRootConfig.GetConfigProperty(path, throwIfUndefined=true, rethrowExceptions=true); // throw in all scenarios where we can supply a fallback config value
+        }
+        catch (e)
+        {
+            console.warn("[!] Unable to retrieve config property value for path: '" + path + "'; using fallback value instead: '" + fallback + "' [!]");
+            console.log("  Inner exception details: ", e);
+            return fallback;
+        }
+    }
 
     
 })();

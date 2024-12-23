@@ -172,15 +172,17 @@
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\_support_\pre\inner-friends.js\compat.js" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\_support_\pre\inner-friends.js\config.js" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\_support_\pre\inner-friends.js\hooks.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\_support_\pre\inner-friends.js\infra.js" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\_support_\pre\inner-friends.js\init.js" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\_support_\pre\inner-friends.js\meta.js" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\_support_\pre\inner-friends.js\helpers.js" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\_support_\pre\inner-friends.js\resources.js" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\_support_\shared\rootconfig.js" />
     <Content Include="TemplateDirectives.xml" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>"$(TargetPath)" "$(ProjectDir)\"</PostBuildEvent>
+    <PostBuildEvent>"$(TargetPath)" "$(ProjectDir)\" /skipzip</PostBuildEvent>
   </PropertyGroup>
 </Project>

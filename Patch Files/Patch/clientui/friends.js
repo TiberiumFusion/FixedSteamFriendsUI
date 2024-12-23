@@ -2,11 +2,8 @@
 // Fixed steam-chat.com PWA for FriendsUI in vgui clients
 // By TiberiumFusion
 
-const PATCH_ENABLE = true; // Set to false to quickly bypass the entire patch and run friends in vanilla form
+const PATCH_ENABLE = true; // Set to false to quickly disable the entire patch and run friends in vanilla form
 
-const RETRY_CONNECTION_BUTTON_STRONGER_RELOAD = true; // When true, clicking the blue Retry Connection button will reload the entire FriendsUI. When false, it will send a meager reload message to the inner document js (default Valve behavior).
-
-const INNER_LOAD_FAIL_AUTO_RETRY_COUNT = 3; // Number of times to automatically refresh the page if a load failure of the inner frame is detected
 
 
 // ____________________________________________________________________________________________________
@@ -17,7 +14,7 @@ const INNER_LOAD_FAIL_AUTO_RETRY_COUNT = 3; // Number of times to automatically 
 
 // First, the raw string, wrapped in a esoteric tag so that programs can scrape this if needed
 //-@[PMJ[
-var TfusionPatchMetadataJsonRaw = `{
+var TfusionPatch_MetadataJsonRaw = `{
 	"ScraperMagic": "{A0806671-AC87-4543-A2B6-51BC55CEE900}",
 	"Level0": {
 		"PatchType": "{62C3D4C0-8A0B-4602-820E-7020B8473037}",
@@ -33,67 +30,159 @@ var TfusionPatchMetadataJsonRaw = `{
 //]]@-
 
 // Live object
-var TfusionPatchMetadataJson = JSON.parse(TfusionPatchMetadataJsonRaw);
+var TfusionPatch_MetadataJson = JSON.parse(TfusionPatch_MetadataJsonRaw);
 
-if (PATCH_ENABLE)
+
+
+// ____________________________________________________________________________________________________
+//
+//     Helpers
+// ____________________________________________________________________________________________________
+//
+
+function TfusionPatch_IsEnabled()
 {
-	console.log("FixedSteamFriendsUI local steam-chat.com snapshot v" + TfusionPatchMetadataJson.Level0.Version + " (released " + TfusionPatchMetadataJson.Level0.ReleaseDateFriendly + ") by TiberiumFusion");
-    console.log("Valve CLSTAMP:", TfusionPatchMetadataJson.Level0.CoreBase, ", Patch metadata:", TfusionPatchMetadataJson);
+    if (!PATCH_ENABLE) {
+        return false; }
+
+    if (TfusionPatch_RootConfig != undefined && TfusionPatch_RootConfig_GetValueOrFallback != undefined) { // TfusionPatch_RootConfig and co are undefined as of this function declaration; they become the first things defined after the js loader
+        return !TfusionPatch_RootConfig_GetValueOrFallback("Bypass", false); } // another means for the user to disable the patch functions (though only after enough patch structure is initialized that we can read our rootconfig) via the optional json user configuration files
+
+    return true;
 }
 
 
 
-// ____________________________________________________________________________________________________
-//
-//     Libraries
-// ____________________________________________________________________________________________________
-//
-
-// There isn't really any clean way to include one js file in another in this context (i.e. libraries)
-// We could modify clientui\index_friends.html and add <script> tags for the files we need, but that increases the number of modified files which necessitates changes to the patch install procedure etc etc and I dont want to do that
-// So instead we are just going to inline any libraries this file needs right here in the file
-
-//
-// js-cookie 2.2.1
-//
-
-// Being the vile and ass-backwards language it is, javascript has zero ability to get a cookie by its name and requires a library to do that
-!function(e){var n;if("function"==typeof define&&define.amd&&(define(e),n=!0),"object"==typeof exports&&(module.exports=e(),n=!0),!n){var t=window.Cookies,o=window.Cookies=e();o.noConflict=function(){return window.Cookies=t,o}}}(function(){function e(){for(var e=0,n={};e<arguments.length;e++){var t=arguments[e];for(var o in t)n[o]=t[o]}return n}function n(e){return e.replace(/(%[0-9A-Z]{2})+/g,decodeURIComponent)}return function t(o){function r(){}function i(n,t,i){if("undefined"!=typeof document){"number"==typeof(i=e({path:"/"},r.defaults,i)).expires&&(i.expires=new Date(1*new Date+864e5*i.expires)),i.expires=i.expires?i.expires.toUTCString():"";try{var c=JSON.stringify(t);/^[\{\[]/.test(c)&&(t=c)}catch(e){}t=o.write?o.write(t,n):encodeURIComponent(String(t)).replace(/%(23|24|26|2B|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g,decodeURIComponent),n=encodeURIComponent(String(n)).replace(/%(23|24|26|2B|5E|60|7C)/g,decodeURIComponent).replace(/[\(\)]/g,escape);var f="";for(var u in i)i[u]&&(f+="; "+u,!0!==i[u]&&(f+="="+i[u].split(";")[0]));return document.cookie=n+"="+t+f}}function c(e,t){if("undefined"!=typeof document){for(var r={},i=document.cookie?document.cookie.split("; "):[],c=0;c<i.length;c++){var f=i[c].split("="),u=f.slice(1).join("=");t||'"'!==u.charAt(0)||(u=u.slice(1,-1));try{var a=n(f[0]);if(u=(o.read||o)(u,a)||n(u),t)try{u=JSON.parse(u)}catch(e){}if(r[a]=u,e===a)break}catch(e){}}return e?r[e]:r}}return r.set=i,r.get=function(e){return c(e,!1)},r.getJSON=function(e){return c(e,!0)},r.remove=function(n,t){i(n,"",e(t,{expires:-1}))},r.defaults={},r.withConverter=t,r}(function(){})});
+// ============================================================  Remaining patch init is subject to no switches disabling the patch  ============================================================
 
 
+if (TfusionPatch_IsEnabled())
+{
+    
+	console.log("FixedSteamFriendsUI local steam-chat.com snapshot v" + TfusionPatch_MetadataJson.Level0.Version + " (released " + TfusionPatch_MetadataJson.Level0.ReleaseDateFriendly + ") by TiberiumFusion");
+    console.log("Valve CLSTAMP:", TfusionPatch_MetadataJson.Level0.CoreBase, ", Patch metadata:", TfusionPatch_MetadataJson);
 
-// ____________________________________________________________________________________________________
-//
-//     Automatic reload
-// ____________________________________________________________________________________________________
-//
+
+    // ____________________________________________________________________________________________________
+    //
+    //     JS loader
+    // ____________________________________________________________________________________________________
+    //
+
+    // For loading and evaluating shared javascript components without needing to modify index.html to load them via <script> elements
+    function TfusionPatch_LoadJsOrDie(path)
+    {
+        let xhr = new XMLHttpRequest();
+        xhr.open("GET", path, false); // must be synchronous
+        xhr.send();
+                
+        if (xhr.status < 200 || xhr.status >= 300)
+        {
+            console.error("[!!!] Failed to load js file from path: '" + path + "' (full url: '" + xhr.responseURL + "'), http: " + xhr.status + " [!!!]");
+            throw new Error();
+        }
+
+        if (xhr == null || typeof xhr.response !== "string" || xhr.length == 0)
+        {
+            console.error("[!!!] Failed to load js file from path: '" + path + "' (full url: '" + xhr.responseURL + "'), file contents are empty or were not retrieved as text");
+            throw new Error();
+        }
+
+        // Hideous javascript kludge to run eval() in the global scope (i.e. on window)
+        // See: https://stackoverflow.com/q/9107240
+        return (1, eval)(xhr.responseText);
+    }
+
+
+
+    // ____________________________________________________________________________________________________
+    //
+    //     FixedSteamFriendsUI runtime root config
+    // ____________________________________________________________________________________________________
+    //
+
+    var TfusionPatch_RootConfig = TfusionPatch_LoadJsOrDie(TfusionPatch_MetadataJson.Level0.PayloadName + "/_support_/shared/rootconfig.js");
+
+    console.log("----- BEGIN load FixedSteamFriendsUI rootconfig (outer) -----")
+    
+    TfusionPatch_RootConfig.Initialize(
+        "", // Root path suffix (keep as window.location's root, which will be "https://steamloopback.host/")
+        TfusionPatch_RootConfig.GetDefaultLocationsForConfigFiles(TfusionPatch_MetadataJson) // List of config file paths to try loading from, specified in overwrite order
+    );
+
+    console.log("-----  END  load FixedSteamFriendsUI rootconfig (outer) -----")
+
+    function TfusionPatch_RootConfig_GetValueOrFallback(path, fallback=null)
+    {
+        // Catch-all within our scope for anything that can go wrong with accessing the root config component
+        try
+        {
+            return TfusionPatch_RootConfig.GetConfigProperty(path, throwIfUndefined=true, rethrowExceptions=true); // throw in all scenarios where we can supply a fallback config value
+        }
+        catch (e)
+        {
+            console.warn("[!] Unable to retrieve config property value for path: '" + path + "'; using fallback value instead: '" + fallback + "' [!]");
+            console.log("  Inner exception details: ", e);
+            return fallback;
+        }
+    }
+
+
+
+    // ____________________________________________________________________________________________________
+    //
+    //     Inline libraries
+    // ____________________________________________________________________________________________________
+    //
+
+    // There isn't really any clean way to include one js file in another in this context (i.e. libraries)
+    // We could modify clientui\index_friends.html and add <script> tags for the files we need, but that increases the number of modified files which necessitates changes to the patch install procedure etc etc and I dont want to do that
+    // So instead we are just going to inline any libraries this file needs right here in the file
+
+    //
+    // js-cookie 2.2.1
+    //
+
+    // Being the vile and ass-backwards language it is, javascript has zero ability to get a cookie by its name and requires a library to do that
+    !function(e){var n;if("function"==typeof define&&define.amd&&(define(e),n=!0),"object"==typeof exports&&(module.exports=e(),n=!0),!n){var t=window.Cookies,o=window.Cookies=e();o.noConflict=function(){return window.Cookies=t,o}}}(function(){function e(){for(var e=0,n={};e<arguments.length;e++){var t=arguments[e];for(var o in t)n[o]=t[o]}return n}function n(e){return e.replace(/(%[0-9A-Z]{2})+/g,decodeURIComponent)}return function t(o){function r(){}function i(n,t,i){if("undefined"!=typeof document){"number"==typeof(i=e({path:"/"},r.defaults,i)).expires&&(i.expires=new Date(1*new Date+864e5*i.expires)),i.expires=i.expires?i.expires.toUTCString():"";try{var c=JSON.stringify(t);/^[\{\[]/.test(c)&&(t=c)}catch(e){}t=o.write?o.write(t,n):encodeURIComponent(String(t)).replace(/%(23|24|26|2B|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g,decodeURIComponent),n=encodeURIComponent(String(n)).replace(/%(23|24|26|2B|5E|60|7C)/g,decodeURIComponent).replace(/[\(\)]/g,escape);var f="";for(var u in i)i[u]&&(f+="; "+u,!0!==i[u]&&(f+="="+i[u].split(";")[0]));return document.cookie=n+"="+t+f}}function c(e,t){if("undefined"!=typeof document){for(var r={},i=document.cookie?document.cookie.split("; "):[],c=0;c<i.length;c++){var f=i[c].split("="),u=f.slice(1).join("=");t||'"'!==u.charAt(0)||(u=u.slice(1,-1));try{var a=n(f[0]);if(u=(o.read||o)(u,a)||n(u),t)try{u=JSON.parse(u)}catch(e){}if(r[a]=u,e===a)break}catch(e){}}return e?r[e]:r}}return r.set=i,r.get=function(e){return c(e,!1)},r.getJSON=function(e){return c(e,!0)},r.remove=function(n,t){i(n,"",e(t,{expires:-1}))},r.defaults={},r.withConverter=t,r}(function(){})});
+
+
+
+    // ____________________________________________________________________________________________________
+    //
+    //     Automatic reload
+    // ____________________________________________________________________________________________________
+    //
  
-var IframeErrorInducedReloadCountMax = INNER_LOAD_FAIL_AUTO_RETRY_COUNT;
-var IframeErrorInducedReloadCount = 0;
+    var IframeErrorInducedReloadCountMax = TfusionPatch_RootConfig_GetValueOrFallback("OuterFrame.InnerLoadFailAutoRetryCount", 3);
+    var IframeErrorInducedReloadCount = 0;
 
-let ieirCount = Cookies.get("IframeErrorInducedReloadCount");
-if (ieirCount != null) {
-    IframeErrorInducedReloadCount = parseInt(ieirCount); }
+    let ieirCount = Cookies.get("IframeErrorInducedReloadCount");
+    if (ieirCount != null) {
+        IframeErrorInducedReloadCount = parseInt(ieirCount); }
 
-if (IframeErrorInducedReloadCount > 0)
-{
-    console.log(`This is Iframe Error Induced automatic reload attempt ${IframeErrorInducedReloadCount}/${IframeErrorInducedReloadCountMax}`);
+    if (IframeErrorInducedReloadCount > 0)
+    {
+        console.log(`This is Iframe Error Induced automatic reload attempt ${IframeErrorInducedReloadCount}/${IframeErrorInducedReloadCountMax}`);
+    }
+
+
+
+    // ____________________________________________________________________________________________________
+    //
+    //     Inner web page management
+    // ____________________________________________________________________________________________________
+    //
+
+    //
+    // Iframe document state tracking
+    //
+
+    var IsChatJavascriptIntialized = false;
+    // Set to true in OnMessageFromFrame when we receive a ChatJavascriptIntialized message from the iframe document
+
 }
 
-
-
-// ____________________________________________________________________________________________________
-//
-//     Inner web page management
-// ____________________________________________________________________________________________________
-//
-
-//
-// Iframe document state tracking
-//
-
-var IsChatJavascriptIntialized = false;
-// Set to true in OnMessageFromFrame when we receive a ChatJavascriptIntialized message from the iframe document
 
 
 
@@ -43311,7 +43400,7 @@ function LoadingState() {
 function RetryState() {
     let fnRetry = () => {
         console.log("OnRetryClick");
-        if (RETRY_CONNECTION_BUTTON_STRONGER_RELOAD)
+        if (TfusionPatch_IsEnabled() && TfusionPatch_RootConfig_GetValueOrFallback("OuterFrame.RetryConnectionButtonStrongerReload", true))
         {
             Cookies.remove("IframeErrorInducedReloadCount", {path: ""} );
             window.location.reload();
@@ -57095,7 +57184,7 @@ function StartChat(strFrame) {
 
     // Also of note: there is also an injected WebChat.GetWebChatLanguage() method, which presumably (untested) returns strings like "english" or "russian"
 	
-	if (PATCH_ENABLE)
+	if (TfusionPatch_IsEnabled())
 	{
         // First, we need to get the actual url from getwebchat since it conveniently has the `l` and `cc` GET params set on it
         // And I don't know of any other injected method that more cleanly/directly gets the Steam client's chosen display language & country
@@ -57108,9 +57197,9 @@ function StartChat(strFrame) {
             let countryCode = urlParams.get("cc") ?? "US"; // the steam-chat.com snapshots I capture are captured in the US so "US" is what is baked into the hypertext wherever this string is used
             
             // Now we can build the new url
-            let payloadRootUrl = "https://steamloopback.host/" + TfusionPatchMetadataJson.Level0.PayloadName + "/" // must have trailing slash! (for payload's friends.js logic)
+            let payloadRootUrl = "https://steamloopback.host/" + TfusionPatch_MetadataJson.Level0.PayloadName + "/" // must have trailing slash! (for payload's friends.js logic)
 		
-		    let iframeSrc = payloadRootUrl + TfusionPatchMetadataJson.Level0.PayloadRootIndexFilename
+		    let iframeSrc = payloadRootUrl + TfusionPatch_MetadataJson.Level0.PayloadRootIndexFilename
 			    + "?DisplayLanguage=" + encodeURIComponent(displayLanguage)
 			    + "&CountryCode=" + encodeURIComponent(countryCode)
 			    + "&PayloadRootUrl=" + encodeURIComponent(payloadRootUrl);
@@ -57453,44 +57542,47 @@ function Init() {
         // If we detect the iframe failed to load, we will assume the most likely known scenario: Valve's race condition as noted in issue #5
         // Per that assumption, the injected SteamClient interface is borked, and the only way to regenerate it is to refresh ourself (the outer Steam\clientui\index_friends.html document, not the inner remote\public\index.html iframe)
         // Note that this is a stronger refresh than the blue "Retry Connection" button that appears when the Valve code "detects" the inner iframe failed (by ugly fixed timeout)
-        // Normally, that button only reloads the iframe and is thus only suitable for handling network issues (this can be changed with RETRY_CONNECTION_BUTTON_STRONGER_RELOAD)
-        // - Related note: I have upgraded the blue retry connection button to perform the same kind of full/strong reload that we're doing here. This behavior is enabled by RETRY_CONNECTION_BUTTON_STRONGER_RELOAD.
+        // Normally, that button only reloads the iframe and is thus only suitable for handling network issues (this can be changed with rootconfig.OuterFrame.RetryConnectionButtonStrongerReload)
+        // - Related note: I have upgraded the blue retry connection button to perform the same kind of full/strong reload that we're doing here. This behavior is enabled by rootconfig.OuterFrame.RetryConnectionButtonStrongerReload.
 
         // We will only reload a limited number of times
 
         let iframe = document.getElementById("tracked_frame_friends_chat");
         iframe.addEventListener("load", function()
         {
-            if (!IsChatJavascriptIntialized)
+            if (TfusionPatch_IsEnabled())
             {
-                console.log("[!!!] An unhandled exception occurred while the inner document was loading [!!!]");
-                if (IframeErrorInducedReloadCount < IframeErrorInducedReloadCountMax && IframeErrorInducedReloadCountMax > 0)
+                if (!IsChatJavascriptIntialized)
                 {
-                    let retryCount = IframeErrorInducedReloadCount + 1;
-                    console.log(`Reloading outer document (attempt ${retryCount}/${IframeErrorInducedReloadCountMax})`);
+                    console.log("[!!!] An unhandled exception occurred while the inner document was loading [!!!]");
+                    if (IframeErrorInducedReloadCount < IframeErrorInducedReloadCountMax && IframeErrorInducedReloadCountMax > 0)
+                    {
+                        let retryCount = IframeErrorInducedReloadCount + 1;
+                        console.log(`Reloading outer document (attempt ${retryCount}/${IframeErrorInducedReloadCountMax})`);
                     
-                    // Graduated delay between page reloads to increase coverage likelihood on slower systems
-                    let reloadDelay = 2000 * Math.pow(IframeErrorInducedReloadCount, 2); // milliseconds
+                        // Graduated delay between page reloads to increase coverage likelihood on slower systems
+                        let reloadDelay = 2000 * Math.pow(IframeErrorInducedReloadCount, 2); // milliseconds
                     
-                    setTimeout(function()
-                        {
-                            // Cookies are the only way to pass data to new instance of this document; urlvars don't work because we are prevented from loading a different web page
-                            // Which means we have to deal with the fact that cookies persist, so we'll make this one expire shortly
-                            // 8 seconds is probably long enough to allow for a page reload 99% of the time while also being short enough to expire between exiting Steam and relaunching it even on fast disks
-                            Cookies.set("IframeErrorInducedReloadCount", retryCount, {expires: new Date(new Date().getTime() + 8000)} );
+                        setTimeout(function()
+                            {
+                                // Cookies are the only way to pass data to new instance of this document; urlvars don't work because we are prevented from loading a different web page
+                                // Which means we have to deal with the fact that cookies persist, so we'll make this one expire shortly
+                                // 8 seconds is probably long enough to allow for a page reload 99% of the time while also being short enough to expire between exiting Steam and relaunching it even on fast disks
+                                Cookies.set("IframeErrorInducedReloadCount", retryCount, {expires: new Date(new Date().getTime() + 8000)} );
                             
-                            // reload() is the only thing that works, which is why we have to use cookies
-                            // assign(), replace(), location= and location.href= all do absolutely nothing. I'm assuming steamwebhelper has cef configured to deny web pages the ability to navigate elsewhere.
-                            window.location.reload();
-                        },
-                        reloadDelay
-                    );
-                }
-                else
-                {
-                    console.log("Maximum number of consecutive automatic outer document reloads reached (" + IframeErrorInducedReloadCountMax + ")");
-                    if (RETRY_CONNECTION_BUTTON_STRONGER_RELOAD) {
-                        console.log("Use 'Retry Connection' button to manually reload"); }
+                                // reload() is the only thing that works, which is why we have to use cookies
+                                // assign(), replace(), location= and location.href= all do absolutely nothing. I'm assuming steamwebhelper has cef configured to deny web pages the ability to navigate elsewhere.
+                                window.location.reload();
+                            },
+                            reloadDelay
+                        );
+                    }
+                    else
+                    {
+                        console.log("Maximum number of consecutive automatic outer document reloads reached (" + IframeErrorInducedReloadCountMax + ")");
+                        if (TfusionPatch_RootConfig_GetValueOrFallback("OuterFrame.RetryConnectionButtonStrongerReload", true)) {
+                            console.log("Use 'Retry Connection' button to manually reload"); }
+                    }
                 }
             }
         });
