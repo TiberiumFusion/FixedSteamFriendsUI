@@ -61,6 +61,7 @@
     <None Include="build\PatchPayload_v3.0.0-{7e2daa54-0b1d-41b8-855c-486c298f36cf}.zip" />
     <None Include="build\PatchPayload_v3.0.1-{a44f8991-3c90-4b8a-b0ec-34c067094988}.zip" />
     <None Include="build\PatchPayload_v4.0.0-{c2f833e7-dae0-4368-984b-b1267578ff04}.zip" />
+    <None Include="build\PatchPayload_v5.0.0-{36b8a64e-0825-4226-9edb-52527018f6b6}.zip" />
     <None Include="Patch\clientui\steam-chat.com-snapshot-mod\public\shared\fonts\MotivaSans-Black.ttf" />
     <None Include="Patch\clientui\steam-chat.com-snapshot-mod\public\shared\fonts\MotivaSans-Bold.ttf" />
     <None Include="Patch\clientui\steam-chat.com-snapshot-mod\public\shared\fonts\MotivaSans-BoldItalic.ttf" />
