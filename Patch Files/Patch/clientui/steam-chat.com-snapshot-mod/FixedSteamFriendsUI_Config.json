@@ -1,0 +1,8 @@
+{
+	"Bypass": false,
+	"OuterFrame":
+	{
+		"RetryConnectionButtonStrongerReload": true,
+		"InnerLoadFailAutoRetryCount": 3
+	}
+}

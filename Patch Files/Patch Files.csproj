@@ -76,6 +76,7 @@
     <Content Include="Patch\clientui\friends.js" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\favicon.ico" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\index.html" />
+    <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\FixedSteamFriendsUI_Config.json" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\css\webui\3159.css" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\css\webui\351.css" />
     <Content Include="Patch\clientui\steam-chat.com-snapshot-mod\public\css\webui\broadcastapp.css" />
