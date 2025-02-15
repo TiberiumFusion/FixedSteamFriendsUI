@@ -18,7 +18,7 @@ namespace TiberiumFusion.FixedSteamFriendsUI.QuickPatcher
             InstallLog.PropertyChanged += (s, e) => OnPropertyChanged("InstallLog");
 
             UninstallLog = new PatchInstallLog();
-            UninstallLog.PropertyChanged += (s, e) => OnPropertyChanged("UninstallLog ");
+            UninstallLog.PropertyChanged += (s, e) => OnPropertyChanged("UninstallLog");
         }
 
         public bool AnyOperationInProgress
