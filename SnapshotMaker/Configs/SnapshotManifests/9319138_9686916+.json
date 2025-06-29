@@ -3,8 +3,8 @@
     "Version": 1,
 
     "MinCLSTAMP": 9319138, // ca 2024-11-06; unsure if this is the first CLSTAMP for this manifest, due to 7 days of no snapshots taken between 9300009 and 9319138
-    "MaxCLSTAMP": 9431461, // ca 2024-12-21
-    "UnboundedMaxCLSTAMP": true,
+    "MaxCLSTAMP": 9686916, // ca 2025-04-28; 9686916 is the last functional known CLSTAMP, but this manifest is still valid for the later versions, including up to the current CLSTAMP 9856267 (ca 2025-06-29)
+    "UnboundedMaxCLSTAMP": true, // at least 9856267 (ca 2025-06-29)
 
     "ResourcesByCategory":
     {
