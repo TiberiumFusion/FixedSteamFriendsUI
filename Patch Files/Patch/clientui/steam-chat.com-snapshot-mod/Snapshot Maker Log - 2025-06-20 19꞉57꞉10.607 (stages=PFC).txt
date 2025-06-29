@@ -1,4 +1,4 @@
-Snapshot Maker (v1.4.0.0) :: Started at 12/23/2024 4:47:51 PM
+Snapshot Maker (v1.4.0.0) :: Started at 6/20/2025 7:57:10 PM
 Launch args: /stages:pfc
 
 Enabled stages: PFC
@@ -6,7 +6,7 @@ Enabled stages: PFC
 
 ---------- |  Patching Snapshot  | ----------
 Preparing to rewrite inner friends.js javascript
-- CLSTMAP = 9431461
+- CLSTMAP = 9686916
 Selecting patcher config
 - Using patcher config for CLSTAMP 9386932
 Initializing CefJsHost
@@ -17,108 +17,108 @@ Initializing CefJsHost
   - JsTranspiler... OK
 
 Rewriting "public/javascript/webui/friends.js"...
-[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 5466, char 74 >> Node: 
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 5506, char 74 >> Node: 
 [JS]   - Original JS:  o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_enter.m4a?v=1"
 [JS]   - Patched JS:   /*o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_enter.m4a?v=1"*/ TFP.Resources.SelectCdnResourceUrl(o.TS.COMMUNITY_CDN_URL, "public/sounds/webui/steam_voice_channel_enter.m4a?v=1", "Root", "JsSounds")
-[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 5466, char 202 >> Node: 
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 5506, char 202 >> Node: 
 [JS]   - Original JS:  o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_exit.m4a?v=1"
 [JS]   - Patched JS:   /*o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_exit.m4a?v=1"*/ TFP.Resources.SelectCdnResourceUrl(o.TS.COMMUNITY_CDN_URL, "public/sounds/webui/steam_voice_channel_exit.m4a?v=1", "Root", "JsSounds")
-[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 5607, char 87 >> Node: 
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 5647, char 87 >> Node: 
 [JS]   - Original JS:  o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/steam_chatroom_notification.m4a?v=1"
 [JS]   - Patched JS:   /*o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/steam_chatroom_notification.m4a?v=1"*/ TFP.Resources.SelectCdnResourceUrl(o.TS.COMMUNITY_CDN_URL, "public/sounds/webui/steam_chatroom_notification.m4a?v=1", "Root", "JsSounds")
-[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 5610, char 87 >> Node: 
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 5650, char 87 >> Node: 
 [JS]   - Original JS:  o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/steam_at_mention.m4a?v=1"
 [JS]   - Patched JS:   /*o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/steam_at_mention.m4a?v=1"*/ TFP.Resources.SelectCdnResourceUrl(o.TS.COMMUNITY_CDN_URL, "public/sounds/webui/steam_at_mention.m4a?v=1", "Root", "JsSounds")
-[JS] > Detection 'ShimSettingsStoreIsSteamInTournamentMode' matched >> Line 8175, char 57 >> Node: 
+[JS] > Detection 'ShimSettingsStoreIsSteamInTournamentMode' matched >> Line 8190, char 57 >> Node: 
 [JS]   - Original JS:  b.xm.SettingsStore.IsSteamInTournamentMode()
 [JS]   - Patched JS:   /*b.xm.SettingsStore.IsSteamInTournamentMode()*/ TFP.Compat.SettingsStore_IsSteamInTournamentMode(b.xm.SettingsStore, "IsSteamInTournamentMode")
-[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 8483, char 87 >> Node: 
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 8562, char 87 >> Node: 
 [JS]   - Original JS:  o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/ui_steam_smoother_friend_join.m4a"
 [JS]   - Patched JS:   /*o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/ui_steam_smoother_friend_join.m4a"*/ TFP.Resources.SelectCdnResourceUrl(o.TS.COMMUNITY_CDN_URL, "public/sounds/webui/ui_steam_smoother_friend_join.m4a", "Root", "JsSounds")
-[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 8486, char 87 >> Node: 
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 8565, char 87 >> Node: 
 [JS]   - Original JS:  o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/ui_steam_smoother_friend_online.m4a"
 [JS]   - Patched JS:   /*o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/ui_steam_smoother_friend_online.m4a"*/ TFP.Resources.SelectCdnResourceUrl(o.TS.COMMUNITY_CDN_URL, "public/sounds/webui/ui_steam_smoother_friend_online.m4a", "Root", "JsSounds")
-[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 8962, char 87 >> Node: 
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 9042, char 87 >> Node: 
 [JS]   - Original JS:  r.TS.COMMUNITY_CDN_URL + "public/sounds/webui/ui_steam_message_old_smooth.m4a"
 [JS]   - Patched JS:   /*r.TS.COMMUNITY_CDN_URL + "public/sounds/webui/ui_steam_message_old_smooth.m4a"*/ TFP.Resources.SelectCdnResourceUrl(r.TS.COMMUNITY_CDN_URL, "public/sounds/webui/ui_steam_message_old_smooth.m4a", "Root", "JsSounds")
-[JS] > Detection 'ShimSettingsStoreIsSteamInTournamentMode' matched >> Line 9786, char 57 >> Node: 
+[JS] > Detection 'ShimSettingsStoreIsSteamInTournamentMode' matched >> Line 9868, char 57 >> Node: 
 [JS]   - Original JS:  p.xm.SettingsStore.IsSteamInTournamentMode()
 [JS]   - Patched JS:   /*p.xm.SettingsStore.IsSteamInTournamentMode()*/ TFP.Compat.SettingsStore_IsSteamInTournamentMode(p.xm.SettingsStore, "IsSteamInTournamentMode")
-[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 11769, char 14 >> Node: 
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 11852, char 14 >> Node: 
 [JS]   - Original JS:  n.p + "javascript/webui/noisegate-audio-worklet.js?contenthash=ef007c9e0249549f997c"
 [JS]   - Patched JS:   /*n.p + "javascript/webui/noisegate-audio-worklet.js?contenthash=ef007c9e0249549f997c"*/ TFP.Resources.SelectCdnResourceUrl(n.p, "javascript/webui/noisegate-audio-worklet.js?contenthash=ef007c9e0249549f997c", "Root_Public", "LibraryJs")
-[JS] > Detection 'RewriteEarly2024NewWindowGettersUsage' matched >> Line 12041, char 68 >> Node: 
+[JS] > Detection 'RewriteEarly2024NewWindowGettersUsage' matched >> Line 12124, char 68 >> Node: 
 [JS]   - Original JS:  this.m_window.SteamClient.Window.IsWindowMinimized()
 [JS]   - Patched JS:   /*this.m_window.SteamClient.Window.IsWindowMinimized()*/ new Promise((e, t) => {
     this.m_window.SteamClient.Window.IsWindowMinimized((t) => {
         e(t);
     });
 })
-[JS] > Detection 'ShimSettingsStoreIsSteamInTournamentMode' matched >> Line 12070, char 47 >> Node: 
+[JS] > Detection 'ShimSettingsStoreIsSteamInTournamentMode' matched >> Line 12153, char 47 >> Node: 
 [JS]   - Original JS:  p.xm.SettingsStore.IsSteamInTournamentMode()
 [JS]   - Patched JS:   /*p.xm.SettingsStore.IsSteamInTournamentMode()*/ TFP.Compat.SettingsStore_IsSteamInTournamentMode(p.xm.SettingsStore, "IsSteamInTournamentMode")
-[JS] > Detection 'ShimSettingsStoreIsSteamInTournamentMode' matched >> Line 12325, char 66 >> Node: 
+[JS] > Detection 'ShimSettingsStoreIsSteamInTournamentMode' matched >> Line 12408, char 66 >> Node: 
 [JS]   - Original JS:  this.m_FriendsUIApp.SettingsStore.IsSteamInTournamentMode()
 [JS]   - Patched JS:   /*this.m_FriendsUIApp.SettingsStore.IsSteamInTournamentMode()*/ TFP.Compat.SettingsStore_IsSteamInTournamentMode(this.m_FriendsUIApp.SettingsStore, "IsSteamInTournamentMode")
-[JS] > Detection 'RewriteScRpBCanCreateInviteForGameCall' matched >> Line 12998, char 65 >> Node: 
+[JS] > Detection 'RewriteScRpBCanCreateInviteForGameCall' matched >> Line 13081, char 65 >> Node: 
 [JS]   - Original JS:  SteamClient.RemotePlay.BCanCreateInviteForGame(e, t)
 [JS]   - Patched JS:   /*SteamClient.RemotePlay.BCanCreateInviteForGame(e, t)*/ SteamClient.RemotePlay.BCanCreateInviteForGame(e)
-[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 13168, char 155 >> Node: 
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 13251, char 155 >> Node: 
 [JS]   - Original JS:  o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/steam_rpt_leave.m4a"
 [JS]   - Patched JS:   /*o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/steam_rpt_leave.m4a"*/ TFP.Resources.SelectCdnResourceUrl(o.TS.COMMUNITY_CDN_URL, "public/sounds/webui/steam_rpt_leave.m4a", "Root", "JsSounds")
-[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 13177, char 204 >> Node: 
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 13260, char 204 >> Node: 
 [JS]   - Original JS:  o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/steam_rpt_join.m4a"
 [JS]   - Patched JS:   /*o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/steam_rpt_join.m4a"*/ TFP.Resources.SelectCdnResourceUrl(o.TS.COMMUNITY_CDN_URL, "public/sounds/webui/steam_rpt_join.m4a", "Root", "JsSounds")
-[JS] > Detection 'ShimSteamClientIsSteamInTournamentMode' matched >> Line 13338, char 292 >> Node: 
+[JS] > Detection 'ShimSteamClientIsSteamInTournamentMode' matched >> Line 13421, char 292 >> Node: 
 [JS]   - Original JS:  SteamClient.System.IsSteamInTournamentMode()
 [JS]   - Patched JS:   /*SteamClient.System.IsSteamInTournamentMode()*/ TFP.Compat.SteamClient_System_IsSteamInTournamentMode(SteamClient, "System", "IsSteamInTournamentMode")
-[JS] > Detection 'DisableMiniprofileBrokenBlurHandler' matched >> Line 14306, char 31 >> Node: 
+[JS] > Detection 'DisableMiniprofileBrokenBlurHandler' matched >> Line 14394, char 31 >> Node: 
 [JS]   - Original JS:  {
     this.HideByElement(t.m_OwningElement);
 }
 [JS]   - Patched JS:   {
     /*this.HideByElement(t.m_OwningElement);*/ ;
 }
-[JS] > Detection 'ShimSettingsStoreIsSteamInTournamentMode' matched >> Line 14537, char 57 >> Node: 
+[JS] > Detection 'ShimSettingsStoreIsSteamInTournamentMode' matched >> Line 14625, char 57 >> Node: 
 [JS]   - Original JS:  r.xm.SettingsStore.IsSteamInTournamentMode()
 [JS]   - Patched JS:   /*r.xm.SettingsStore.IsSteamInTournamentMode()*/ TFP.Compat.SettingsStore_IsSteamInTournamentMode(r.xm.SettingsStore, "IsSteamInTournamentMode")
-[JS] > Detection 'ShimSettingsStoreIsSteamInTournamentMode' matched >> Line 14911, char 209 >> Node: 
+[JS] > Detection 'ShimSettingsStoreIsSteamInTournamentMode' matched >> Line 14999, char 209 >> Node: 
 [JS]   - Original JS:  r.xm.SettingsStore.IsSteamInTournamentMode()
 [JS]   - Patched JS:   /*r.xm.SettingsStore.IsSteamInTournamentMode()*/ TFP.Compat.SettingsStore_IsSteamInTournamentMode(r.xm.SettingsStore, "IsSteamInTournamentMode")
-[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 16204, char 168 >> Node: 
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 16298, char 168 >> Node: 
 [JS]   - Original JS:  o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_exit.m4a?v=1"
 [JS]   - Patched JS:   /*o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_exit.m4a?v=1"*/ TFP.Resources.SelectCdnResourceUrl(o.TS.COMMUNITY_CDN_URL, "public/sounds/webui/steam_voice_channel_exit.m4a?v=1", "Root", "JsSounds")
-[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 16217, char 172 >> Node: 
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 16311, char 172 >> Node: 
 [JS]   - Original JS:  o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_exit.m4a?v=1"
 [JS]   - Patched JS:   /*o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_exit.m4a?v=1"*/ TFP.Resources.SelectCdnResourceUrl(o.TS.COMMUNITY_CDN_URL, "public/sounds/webui/steam_voice_channel_exit.m4a?v=1", "Root", "JsSounds")
-[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 16264, char 248 >> Node: 
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 16358, char 248 >> Node: 
 [JS]   - Original JS:  o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_enter.m4a?v=1"
 [JS]   - Patched JS:   /*o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_enter.m4a?v=1"*/ TFP.Resources.SelectCdnResourceUrl(o.TS.COMMUNITY_CDN_URL, "public/sounds/webui/steam_voice_channel_enter.m4a?v=1", "Root", "JsSounds")
-[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 16269, char 333 >> Node: 
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 16363, char 333 >> Node: 
 [JS]   - Original JS:  o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_exit.m4a?v=1"
 [JS]   - Patched JS:   /*o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/steam_voice_channel_exit.m4a?v=1"*/ TFP.Resources.SelectCdnResourceUrl(o.TS.COMMUNITY_CDN_URL, "public/sounds/webui/steam_voice_channel_exit.m4a?v=1", "Root", "JsSounds")
-[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 16288, char 173 >> Node: 
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 16382, char 173 >> Node: 
 [JS]   - Original JS:  o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/steam_phonecall.m4a?v=1"
 [JS]   - Patched JS:   /*o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/steam_phonecall.m4a?v=1"*/ TFP.Resources.SelectCdnResourceUrl(o.TS.COMMUNITY_CDN_URL, "public/sounds/webui/steam_phonecall.m4a?v=1", "Root", "JsSounds")
-[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 16730, char 133 >> Node: 
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 16824, char 133 >> Node: 
 [JS]   - Original JS:  o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/steam_ui_ptt_short_02_quiet.m4a"
 [JS]   - Patched JS:   /*o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/steam_ui_ptt_short_02_quiet.m4a"*/ TFP.Resources.SelectCdnResourceUrl(o.TS.COMMUNITY_CDN_URL, "public/sounds/webui/steam_ui_ptt_short_02_quiet.m4a", "Root", "JsSounds")
-[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 16730, char 254 >> Node: 
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 16824, char 254 >> Node: 
 [JS]   - Original JS:  o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/steam_ui_ptt_short_01_quiet.m4a"
 [JS]   - Patched JS:   /*o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/steam_ui_ptt_short_01_quiet.m4a"*/ TFP.Resources.SelectCdnResourceUrl(o.TS.COMMUNITY_CDN_URL, "public/sounds/webui/steam_ui_ptt_short_01_quiet.m4a", "Root", "JsSounds")
-[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 16742, char 96 >> Node: 
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 16836, char 96 >> Node: 
 [JS]   - Original JS:  o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/steam_ui_ptt_short_01_quiet.m4a"
 [JS]   - Patched JS:   /*o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/steam_ui_ptt_short_01_quiet.m4a"*/ TFP.Resources.SelectCdnResourceUrl(o.TS.COMMUNITY_CDN_URL, "public/sounds/webui/steam_ui_ptt_short_01_quiet.m4a", "Root", "JsSounds")
-[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 16743, char 96 >> Node: 
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 16837, char 96 >> Node: 
 [JS]   - Original JS:  o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/steam_ui_ptt_short_02_quiet.m4a"
 [JS]   - Patched JS:   /*o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/steam_ui_ptt_short_02_quiet.m4a"*/ TFP.Resources.SelectCdnResourceUrl(o.TS.COMMUNITY_CDN_URL, "public/sounds/webui/steam_ui_ptt_short_02_quiet.m4a", "Root", "JsSounds")
-[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 17343, char 121 >> Node: 
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 17437, char 121 >> Node: 
 [JS]   - Original JS:  o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/steam_phonecall.m4a?v=1"
 [JS]   - Patched JS:   /*o.TS.COMMUNITY_CDN_URL + "public/sounds/webui/steam_phonecall.m4a?v=1"*/ TFP.Resources.SelectCdnResourceUrl(o.TS.COMMUNITY_CDN_URL, "public/sounds/webui/steam_phonecall.m4a?v=1", "Root", "JsSounds")
-[JS] > Detection 'ShimSteamClientBrowserGetBrowserId' matched >> Line 24776, char 222 >> Node: 
+[JS] > Detection 'ShimSteamClientBrowserGetBrowserId' matched >> Line 24863, char 222 >> Node: 
 [JS]   - Original JS:  e.target.ownerDocument.defaultView?.SteamClient.Browser.GetBrowserID()
 [JS]   - Patched JS:   /*e.target.ownerDocument.defaultView?.SteamClient.Browser.GetBrowserID()*/ TFP.Compat.SteamClient_Browser_GetBrowserID(e.target.ownerDocument.defaultView?.SteamClient)
-[JS] > Detection 'RewriteSteamClientWindowNewGetterPromises' matched >> Line 24813, char 33 >> Node: 
+[JS] > Detection 'RewriteSteamClientWindowNewGetterPromises' matched >> Line 24900, char 33 >> Node: 
 [JS]   - Original JS:  this.props.target.ownerDocument.defaultView.SteamClient.Window.GetWindowRestoreDetails().then((e) => {
     const t = this.state.x - this.props.target.ownerDocument.defaultView.screenX, n = this.state.y - this.props.target.ownerDocument.defaultView.screenY;
     try {
@@ -145,7 +145,7 @@ Rewriting "public/javascript/webui/friends.js"...
         console.error(e);
     }
 })
-[JS] > Detection 'FixBrokenInviteListAutoCloseOnDone' matched >> Line 26884, char 13 >> Node: 
+[JS] > Detection 'FixBrokenInviteListAutoCloseOnDone' matched >> Line 26967, char 13 >> Node: 
 [JS]   - Original JS:  {
     let e = this.props.friends.self, t = this.GetNormalizedSearchString(), n = this.state.bFriendTabSearch, i = "friendTab socialListTab activeTab";
     n && (i += " TabSearchActive");
@@ -154,7 +154,7 @@ Rewriting "public/javascript/webui/friends.js"...
     let a = !1;
     if (this.props.popup) {
         let e = (0, m._k)(this.props.popup);
-        a = !(0, R.u)(e, R.m);
+        a = !(0, M.u)(e, M.m);
     }
     let s = !1, l = 0, c = !1, u = "friendListButton friendSettingsButton friendsListNeedsUpdate no-drag";
     null != m.ZM && ((s = m.ZM.BNeedsUpdate()), (l = m.ZM.GetSecondsOutOfDate()), l < 432e3 ? (s = !1) : l > 604800 && ((u += " friendsListVeryOutOfDate"), (c = !0)));
@@ -163,8 +163,8 @@ Rewriting "public/javascript/webui/friends.js"...
     let _ = d.xm.SettingsStore.FriendsSettings.bCompactFriendsList, g = this.props.collapsed, C = "friendlist", f = m.ZM && m.ZM.IsDesktopUIActive();
     _ && (C += " compactView"), s && (C += " needsUpdate"), g && this.props.collapsible && (C += " collapsed");
     const S = d.xm.FriendStore.BIsOfflineMode(), v = a;
-    return I.createElement("div", { className: C, ref: this.ref }, I.createElement("div", { className: (0, ue.A)("friendListHeaderContainer", "titleBarContainer", (0, Me.Pr)() && "OSX") }, this.props.popup && o.TS.IN_CLIENT && I.createElement(se.c, { hideMin: v, hideMax: v, popup: this.props.popup, className: "chatTitleBar" }), this.props.collapsible && I.createElement("div", { className: "friendListCollapse no-drag" }, I.createElement("div", { className: "friendListButton friendCollapseButton no-drag " + (g ? "Collapsed" : ""), onClick: this.ToggleCollapseExpand }, I.createElement(H.F2T, null))), I.createElement(Je, { popup: this.props.popup && this.props.popup, currentUser: e }), I.createElement("div", { className: "friendListButtons" }, s && I.createElement("div", { className: u, onClick: this.OnDoFriendsListUpdate, title: c ? (0, A.we)("#Tooltip_FriendsListUpdate_VeryOld") : (0, A.we)("#Tooltip_FriendsListUpdate") }, I.createElement(H.MvQ, null)), !f && I.createElement("div", { className: "friendListButton friendSettingsButton no-drag", onClick: this.OnSettingsClick, title: (0, A.we)("#Tooltip_Settings") }, I.createElement(H.wB_, null))), !S &&
-        I.createElement(I.Fragment, null, I.createElement(N.A, null, p && I.createElement(Le.M, { key: "activeVoiceControls1", classNames: "activevoice-anim", timeout: 500 }, (e) => I.createElement(Fe, { chats: this.props.chats, containerRef: e }))), I.createElement(Ye, { browserContext: this.props.browserContext }), I.createElement(L, { FavoritesStore: this.props.friends.FavoritesStore, bInOverlay: a }), I.createElement("div", { className: "socialTabSearchContainer" }, I.createElement("div", { className: "socialTabContainer" }, I.createElement("div", { className: i }, I.createElement("div", { className: "tabLabel", style: r, ref: this.BindTabLabel, onClick: n ? void 0 : this.OnTabSearchClick }, (0, A.we)("#tab_friends")), I.createElement("div", { className: "friendsTabButtonsContainer" }, I.createElement("div", { className: "TabSearchButton", onClick: n ? null : this.OnTabSearchClick }, I.createElement(N.A, { className: "tabSearchTransitionGroup" }, n && I.createElement(Le.M, { key: "tabSearch", classNames: "tab-search-anim", timeout: 500 }, (e) => I.createElement("div", { ref: e, className: "socialSearchContainer" }, I.createElement("form", { className: "socialInputContainer" + (n ? " SearchActive" : ""), name: "friendSearchForm", onSubmit: this.OnSearchSubmit }, I.createElement("div", { className: "inputContainer no-drag" }, I.createElement("input", { id: "friendSearchInputID", className: "friendSearchInput", autoFocus: !0, type: "text", name: "friendSearch", placeholder: (0, A.we)("#SearchFriends"), value: this.state.searchString, onInput: this.OnSearchInput, onKeyDown: this.OnSearchKeyDown, autoComplete: "off", ref: this.OnSearchInputRef }), I.createElement("div", { className: "friendSearchClear", onClick: this.OnClearSearch }, I.createElement(H.sED, null))))))), I.createElement("div", { className: "searchIconButton", onClick: this.OnTabSearchClick, title: (0, A.we)("#Tooltip_SearchFriends") }, I.createElement(H.eSy, null))), I.createElement(Qe, { fnToggleViewingIncomingInvites: this.ToggleViewingIncomingInvites, bViewingIncomingInvites: this.state.bViewingIncomingInvites }), I.createElement(O.uU, { href: o.TS.COMMUNITY_BASE_URL + "friends/add" }, I.createElement("div", { className: "friendListButton addFriendButton no-drag", title: (0, A.we)("#Tooltip_AddFriend") }, I.createElement(H.sdo, null)))))))), I.createElement("div", { className: "disconnectBlocker" })), S ? I.createElement("div", { className: pe.OfflineContainer }, I.createElement("div", { className: pe.OfflineMessage }, I.createElement("div", { className: pe.summaryText }, (0, A.we)("#FriendsList_SignedOut")), I.createElement("div", { className: pe.detailText }, (0, A.we)("#FriendsList_SignedOut_Detail")), I.createElement("div", null, I.createElement("button", { className: pe.retryButton, onClick: this.SignIn }, (0, A.we)("#Friends_SignIn"))))) : I.createElement(et, { friends: this.props.friends, chats: this.props.chats, searchString: t, fnOnSearchSelection: this.OnSearchSelection, onStartSearch: this.StartSearchOnKeyPress, browserContext: this.props.browserContext, bViewingIncomingInvites: this.state.bViewingIncomingInvites, onClose: this.ToggleViewingIncomingInvites }), I.createElement("div", { className: "friendListFooter" }, I.createElement(Xe, null)));
+    return I.createElement("div", { className: C, ref: this.ref }, I.createElement("div", { className: (0, ue.A)("friendListHeaderContainer", "titleBarContainer", (0, Re.Pr)() && "OSX") }, this.props.popup && o.TS.IN_CLIENT && I.createElement(se.c, { hideMin: v, hideMax: v, popup: this.props.popup, className: "chatTitleBar" }), this.props.collapsible && I.createElement("div", { className: "friendListCollapse no-drag" }, I.createElement("div", { className: "friendListButton friendCollapseButton no-drag " + (g ? "Collapsed" : ""), onClick: this.ToggleCollapseExpand }, I.createElement(H.F2T, null))), I.createElement(Je, { popup: this.props.popup && this.props.popup, currentUser: e }), I.createElement("div", { className: "friendListButtons" }, s && I.createElement("div", { className: u, onClick: this.OnDoFriendsListUpdate, title: c ? (0, D.we)("#Tooltip_FriendsListUpdate_VeryOld") : (0, D.we)("#Tooltip_FriendsListUpdate") }, I.createElement(H.MvQ, null)), !f && I.createElement("div", { className: "friendListButton friendSettingsButton no-drag", onClick: this.OnSettingsClick, title: (0, D.we)("#Tooltip_Settings") }, I.createElement(H.wB_, null))), !S &&
+        I.createElement(I.Fragment, null, I.createElement(N.A, null, p && I.createElement(Le.M, { key: "activeVoiceControls1", classNames: "activevoice-anim", timeout: 500 }, (e) => I.createElement(Pe, { chats: this.props.chats, containerRef: e }))), I.createElement(Ye, { browserContext: this.props.browserContext }), I.createElement(L, { FavoritesStore: this.props.friends.FavoritesStore, bInOverlay: a }), I.createElement("div", { className: "socialTabSearchContainer" }, I.createElement("div", { className: "socialTabContainer" }, I.createElement("div", { className: i }, I.createElement("div", { className: "tabLabel", style: r, ref: this.BindTabLabel, onClick: n ? void 0 : this.OnTabSearchClick }, (0, D.we)("#tab_friends")), I.createElement("div", { className: "friendsTabButtonsContainer" }, I.createElement("div", { className: "TabSearchButton", onClick: n ? null : this.OnTabSearchClick }, I.createElement(N.A, { className: "tabSearchTransitionGroup" }, n && I.createElement(Le.M, { key: "tabSearch", classNames: "tab-search-anim", timeout: 500 }, (e) => I.createElement("div", { ref: e, className: "socialSearchContainer" }, I.createElement("form", { className: "socialInputContainer" + (n ? " SearchActive" : ""), name: "friendSearchForm", onSubmit: this.OnSearchSubmit }, I.createElement("div", { className: "inputContainer no-drag" }, I.createElement("input", { id: "friendSearchInputID", className: "friendSearchInput", autoFocus: !0, type: "text", name: "friendSearch", placeholder: (0, D.we)("#SearchFriends"), value: this.state.searchString, onInput: this.OnSearchInput, onKeyDown: this.OnSearchKeyDown, autoComplete: "off", ref: this.OnSearchInputRef }), I.createElement("div", { className: "friendSearchClear", onClick: this.OnClearSearch }, I.createElement(H.sED, null))))))), I.createElement("div", { className: "searchIconButton", onClick: this.OnTabSearchClick, title: (0, D.we)("#Tooltip_SearchFriends") }, I.createElement(H.eSy, null))), I.createElement(Qe, { fnToggleViewingIncomingInvites: this.ToggleViewingIncomingInvites, bViewingIncomingInvites: this.state.bViewingIncomingInvites }), I.createElement(x.uU, { href: o.TS.COMMUNITY_BASE_URL + "friends/add" }, I.createElement("div", { className: "friendListButton addFriendButton no-drag", title: (0, D.we)("#Tooltip_AddFriend") }, I.createElement(H.sdo, null)))))))), I.createElement("div", { className: "disconnectBlocker" })), S ? I.createElement("div", { className: pe.OfflineContainer }, I.createElement("div", { className: pe.OfflineMessage }, I.createElement("div", { className: pe.summaryText }, (0, D.we)("#FriendsList_SignedOut")), I.createElement("div", { className: pe.detailText }, (0, D.we)("#FriendsList_SignedOut_Detail")), I.createElement("div", null, I.createElement("button", { className: pe.retryButton, onClick: this.SignIn }, (0, D.we)("#Friends_SignIn"))))) : I.createElement(et, { friends: this.props.friends, chats: this.props.chats, searchString: t, fnOnSearchSelection: this.OnSearchSelection, onStartSearch: this.StartSearchOnKeyPress, browserContext: this.props.browserContext, bViewingIncomingInvites: this.state.bViewingIncomingInvites, onClose: this.ToggleViewingIncomingInvites }), I.createElement("div", { className: "friendListFooter" }, I.createElement(Xe, null)));
 }
 [JS]   - Patched JS:   {
     let zzz1 = d.xm.FriendStore.FriendGroupStore.incoming_invites_group.member_count > 0, zzz2 = d.xm.FriendStore.ClanStore.clan_invites.length > 0, zzz3 = d.xm.FriendStore.FriendGroupStore.outgoing_invites_group.member_count > 0, zzz4 = d.xm.FriendStore.FriendGroupStore.incoming_invites_group.member_count + d.xm.FriendStore.ClanStore.clan_invites.length;
@@ -175,7 +175,7 @@ Rewriting "public/javascript/webui/friends.js"...
     let a = !1;
     if (this.props.popup) {
         let e = (0, m._k)(this.props.popup);
-        a = !(0, R.u)(e, R.m);
+        a = !(0, M.u)(e, M.m);
     }
     let s = !1, l = 0, c = !1, u = "friendListButton friendSettingsButton friendsListNeedsUpdate no-drag";
     null != m.ZM && ((s = m.ZM.BNeedsUpdate()), (l = m.ZM.GetSecondsOutOfDate()), l < 432000 ? (s = !1) : l > 604800 && ((u += " friendsListVeryOutOfDate"), (c = !0)));
@@ -184,9 +184,9 @@ Rewriting "public/javascript/webui/friends.js"...
     let _ = d.xm.SettingsStore.FriendsSettings.bCompactFriendsList, g = this.props.collapsed, C = "friendlist", f = m.ZM && m.ZM.IsDesktopUIActive();
     _ && (C += " compactView"), s && (C += " needsUpdate"), g && this.props.collapsible && (C += " collapsed");
     const S = d.xm.FriendStore.BIsOfflineMode(), v = a;
-    return I.createElement("div", { className: C, ref: this.ref }, I.createElement("div", { className: (0, ue.A)("friendListHeaderContainer", "titleBarContainer", (0, Me.Pr)() && "OSX") }, this.props.popup && o.TS.IN_CLIENT && I.createElement(se.c, { hideMin: v, hideMax: v, popup: this.props.popup, className: "chatTitleBar" }), this.props.collapsible && I.createElement("div", { className: "friendListCollapse no-drag" }, I.createElement("div", { className: "friendListButton friendCollapseButton no-drag " + (g ? "Collapsed" : ""), onClick: this.ToggleCollapseExpand }, I.createElement(H.F2T, null))), I.createElement(Je, { popup: this.props.popup && this.props.popup, currentUser: e }), I.createElement("div", { className: "friendListButtons" }, s && I.createElement("div", { className: u, onClick: this.OnDoFriendsListUpdate, title: c ? (0, A.we)("#Tooltip_FriendsListUpdate_VeryOld") : (0, A.we)("#Tooltip_FriendsListUpdate") }, I.createElement(H.MvQ, null)), !f && I.createElement("div", { className: "friendListButton friendSettingsButton no-drag", onClick: this.OnSettingsClick, title: (0, A.we)("#Tooltip_Settings") }, I.createElement(H.wB_, null))), !S && I.createElement(I.Fragment, null, I.createElement(N.A, null, p && I.createElement(Le.M, { key: "activeVoiceControls1", classNames: "activevoice-anim", timeout: 500 }, (e) => I.createElement(Fe, { chats: this.props.chats, containerRef: e }))), I.createElement(Ye, { browserContext: this.props.browserContext }), I.createElement(L, { FavoritesStore: this.props.friends.FavoritesStore, bInOverlay: a }), I.createElement("div", { className: "socialTabSearchContainer" }, I.createElement("div", { className: "socialTabContainer" }, I.createElement("div", { className: i }, I.createElement("div", { className: "tabLabel", style: r, ref: this.BindTabLabel, onClick: n ? void 0 : this.OnTabSearchClick }, (0, A.we)("#tab_friends")), I.createElement("div", { className: "friendsTabButtonsContainer" }, I.createElement("div", { className: "TabSearchButton", onClick: n ? null : this.OnTabSearchClick }, I.createElement(N.A, { className: "tabSearchTransitionGroup" }, n && I.createElement(Le.M, { key: "tabSearch", classNames: "tab-search-anim", timeout: 500 }, (e) => I.createElement("div", { ref: e, className: "socialSearchContainer" }, I.createElement("form", { className: "socialInputContainer" + (n ? " SearchActive" : ""), name: "friendSearchForm", onSubmit: this.OnSearchSubmit }, I.createElement("div", { className: "inputContainer no-drag" }, I.createElement("input", { id: "friendSearchInputID", className: "friendSearchInput", autoFocus: !0, type: "text", name: "friendSearch", placeholder: (0, A.we)("#SearchFriends"), value: this.state.searchString, onInput: this.OnSearchInput, onKeyDown: this.OnSearchKeyDown, autoComplete: "off", ref: this.OnSearchInputRef }), I.createElement("div", { className: "friendSearchClear", onClick: this.OnClearSearch }, I.createElement(H.sED, null))))))), I.createElement("div", { className: "searchIconButton", onClick: this.OnTabSearchClick, title: (0, A.we)("#Tooltip_SearchFriends") }, I.createElement(H.eSy, null))), I.createElement(Qe, { fnToggleViewingIncomingInvites: this.ToggleViewingIncomingInvites, bViewingIncomingInvites: this.state.bViewingIncomingInvites }), I.createElement(O.uU, { href: o.TS.COMMUNITY_BASE_URL + "friends/add" }, I.createElement("div", { className: "friendListButton addFriendButton no-drag", title: (0, A.we)("#Tooltip_AddFriend") }, I.createElement(H.sdo, null)))))))), I.createElement("div", { className: "disconnectBlocker" })), S ? I.createElement("div", { className: pe.OfflineContainer }, I.createElement("div", { className: pe.OfflineMessage }, I.createElement("div", { className: pe.summaryText }, (0, A.we)("#FriendsList_SignedOut")), I.createElement("div", { className: pe.detailText }, (0, A.we)("#FriendsList_SignedOut_Detail")), I.createElement("div", null, I.createElement("button", { className: pe.retryButton, onClick: this.SignIn }, (0, A.we)("#Friends_SignIn"))))) : I.createElement(et, { friends: this.props.friends, chats: this.props.chats, searchString: t, fnOnSearchSelection: this.OnSearchSelection, onStartSearch: this.StartSearchOnKeyPress, browserContext: this.props.browserContext, bViewingIncomingInvites: this.state.bViewingIncomingInvites, onClose: this.ToggleViewingIncomingInvites }), I.createElement("div", { className: "friendListFooter" }, I.createElement(Xe, null)));
+    return I.createElement("div", { className: C, ref: this.ref }, I.createElement("div", { className: (0, ue.A)("friendListHeaderContainer", "titleBarContainer", (0, Re.Pr)() && "OSX") }, this.props.popup && o.TS.IN_CLIENT && I.createElement(se.c, { hideMin: v, hideMax: v, popup: this.props.popup, className: "chatTitleBar" }), this.props.collapsible && I.createElement("div", { className: "friendListCollapse no-drag" }, I.createElement("div", { className: "friendListButton friendCollapseButton no-drag " + (g ? "Collapsed" : ""), onClick: this.ToggleCollapseExpand }, I.createElement(H.F2T, null))), I.createElement(Je, { popup: this.props.popup && this.props.popup, currentUser: e }), I.createElement("div", { className: "friendListButtons" }, s && I.createElement("div", { className: u, onClick: this.OnDoFriendsListUpdate, title: c ? (0, D.we)("#Tooltip_FriendsListUpdate_VeryOld") : (0, D.we)("#Tooltip_FriendsListUpdate") }, I.createElement(H.MvQ, null)), !f && I.createElement("div", { className: "friendListButton friendSettingsButton no-drag", onClick: this.OnSettingsClick, title: (0, D.we)("#Tooltip_Settings") }, I.createElement(H.wB_, null))), !S && I.createElement(I.Fragment, null, I.createElement(N.A, null, p && I.createElement(Le.M, { key: "activeVoiceControls1", classNames: "activevoice-anim", timeout: 500 }, (e) => I.createElement(Pe, { chats: this.props.chats, containerRef: e }))), I.createElement(Ye, { browserContext: this.props.browserContext }), I.createElement(L, { FavoritesStore: this.props.friends.FavoritesStore, bInOverlay: a }), I.createElement("div", { className: "socialTabSearchContainer" }, I.createElement("div", { className: "socialTabContainer" }, I.createElement("div", { className: i }, I.createElement("div", { className: "tabLabel", style: r, ref: this.BindTabLabel, onClick: n ? void 0 : this.OnTabSearchClick }, (0, D.we)("#tab_friends")), I.createElement("div", { className: "friendsTabButtonsContainer" }, I.createElement("div", { className: "TabSearchButton", onClick: n ? null : this.OnTabSearchClick }, I.createElement(N.A, { className: "tabSearchTransitionGroup" }, n && I.createElement(Le.M, { key: "tabSearch", classNames: "tab-search-anim", timeout: 500 }, (e) => I.createElement("div", { ref: e, className: "socialSearchContainer" }, I.createElement("form", { className: "socialInputContainer" + (n ? " SearchActive" : ""), name: "friendSearchForm", onSubmit: this.OnSearchSubmit }, I.createElement("div", { className: "inputContainer no-drag" }, I.createElement("input", { id: "friendSearchInputID", className: "friendSearchInput", autoFocus: !0, type: "text", name: "friendSearch", placeholder: (0, D.we)("#SearchFriends"), value: this.state.searchString, onInput: this.OnSearchInput, onKeyDown: this.OnSearchKeyDown, autoComplete: "off", ref: this.OnSearchInputRef }), I.createElement("div", { className: "friendSearchClear", onClick: this.OnClearSearch }, I.createElement(H.sED, null))))))), I.createElement("div", { className: "searchIconButton", onClick: this.OnTabSearchClick, title: (0, D.we)("#Tooltip_SearchFriends") }, I.createElement(H.eSy, null))), I.createElement(Qe, { fnToggleViewingIncomingInvites: this.ToggleViewingIncomingInvites, bViewingIncomingInvites: this.state.bViewingIncomingInvites }), I.createElement(x.uU, { href: o.TS.COMMUNITY_BASE_URL + "friends/add" }, I.createElement("div", { className: "friendListButton addFriendButton no-drag", title: (0, D.we)("#Tooltip_AddFriend") }, I.createElement(H.sdo, null)))))))), I.createElement("div", { className: "disconnectBlocker" })), S ? I.createElement("div", { className: pe.OfflineContainer }, I.createElement("div", { className: pe.OfflineMessage }, I.createElement("div", { className: pe.summaryText }, (0, D.we)("#FriendsList_SignedOut")), I.createElement("div", { className: pe.detailText }, (0, D.we)("#FriendsList_SignedOut_Detail")), I.createElement("div", null, I.createElement("button", { className: pe.retryButton, onClick: this.SignIn }, (0, D.we)("#Friends_SignIn"))))) : I.createElement(et, { friends: this.props.friends, chats: this.props.chats, searchString: t, fnOnSearchSelection: this.OnSearchSelection, onStartSearch: this.StartSearchOnKeyPress, browserContext: this.props.browserContext, bViewingIncomingInvites: this.state.bViewingIncomingInvites, onClose: this.ToggleViewingIncomingInvites }), I.createElement("div", { className: "friendListFooter" }, I.createElement(Xe, null)));
 }
-[JS] > Detection 'FixBrokenInviteListInviteItems' matched >> Line 27452, char 13 >> Node: 
+[JS] > Detection 'FixBrokenInviteListInviteItems' matched >> Line 27535, char 13 >> Node: 
 [JS]   - Original JS:  {
     let e = this.props.searchString && this.props.searchString.length > 0, t = e, n = this.IsCollapsed() && !e && !this.state.friendDrag, i = [], r = this.IsInviteGroup(), a = this.props.group.m_eDisplayType == c.oy.eOfflineOnly, l = !1;
     if (!n) {
@@ -216,33 +216,33 @@ Rewriting "public/javascript/webui/friends.js"...
                     n && "accept" == n.action ? (c += "bright") : !n || ("decline" != n.action && "block" != n.action) || (c += "dim"),
                     this.context?.IN_GAMEPADUI &&
                         ((m.onOKButton = (t) => {
-                            let n = D.uX(t);
+                            let n = A.uX(t);
                             this.AcceptInvite(n, e);
                         }),
-                            (m.onOKActionDescription = (0, A.we)("#FriendGroup_Tip_Accept")),
+                            (m.onOKActionDescription = (0, D.we)("#FriendGroup_Tip_Accept")),
                             (m.onSecondaryButton = (t) => {
-                                let n = D.uX(t);
+                                let n = A.uX(t);
                                 this.BlockInvite(n, e);
                             }),
-                            (m.onSecondaryActionDescription = (0, A.we)("#Button_Block")),
+                            (m.onSecondaryActionDescription = (0, D.we)("#Button_Block")),
                             (m.onOptionsButton = (t) => {
-                                let n = D.uX(t);
+                                let n = A.uX(t);
                                 this.DeclineInvite(n, e);
                             }),
-                            (m.onOptionsActionDescription = (0, A.we)("#FriendGroup_Tip_Decline")));
+                            (m.onOptionsActionDescription = (0, D.we)("#FriendGroup_Tip_Decline")));
             }
-            i.push(I.createElement(Le.M, { className: r ? "friendInviteContainer" + s : "friendCategoryContainer", key: e.accountid, classNames: "friend-anim", timeout: 320 }, (n) => I.createElement("div", { ref: n }, I.createElement(dt, { friend: e, key: e.accountid, className: c, context: this.GetFriendRenderContext(), bInOverlay: this.props.bInOverlay, noActions: r && this.context?.IN_GAMEPADUI, action: l || (r && this.context?.IN_GAMEPADUI) ? () => { } : this.OnFriendSelected, ...this.props.friendProps, gamepadEventOverrides: m, bFriendsListEntry: !0 }), r && !this.context?.IN_GAMEPADUI && I.createElement("div", { className: "friendInviteButtons" }, I.createElement("div", { className: "friendInviteButton acceptFriendInvite " + t, onClick: () => this.OnAcceptInvite(e), title: (0, A.we)("#FriendGroup_Tip_Accept") }, I.createElement(H.Jlk, null)), I.createElement("div", { className: "friendInviteButton declineFriendInvite " + a, onClick: () => this.OnDeclineInvite(e), title: (0, A.we)("#FriendGroup_Tip_Decline") }, I.createElement(H.sED, null))), r && !this.context?.IN_GAMEPADUI && I.createElement("div", { className: "friendInviteBlockContainer" }, I.createElement(Z.Yh, { onChange: (t) => this.OnBlockInvite(t, e) }), I.createElement("div", { className: "displayColumn" }, I.createElement("div", { className: "blockCommunicationLabel" }, (0, A.we)("#FriendGroup_IncomingInvites_Block")), I.createElement("div", { className: "blockCommunicationLabel subtitle" }, (0, A.we)("#FriendGroup_IncomingInvites_Block_desc")))))));
+            i.push(I.createElement(Le.M, { className: r ? "friendInviteContainer" + s : "friendCategoryContainer", key: e.accountid, classNames: "friend-anim", timeout: 320 }, (n) => I.createElement("div", { ref: n }, I.createElement(dt, { friend: e, key: e.accountid, className: c, context: this.GetFriendRenderContext(), bInOverlay: this.props.bInOverlay, noActions: r && this.context?.IN_GAMEPADUI, action: l || (r && this.context?.IN_GAMEPADUI) ? () => { } : this.OnFriendSelected, ...this.props.friendProps, gamepadEventOverrides: m, bFriendsListEntry: !0 }), r && !this.context?.IN_GAMEPADUI && I.createElement("div", { className: "friendInviteButtons" }, I.createElement("div", { className: "friendInviteButton acceptFriendInvite " + t, onClick: () => this.OnAcceptInvite(e), title: (0, D.we)("#FriendGroup_Tip_Accept") }, I.createElement(H.Jlk, null)), I.createElement("div", { className: "friendInviteButton declineFriendInvite " + a, onClick: () => this.OnDeclineInvite(e), title: (0, D.we)("#FriendGroup_Tip_Decline") }, I.createElement(H.sED, null))), r && !this.context?.IN_GAMEPADUI && I.createElement("div", { className: "friendInviteBlockContainer" }, I.createElement(Z.Yh, { onChange: (t) => this.OnBlockInvite(t, e) }), I.createElement("div", { className: "displayColumn" }, I.createElement("div", { className: "blockCommunicationLabel" }, (0, D.we)("#FriendGroup_IncomingInvites_Block")), I.createElement("div", { className: "blockCommunicationLabel subtitle" }, (0, D.we)("#FriendGroup_IncomingInvites_Block_desc")))))));
         }
     }
     let m = "friendGroup", h = !1, p = !1, _ = !1;
     if ((t && (m += " noTransitions"), this.props.group.modifiable ? ((m += " taggedGroup "), (h = !0)) : this.props.group.m_eDisplayType == c.oy.eOnlineOnlyNotInGame ? ((m += " onlineFriends "), (p = !0)) : this.props.group.m_eDisplayType == c.oy.eOfflineOnly ? ((m += " offlineFriends "), (_ = !0)) : this.IsInviteGroup() ? (m += " friendRequests ") : this.IsOutGoingInviteGroup() && (m += " friendOutgoingRequests "), e && (!i || !i.length)))
-        return I.createElement("div", { className: "friendSearchNoResultsContainer", ref: this.containerRef }, I.createElement("div", null, (0, A.we)("#FriendGroup_Search_NoResults", this.props.searchString)), I.createElement("div", { className: "searchSteamSuggestion" }, (0, A.we)("#FriendGroup_Search_CantFind")), I.createElement(O.uU, { href: o.TS.COMMUNITY_BASE_URL + "search/users" }, (0, A.we)("#FriendGroup_Search_Link")));
+        return I.createElement("div", { className: "friendSearchNoResultsContainer", ref: this.containerRef }, I.createElement("div", null, (0, D.we)("#FriendGroup_Search_NoResults", this.props.searchString)), I.createElement("div", { className: "searchSteamSuggestion" }, (0, D.we)("#FriendGroup_Search_CantFind")), I.createElement(x.uU, { href: o.TS.COMMUNITY_BASE_URL + "search/users" }, (0, D.we)("#FriendGroup_Search_Link")));
     if (0 == i.length && !this.IsCollapsed())
         return null;
     let g = 0 != this.m_actions.size, C = "SortByRecent";
     l && (C += " Recent"), n && (C += " Collapsed");
-    let f = !this.IsInviteGroup() && !this.IsOutGoingInviteGroup(), S = { onActivate: this.ToggleCollapsed, onOKActionDescription: (0, A.we)(n ? "#FriendGroup_Expand" : "#FriendGroup_Collapse"), onContextMenu: this.OnContextMenu, onMenuButton: f && this.OnContextMenu, onMenuActionDescription: f ? (0, A.we)("#FriendGroup_Options") : void 0 };
-    return I.createElement(u.T, { className: m, ...this.GetDragDropProps(this.props.group.modifiable || this.props.group.accepts_group_removals), ref: this.containerRef }, I.createElement(w.Z, { className: "groupHeaderContainer", "flow-children": "row", focusable: !1 }, !e && I.createElement(w.Z, { className: "groupName" + (n ? " Collapsed" : ""), ...S }, I.createElement("div", { className: "ExpandPlusMinus" }, I.createElement(H.f5w, null)), this.props.group.icon_url && I.createElement("img", { className: "groupIcon", src: this.props.group.icon_url }), this.props.group.name, !e && I.createElement("span", { className: this.IsCollapsed() ? "groupCount collapsed" : "groupCount" }, "(", this.props.group.member_count, ")"), h && I.createElement("hr", null)), _ && I.createElement(w.Z, { className: C, focusable: !0, onActivate: this.ToggleOfflineSortMethod, title: l ? (0, A.we)("#FriendGroup_Tip_SortByRecent") : (0, A.we)("#FriendGroup_Tip_SortByAlphabet"), onOKActionDescription: (0, A.we)("#FriendGroup_ChangeSort") }, I.createElement(H.gxp, null))), I.createElement(N.A, { className: "groupList", enter: !t, exit: !t }, i, r && !this.context?.IN_GAMEPADUI && I.createElement(Le.M, { key: "inviteButtons", classNames: "opacityfade-anim", timeout: 320 }, (e) => I.createElement("div", { className: "confirmInviteRequestContainer", ref: e }, I.createElement("div", { className: "confirmInviteRequestActions" }, g ? I.createElement("div", { className: "confirmInviteButton confirmInvites", onClick: this.OnConfirmChanges }, (0, A.we)("#FriendGroup_ConfirmInvites")) : I.createElement("div", { className: "confirmInviteButton confirmInvites dim" }, (0, A.we)("#FriendGroup_ConfirmInvites")), I.createElement("div", { className: "confirmInviteButton ignoreAllRequests", onClick: this.OnIgnoreAllInvites }, (0, A.we)("#FriendGroup_AllIgnore"))), I.createElement(w.Z, { className: "cancelAddFriends", onActivate: this.OnCloseInvites, onOKActionDescription: (0, A.we)("#FriendGroup_Close"), title: (0, A.we)("#FriendGroup_Close") }, I.createElement(H.i3G, { angle: -90 }))))), h && I.createElement("div", { className: "dropTargetBox" }));
+    let f = !this.IsInviteGroup() && !this.IsOutGoingInviteGroup(), S = { onActivate: this.ToggleCollapsed, onOKActionDescription: (0, D.we)(n ? "#FriendGroup_Expand" : "#FriendGroup_Collapse"), onContextMenu: this.OnContextMenu, onMenuButton: f && this.OnContextMenu, onMenuActionDescription: f ? (0, D.we)("#FriendGroup_Options") : void 0 };
+    return I.createElement(u.T, { className: m, ...this.GetDragDropProps(this.props.group.modifiable || this.props.group.accepts_group_removals), ref: this.containerRef }, I.createElement(w.Z, { className: "groupHeaderContainer", "flow-children": "row", focusable: !1 }, !e && I.createElement(w.Z, { className: "groupName" + (n ? " Collapsed" : ""), ...S }, I.createElement("div", { className: "ExpandPlusMinus" }, I.createElement(H.f5w, null)), this.props.group.icon_url && I.createElement("img", { className: "groupIcon", src: this.props.group.icon_url }), this.props.group.name, !e && I.createElement("span", { className: this.IsCollapsed() ? "groupCount collapsed" : "groupCount" }, "(", this.props.group.member_count, ")"), h && I.createElement("hr", null)), _ && I.createElement(w.Z, { className: C, focusable: !0, onActivate: this.ToggleOfflineSortMethod, title: l ? (0, D.we)("#FriendGroup_Tip_SortByRecent") : (0, D.we)("#FriendGroup_Tip_SortByAlphabet"), onOKActionDescription: (0, D.we)("#FriendGroup_ChangeSort") }, I.createElement(H.gxp, null))), I.createElement(N.A, { className: "groupList", enter: !t, exit: !t }, i, r && !this.context?.IN_GAMEPADUI && I.createElement(Le.M, { key: "inviteButtons", classNames: "opacityfade-anim", timeout: 320 }, (e) => I.createElement("div", { className: "confirmInviteRequestContainer", ref: e }, I.createElement("div", { className: "confirmInviteRequestActions" }, g ? I.createElement("div", { className: "confirmInviteButton confirmInvites", onClick: this.OnConfirmChanges }, (0, D.we)("#FriendGroup_ConfirmInvites")) : I.createElement("div", { className: "confirmInviteButton confirmInvites dim" }, (0, D.we)("#FriendGroup_ConfirmInvites")), I.createElement("div", { className: "confirmInviteButton ignoreAllRequests", onClick: this.OnIgnoreAllInvites }, (0, D.we)("#FriendGroup_AllIgnore"))), I.createElement(w.Z, { className: "cancelAddFriends", onActivate: this.OnCloseInvites, onOKActionDescription: (0, D.we)("#FriendGroup_Close"), title: (0, D.we)("#FriendGroup_Close") }, I.createElement(H.i3G, { angle: -90 }))))), h && I.createElement("div", { className: "dropTargetBox" }));
 }
 [JS]   - Patched JS:   {
     try {
@@ -282,61 +282,61 @@ Rewriting "public/javascript/webui/friends.js"...
             if (r) {
                 let n = this.m_actions.get(e.accountid);
                 (t = n && "accept" == n.action ? "bright" : "dim"), (a = !n || ("decline" != n.action && "block" != n.action) ? "dim" : "bright"), (s = !n || ("decline" != n.action && "block" != n.action) ? "" : " declined"), n && "accept" == n.action ? (c += "bright") : !n || ("decline" != n.action && "block" != n.action) || (c += "dim"), this.context?.IN_GAMEPADUI && ((m.onOKButton = (t) => {
-                    let n = D.uX(t);
+                    let n = A.uX(t);
                     this.AcceptInvite(n, e);
-                }), (m.onOKActionDescription = (0, A.we)("#FriendGroup_Tip_Accept")), (m.onSecondaryButton = (t) => {
-                    let n = D.uX(t);
+                }), (m.onOKActionDescription = (0, D.we)("#FriendGroup_Tip_Accept")), (m.onSecondaryButton = (t) => {
+                    let n = A.uX(t);
                     this.BlockInvite(n, e);
-                }), (m.onSecondaryActionDescription = (0, A.we)("#Button_Block")), (m.onOptionsButton = (t) => {
-                    let n = D.uX(t);
+                }), (m.onSecondaryActionDescription = (0, D.we)("#Button_Block")), (m.onOptionsButton = (t) => {
+                    let n = A.uX(t);
                     this.DeclineInvite(n, e);
-                }), (m.onOptionsActionDescription = (0, A.we)("#FriendGroup_Tip_Decline")));
+                }), (m.onOptionsActionDescription = (0, D.we)("#FriendGroup_Tip_Decline")));
             }
             i.push(I.createElement(Le.M, { className: r ? "friendInviteContainer" + s : "friendCategoryContainer", key: e.accountid, classNames: "friend-anim", timeout: 320 }, (n) => I.createElement("div", { ref: n }, I.createElement(dt, { friend: e, key: e.accountid, className: c, context: this.GetFriendRenderContext(), bInOverlay: this.props.bInOverlay, noActions: r && this.context?.IN_GAMEPADUI, action: l || (r && this.context?.IN_GAMEPADUI) ? () => {
-                } : this.OnFriendSelected, ...this.props.friendProps, gamepadEventOverrides: m, bFriendsListEntry: !0 }), r && !this.context?.IN_GAMEPADUI && I.createElement("div", { className: "friendInviteButtons" }, I.createElement("div", { className: "friendInviteButton acceptFriendInvite " + t, onClick: () => this.OnAcceptInvite(e), title: (0, A.we)("#FriendGroup_Tip_Accept") }, I.createElement(H.Jlk, null)), I.createElement("div", { className: "friendInviteButton declineFriendInvite " + a, onClick: () => this.OnDeclineInvite(e), title: (0, A.we)("#FriendGroup_Tip_Decline") }, I.createElement(H.sED, null))), r && !this.context?.IN_GAMEPADUI && I.createElement("div", { className: "friendInviteBlockContainer" }, I.createElement(Z.Yh, { onChange: (t) => this.OnBlockInvite(t, e) }), I.createElement("div", { className: "displayColumn" }, I.createElement("div", { className: "blockCommunicationLabel" }, (0, A.we)("#FriendGroup_IncomingInvites_Block")), I.createElement("div", { className: "blockCommunicationLabel subtitle" }, (0, A.we)("#FriendGroup_IncomingInvites_Block_desc")))))));
+                } : this.OnFriendSelected, ...this.props.friendProps, gamepadEventOverrides: m, bFriendsListEntry: !0 }), r && !this.context?.IN_GAMEPADUI && I.createElement("div", { className: "friendInviteButtons" }, I.createElement("div", { className: "friendInviteButton acceptFriendInvite " + t, onClick: () => this.OnAcceptInvite(e), title: (0, D.we)("#FriendGroup_Tip_Accept") }, I.createElement(H.Jlk, null)), I.createElement("div", { className: "friendInviteButton declineFriendInvite " + a, onClick: () => this.OnDeclineInvite(e), title: (0, D.we)("#FriendGroup_Tip_Decline") }, I.createElement(H.sED, null))), r && !this.context?.IN_GAMEPADUI && I.createElement("div", { className: "friendInviteBlockContainer" }, I.createElement(Z.Yh, { onChange: (t) => this.OnBlockInvite(t, e) }), I.createElement("div", { className: "displayColumn" }, I.createElement("div", { className: "blockCommunicationLabel" }, (0, D.we)("#FriendGroup_IncomingInvites_Block")), I.createElement("div", { className: "blockCommunicationLabel subtitle" }, (0, D.we)("#FriendGroup_IncomingInvites_Block_desc")))))));
         }
     }
     let m = "friendGroup", h = !1, p = !1, _ = !1;
     if ((t && (m += " noTransitions"), this.props.group.modifiable ? ((m += " taggedGroup "), (h = !0)) : this.props.group.m_eDisplayType == c.oy.eOnlineOnlyNotInGame ? ((m += " onlineFriends "), (p = !0)) : this.props.group.m_eDisplayType == c.oy.eOfflineOnly ? ((m += " offlineFriends "), (_ = !0)) : this.IsInviteGroup() ? (m += " friendRequests ") : this.IsOutGoingInviteGroup() && (m += " friendOutgoingRequests "), e && (!i || !i.length)))
-        return I.createElement("div", { className: "friendSearchNoResultsContainer", ref: this.containerRef }, I.createElement("div", null, (0, A.we)("#FriendGroup_Search_NoResults", this.props.searchString)), I.createElement("div", { className: "searchSteamSuggestion" }, (0, A.we)("#FriendGroup_Search_CantFind")), I.createElement(O.uU, { href: o.TS.COMMUNITY_BASE_URL + "search/users" }, (0, A.we)("#FriendGroup_Search_Link")));
+        return I.createElement("div", { className: "friendSearchNoResultsContainer", ref: this.containerRef }, I.createElement("div", null, (0, D.we)("#FriendGroup_Search_NoResults", this.props.searchString)), I.createElement("div", { className: "searchSteamSuggestion" }, (0, D.we)("#FriendGroup_Search_CantFind")), I.createElement(x.uU, { href: o.TS.COMMUNITY_BASE_URL + "search/users" }, (0, D.we)("#FriendGroup_Search_Link")));
     if (0 == i.length && !this.IsCollapsed())
         return null;
     let g = 0 != this.m_actions.size, C = "SortByRecent";
     l && (C += " Recent"), n && (C += " Collapsed");
-    let f = !this.IsInviteGroup() && !this.IsOutGoingInviteGroup(), S = { onActivate: this.ToggleCollapsed, onOKActionDescription: (0, A.we)(n ? "#FriendGroup_Expand" : "#FriendGroup_Collapse"), onContextMenu: this.OnContextMenu, onMenuButton: f && this.OnContextMenu, onMenuActionDescription: f ? (0, A.we)("#FriendGroup_Options") : void 0 };
-    return I.createElement(u.T, { className: m, ...this.GetDragDropProps(this.props.group.modifiable || this.props.group.accepts_group_removals), ref: this.containerRef }, I.createElement(w.Z, { className: "groupHeaderContainer", "flow-children": "row", focusable: !1 }, !e && I.createElement(w.Z, { className: "groupName" + (n ? " Collapsed" : ""), ...S }, I.createElement("div", { className: "ExpandPlusMinus" }, I.createElement(H.f5w, null)), this.props.group.icon_url && I.createElement("img", { className: "groupIcon", src: this.props.group.icon_url }), this.props.group.name, !e && I.createElement("span", { className: this.IsCollapsed() ? "groupCount collapsed" : "groupCount" }, "(", this.props.group.member_count, ")"), h && I.createElement("hr", null)), _ && I.createElement(w.Z, { className: C, focusable: !0, onActivate: this.ToggleOfflineSortMethod, title: l ? (0, A.we)("#FriendGroup_Tip_SortByRecent") : (0, A.we)("#FriendGroup_Tip_SortByAlphabet"), onOKActionDescription: (0, A.we)("#FriendGroup_ChangeSort") }, I.createElement(H.gxp, null))), I.createElement(N.A, { className: "groupList", enter: !t, exit: !t }, i, r && !this.context?.IN_GAMEPADUI && I.createElement(Le.M, { key: "inviteButtons", classNames: "opacityfade-anim", timeout: 320 }, (e) => I.createElement("div", { className: "confirmInviteRequestContainer", ref: e }, I.createElement("div", { className: "confirmInviteRequestActions" }, g ? I.createElement("div", { className: "confirmInviteButton confirmInvites", onClick: this.OnConfirmChanges }, (0, A.we)("#FriendGroup_ConfirmInvites")) : I.createElement("div", { className: "confirmInviteButton confirmInvites dim" }, (0, A.we)("#FriendGroup_ConfirmInvites")), I.createElement("div", { className: "confirmInviteButton ignoreAllRequests", onClick: this.OnIgnoreAllInvites }, (0, A.we)("#FriendGroup_AllIgnore"))), I.createElement(w.Z, { className: "cancelAddFriends", onActivate: this.OnCloseInvites, onOKActionDescription: (0, A.we)("#FriendGroup_Close"), title: (0, A.we)("#FriendGroup_Close") }, I.createElement(H.i3G, { angle: -90 }))))), h && I.createElement("div", { className: "dropTargetBox" }));
+    let f = !this.IsInviteGroup() && !this.IsOutGoingInviteGroup(), S = { onActivate: this.ToggleCollapsed, onOKActionDescription: (0, D.we)(n ? "#FriendGroup_Expand" : "#FriendGroup_Collapse"), onContextMenu: this.OnContextMenu, onMenuButton: f && this.OnContextMenu, onMenuActionDescription: f ? (0, D.we)("#FriendGroup_Options") : void 0 };
+    return I.createElement(u.T, { className: m, ...this.GetDragDropProps(this.props.group.modifiable || this.props.group.accepts_group_removals), ref: this.containerRef }, I.createElement(w.Z, { className: "groupHeaderContainer", "flow-children": "row", focusable: !1 }, !e && I.createElement(w.Z, { className: "groupName" + (n ? " Collapsed" : ""), ...S }, I.createElement("div", { className: "ExpandPlusMinus" }, I.createElement(H.f5w, null)), this.props.group.icon_url && I.createElement("img", { className: "groupIcon", src: this.props.group.icon_url }), this.props.group.name, !e && I.createElement("span", { className: this.IsCollapsed() ? "groupCount collapsed" : "groupCount" }, "(", this.props.group.member_count, ")"), h && I.createElement("hr", null)), _ && I.createElement(w.Z, { className: C, focusable: !0, onActivate: this.ToggleOfflineSortMethod, title: l ? (0, D.we)("#FriendGroup_Tip_SortByRecent") : (0, D.we)("#FriendGroup_Tip_SortByAlphabet"), onOKActionDescription: (0, D.we)("#FriendGroup_ChangeSort") }, I.createElement(H.gxp, null))), I.createElement(N.A, { className: "groupList", enter: !t, exit: !t }, i, r && !this.context?.IN_GAMEPADUI && I.createElement(Le.M, { key: "inviteButtons", classNames: "opacityfade-anim", timeout: 320 }, (e) => I.createElement("div", { className: "confirmInviteRequestContainer", ref: e }, I.createElement("div", { className: "confirmInviteRequestActions" }, g ? I.createElement("div", { className: "confirmInviteButton confirmInvites", onClick: this.OnConfirmChanges }, (0, D.we)("#FriendGroup_ConfirmInvites")) : I.createElement("div", { className: "confirmInviteButton confirmInvites dim" }, (0, D.we)("#FriendGroup_ConfirmInvites")), I.createElement("div", { className: "confirmInviteButton ignoreAllRequests", onClick: this.OnIgnoreAllInvites }, (0, D.we)("#FriendGroup_AllIgnore"))), I.createElement(w.Z, { className: "cancelAddFriends", onActivate: this.OnCloseInvites, onOKActionDescription: (0, D.we)("#FriendGroup_Close"), title: (0, D.we)("#FriendGroup_Close") }, I.createElement(H.i3G, { angle: -90 }))))), h && I.createElement("div", { className: "dropTargetBox" }));
 }
-[JS] > Detection 'ShimSettingsStoreIsSteamInTournamentMode' matched >> Line 29992, char 12 >> Node: 
+[JS] > Detection 'ShimSettingsStoreIsSteamInTournamentMode' matched >> Line 30095, char 12 >> Node: 
 [JS]   - Original JS:  r.xm.SettingsStore.IsSteamInTournamentMode()
 [JS]   - Patched JS:   /*r.xm.SettingsStore.IsSteamInTournamentMode()*/ TFP.Compat.SettingsStore_IsSteamInTournamentMode(r.xm.SettingsStore, "IsSteamInTournamentMode")
-[JS] > Detection 'FixBlackFrameBug' matched >> Line 38276, char 31 >> Node: 
+[JS] > Detection 'FixBlackFrameBug' matched >> Line 38471, char 31 >> Node: 
 [JS]   - Original JS:  s && (this.OnCreateInternal(), t != a.iE.k_EWindowBringToFrontInvalid && this.Focus(t))
 [JS]   - Patched JS:   /*s && (this.OnCreateInternal(), t != a.iE.k_EWindowBringToFrontInvalid && this.Focus(t))*/ s ? (this.OnCreateInternal(), t != a.iE.k_EWindowBringToFrontInvalid && this.Focus(t)) : this.OnCreateInternal()
-[JS] > Detection 'RewriteEarly2024NewWindowGettersUsage' matched >> Line 38347, char 96 >> Node: 
+[JS] > Detection 'RewriteEarly2024NewWindowGettersUsage' matched >> Line 38542, char 96 >> Node: 
 [JS]   - Original JS:  this.m_popup.SteamClient.Window.GetWindowRestoreDetails()
 [JS]   - Patched JS:   /*this.m_popup.SteamClient.Window.GetWindowRestoreDetails()*/ new Promise((e, t) => {
     this.m_popup.SteamClient.Window.GetWindowRestoreDetails((t) => {
         e(t);
     });
 })
-[JS] > Detection 'RewriteEarly2024NewWindowGettersUsage' matched >> Line 38350, char 90 >> Node: 
+[JS] > Detection 'RewriteEarly2024NewWindowGettersUsage' matched >> Line 38545, char 90 >> Node: 
 [JS]   - Original JS:  this.m_popup.SteamClient.Window.IsWindowMinimized()
 [JS]   - Patched JS:   /*this.m_popup.SteamClient.Window.IsWindowMinimized()*/ new Promise((e, t) => {
     this.m_popup.SteamClient.Window.IsWindowMinimized((t) => {
         e(t);
     });
 })
-[JS] > Detection 'RewriteEarly2024NewWindowGettersUsage' matched >> Line 38353, char 90 >> Node: 
+[JS] > Detection 'RewriteEarly2024NewWindowGettersUsage' matched >> Line 38548, char 90 >> Node: 
 [JS]   - Original JS:  this.m_popup.SteamClient.Window.IsWindowMaximized()
 [JS]   - Patched JS:   /*this.m_popup.SteamClient.Window.IsWindowMaximized()*/ new Promise((e, t) => {
     this.m_popup.SteamClient.Window.IsWindowMaximized((t) => {
         e(t);
     });
 })
-[JS] > Detection 'ShimSteamClientBrowserGetBrowserId' matched >> Line 38504, char 99 >> Node: 
+[JS] > Detection 'ShimSteamClientBrowserGetBrowserId' matched >> Line 38698, char 99 >> Node: 
 [JS]   - Original JS:  t.center_on_window.SteamClient.Browser.GetBrowserID()
 [JS]   - Patched JS:   /*t.center_on_window.SteamClient.Browser.GetBrowserID()*/ TFP.Compat.SteamClient_Browser_GetBrowserID(t.center_on_window.SteamClient)
-[JS] > Detection 'RewriteSteamClientWindowNewGetterPromises' matched >> Line 38690, char 29 >> Node: 
+[JS] > Detection 'RewriteSteamClientWindowNewGetterPromises' matched >> Line 38884, char 29 >> Node: 
 [JS]   - Original JS:  t.SteamClient.Window.GetWindowRestoreDetails().then((i) => {
     let a = n.current != i;
     t && i && (a || r) && (o.Of.SetRestoreDetails(e, i, !1), (n.current = i));
@@ -348,7 +348,7 @@ Rewriting "public/javascript/webui/friends.js"...
     let a = n.current != i;
     t && i && (a || r) && (o.Of.SetRestoreDetails(e, i, !1), (n.current = i));
 })
-[JS] > Detection 'RewriteSteamClientWindowNewGetterPromises' matched >> Line 38700, char 18 >> Node: 
+[JS] > Detection 'RewriteSteamClientWindowNewGetterPromises' matched >> Line 38894, char 18 >> Node: 
 [JS]   - Original JS:  e.SteamClient.Window.GetWindowRestoreDetails().then((i) => {
     (n.current = i), a(e, t, !0);
 })
@@ -357,14 +357,14 @@ Rewriting "public/javascript/webui/friends.js"...
 })*/ e.SteamClient.Window.GetWindowRestoreDetails((i) => {
     (n.current = i), a(e, t, !0);
 })
-[JS] > Detection 'DisableLate2023ChatCensorshipFeatureAddition' matched >> Line 47268, char 31 >> Node: 
+[JS] > Detection 'DisableLate2023ChatCensorshipFeatureAddition' matched >> Line 47516, char 31 >> Node: 
 [JS]   - Original JS:  {
-    this.m_WebUIServiceTransport.BIsValid() && (this.m_WebUIServiceTransport.messageHandlers.RegisterServiceNotificationHandler(Z.UP.NotifyTextFilterDictionaryChangedHandler, this.OnTextFilterDictionaryChanged), this.InitSteamEngineLanguage(u.TS.LANGUAGE), "english" !== u.TS.LANGUAGE && this.InitSteamEngineLanguage("english"));
+    this.m_WebUIServiceTransport.BIsValid() && (this.m_WebUIServiceTransport.messageHandlers.RegisterServiceNotificationHandler(X.UP.NotifyTextFilterDictionaryChangedHandler, this.OnTextFilterDictionaryChanged), this.InitSteamEngineLanguage(u.TS.LANGUAGE), "english" !== u.TS.LANGUAGE && this.InitSteamEngineLanguage("english"));
 }
 [JS]   - Patched JS:   {
-    /*this.m_WebUIServiceTransport.BIsValid() && (this.m_WebUIServiceTransport.messageHandlers.RegisterServiceNotificationHandler(Z.UP.NotifyTextFilterDictionaryChangedHandler, this.OnTextFilterDictionaryChanged), this.InitSteamEngineLanguage(u.TS.LANGUAGE), "english" !== u.TS.LANGUAGE && this.InitSteamEngineLanguage("english"));*/ ;
+    /*this.m_WebUIServiceTransport.BIsValid() && (this.m_WebUIServiceTransport.messageHandlers.RegisterServiceNotificationHandler(X.UP.NotifyTextFilterDictionaryChangedHandler, this.OnTextFilterDictionaryChanged), this.InitSteamEngineLanguage(u.TS.LANGUAGE), "english" !== u.TS.LANGUAGE && this.InitSteamEngineLanguage("english"));*/ ;
 }
-[JS] > Detection 'DisableLate2023ChatCensorshipFeatureAddition' matched >> Line 47401, char 14 >> Node: 
+[JS] > Detection 'DisableLate2023ChatCensorshipFeatureAddition' matched >> Line 47649, char 14 >> Node: 
 [JS]   - Original JS:  if (this.m_WebUIServiceTransport.BIsValid())
     try {
         {
@@ -395,7 +395,7 @@ Rewriting "public/javascript/webui/friends.js"...
     catch (e) {
         console.warn("LoadLanguage caught while loading from cache:", e);
     }
-[JS] > Detection 'RewriteSteamClientWindowNewGetterPromises' matched >> Line 48012, char 7 >> Node: 
+[JS] > Detection 'RewriteSteamClientWindowNewGetterPromises' matched >> Line 48257, char 7 >> Node: 
 [JS]   - Original JS:  this.parentWin?.SteamClient.Window.GetWindowRestoreDetails().then((t) => {
     const n = this.state.menuLeft - this.parentWin.screenX, i = this.state.menuTop - this.parentWin.screenY;
     try {
@@ -422,19 +422,19 @@ Rewriting "public/javascript/webui/friends.js"...
         console.error(e);
     }
 })
-[JS] > Detection 'ShimSteamClientBrowserGetBrowserIdCheck' matched >> Line 53109, char 31 >> Node: 
+[JS] > Detection 'ShimSteamClientBrowserGetBrowserIdCheck' matched >> Line 53384, char 31 >> Node: 
 [JS]   - Original JS:  i?.SteamClient?.Browser?.GetBrowserID
 [JS]   - Patched JS:   /*i?.SteamClient?.Browser?.GetBrowserID*/ TFP.Compat.SteamClient_HasGetBrowserID(i?.SteamClient)
-[JS] > Detection 'ShimSteamClientBrowserGetBrowserId' matched >> Line 53109, char 74 >> Node: 
+[JS] > Detection 'ShimSteamClientBrowserGetBrowserId' matched >> Line 53384, char 74 >> Node: 
 [JS]   - Original JS:  i.SteamClient.Browser.GetBrowserID()
 [JS]   - Patched JS:   /*i.SteamClient.Browser.GetBrowserID()*/ TFP.Compat.SteamClient_Browser_GetBrowserID(i.SteamClient)
-[JS] > Detection 'ShimSteamClientBrowserGetBrowserId' matched >> Line 53549, char 9 >> Node: 
+[JS] > Detection 'ShimSteamClientBrowserGetBrowserId' matched >> Line 53824, char 9 >> Node: 
 [JS]   - Original JS:  s.SteamClient.Browser.GetBrowserID()
 [JS]   - Patched JS:   /*s.SteamClient.Browser.GetBrowserID()*/ TFP.Compat.SteamClient_Browser_GetBrowserID(s.SteamClient)
-[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 54785, char 13 >> Node: 
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 55065, char 13 >> Node: 
 [JS]   - Original JS:  n.p + "images/webui/8669e97b288da32670e77181618c3dfb.png"
 [JS]   - Patched JS:   /*n.p + "images/webui/8669e97b288da32670e77181618c3dfb.png"*/ TFP.Resources.SelectCdnResourceUrl(n.p, "images/webui/8669e97b288da32670e77181618c3dfb.png", "Root_Public", "JsImages")
-[JS] > Detection 'RewriteSteamClientWindowNewGetterPromises' matched >> Line 56665, char 9 >> Node: 
+[JS] > Detection 'RewriteSteamClientWindowNewGetterPromises' matched >> Line 56907, char 9 >> Node: 
 [JS]   - Original JS:  e.SteamClient.Window.IsWindowMaximized().then((e) => {
     n(e);
 })
@@ -443,45 +443,45 @@ Rewriting "public/javascript/webui/friends.js"...
 })*/ e.SteamClient.Window.IsWindowMaximized((e) => {
     n(e);
 })
-[JS] > Detection 'AddHtmlWebuiConfigOnLoadHook' matched >> Line 57302, char 21 >> Node: 
+[JS] > Detection 'AddHtmlWebuiConfigOnLoadHook' matched >> Line 57544, char 21 >> Node: 
 [JS]   - Original JS:  {
-    const t = {}, n = d("config", e);
+    const t = {}, n = p("config", e);
     n && (delete n.SESSIONID, Object.assign(r.TS, n), (t.config = !0));
-    const i = d("userinfo", e);
-    i && (Object.assign(r.iA, i), (t.userConfig = !0), r.iA.is_support && _() && (r.iA.is_support = !1));
-    const o = d("broadcast", e);
+    const i = p("userinfo", e);
+    i && (Object.assign(r.iA, i), (t.userConfig = !0), r.iA.is_support && f() && (r.iA.is_support = !1));
+    const o = p("broadcast", e);
     o && (Object.assign(r.GP, o), (t.broadcastConfig = !0));
-    const s = d("community", e);
+    const s = p("community", e);
     s && (Object.assign(r.UF, s), (t.communityConfig = !0));
-    const l = d("event", e);
-    return l && (Object.assign(r.P9, l), (t.eventConfig = !0)), t;
+    const l = p("event", e);
+    return l && (Object.assign(r.P9, l), (t.eventConfig = !0)), (u = !0), d.forEach((e) => e()), t;
 }
 [JS]   - Patched JS:   {
-    const t = {}, n = d("config", e);
+    const t = {}, n = p("config", e);
     n && (delete n.SESSIONID, Object.assign(r.TS, n), (t.config = !0));
     TFP.Hooks.OnWebuiConfigLoaded(r.TS);
-    const i = d("userinfo", e);
-    i && (Object.assign(r.iA, i), (t.userConfig = !0), r.iA.is_support && _() && (r.iA.is_support = !1));
-    const o = d("broadcast", e);
+    const i = p("userinfo", e);
+    i && (Object.assign(r.iA, i), (t.userConfig = !0), r.iA.is_support && f() && (r.iA.is_support = !1));
+    const o = p("broadcast", e);
     o && (Object.assign(r.GP, o), (t.broadcastConfig = !0));
-    const s = d("community", e);
+    const s = p("community", e);
     s && (Object.assign(r.UF, s), (t.communityConfig = !0));
-    const l = d("event", e);
-    return l && (Object.assign(r.P9, l), (t.eventConfig = !0)), t;
+    const l = p("event", e);
+    return l && (Object.assign(r.P9, l), (t.eventConfig = !0)), (u = !0), d.forEach((e) => e()), t;
 }
-[JS] > Detection 'DisableContenthashGetParamOnFetches' matched >> Line 58325, char 15 >> Node: 
+[JS] > Detection 'DisableContenthashGetParamOnFetches' matched >> Line 58576, char 15 >> Node: 
 [JS]   - Original JS:  ".js?contenthash="
 [JS]   - Patched JS:   /*".js?contenthash="*/ ".js?_contenthash_="
-[JS] > Detection 'DisableContenthashGetParamOnFetches' matched >> Line 58396, char 97 >> Node: 
+[JS] > Detection 'DisableContenthashGetParamOnFetches' matched >> Line 58647, char 97 >> Node: 
 [JS]   - Original JS:  ".css?contenthash="
 [JS]   - Patched JS:   /*".css?contenthash="*/ ".css?_contenthash_="
-[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 58455, char 11 >> Node: 
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 58706, char 11 >> Node: 
 [JS]   - Original JS:  s.p + i
 [JS]   - Patched JS:   /*s.p + i*/ TFP.Resources.SelectCdnResourceUrl(s.p, i, "Root_Public", "JsCss")
-[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 58516, char 13 >> Node: 
+[JS] > Detection 'RewriteCdnAssetUrlStringBuild' matched >> Line 58767, char 13 >> Node: 
 [JS]   - Original JS:  s.p + s.u(t)
 [JS]   - Patched JS:   /*s.p + s.u(t)*/ TFP.Resources.SelectCdnResourceUrl_JsLoaderDirect(s.p, s.u(t), "Root_Public", "CoreJs")
-[JS] Total visited ast nodes: 569389
+[JS] Total visited ast nodes: 572033
 [JS] Total applied patches: 55
 [JS] Applied patches:
 [JS]   -  'RewriteCdnAssetUrlStringBuild' (config: System.Dynamic.ExpandoObject ) applied 23 time(s)
@@ -507,7 +507,7 @@ Writing to disk... OK
 ---------- |  Conforming Snapshot  | ----------
 Preparing to transpile javascript files
 Selecting transpiler config
-- CLSTMAP = 9431461
+- CLSTMAP = 9686916
 Using config for CLSTAMP 9004798 thru 9389539+ (tenative range match for remote friends.js)
 Transpile targets:
 - public/javascript/webui/friends.js
@@ -518,7 +518,7 @@ Writing to disk... OK
 
 ---------- |  Cleaning Snapshot  | ----------
 Getting CLSTAMP from friends.js... OK
-- CLSTMAP = 9431461
+- CLSTMAP = 9686916
 Found working snapshot manifest: WorkingSnapshotManifest.json
 Loading manifest file... OK
 
@@ -532,4 +532,4 @@ Deleting undeclared files
 - Deleting 'public/shared/css/motiva_sans.000-original.css'... OK
 - Deleting 'public/shared/css/motiva_sans.001-urlfix.css'... OK
 
-Snapshot Maker :: Finished at 12/23/2024 4:48:37 PM
+Snapshot Maker :: Finished at 6/20/2025 7:57:53 PM
