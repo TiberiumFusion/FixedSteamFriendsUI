@@ -12,7 +12,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("TiberiumFusion")]
 [assembly: AssemblyProduct("Fixed Steam FriendsUI Quick Patcher")]
-[assembly: AssemblyCopyright("Copyright © TiberiumFusion 2024")]
+[assembly: AssemblyCopyright("Copyright © TiberiumFusion 2025")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
